@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import HomePage from './components/HomePage'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <h1 className="text-3xl text-yellow-500 font-bold"> Welcome to The Ethiantech LLM Platform...</h1>
+      <HomePage />
     </>
   )
 }
 
 export default App
+
+
