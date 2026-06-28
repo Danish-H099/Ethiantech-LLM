@@ -2,7 +2,7 @@ import React from "react";
 import Header from "./Header";
 import courses from "./CoarseData"
 import Testimonials from "./Testimonials";
-import CTASection from "./CTASection";
+import CTASection from "./CTAsection";
 import Footer from "./Footer";
 import {
   Search,
@@ -66,7 +66,7 @@ export default function HomePage() {
           <h3 className="mx-auto max-w-4xl text-3xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-2xl md:text-2xl lg:text-5xl">
             Innovate Transform Accelerate
             <br />
-            EthianTech LLM Platform,{" "}
+            EthianTech LMS Platform
             <br />
             <span className="relative inline-block text-blue-600 text-4xl font-outfit">
               Tailored for your Growth.
