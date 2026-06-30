@@ -242,7 +242,13 @@ export default function CourseDetailsPage() {
               renderLessonContent={(lesson) => (
                 <>
                   <PlayCircle size={16} className="shrink-0 text-gray-400" />
-                  <span>{lesson.title}</span>
+                  <Link
+                    to={`/courses/video`}
+                    className="text-inherit no-underline"
+                  >
+                    {lesson.title}
+                  </Link>
+                  {/* <span>{lesson.title}</span> */}
                 </>
               )}
               renderLessonMeta={(lesson) => lesson.duration}
