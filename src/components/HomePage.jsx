@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "./Header";
-import courses from "./CoarseData";
+import courses from "./CourseData";
 import Testimonials from "./Testimonials";
 import CTASection from "./CTAsection";
 import Footer from "./Footer";
@@ -9,7 +10,10 @@ import { LoginPopup, SignupPopup } from "./AuthPopups";
 
 function CourseCard({ course }) {
   return (
-    <div className="group overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+    <Link
+      to={`/course/${course.id}`}
+      className="group block overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+    >
       <div className="relative h-44 w-full overflow-hidden sm:h-48">
         <img
           src={course.image}
@@ -21,7 +25,7 @@ function CourseCard({ course }) {
         </span>
       </div>
 
-      <div className="space-y-2 p-4">
+      <div className="space-y-2 p-4 text-left">
         <h3 className="line-clamp-2 text-base font-semibold leading-snug text-gray-900">
           {course.title}
         </h3>
@@ -37,7 +41,7 @@ function CourseCard({ course }) {
         </div>
         <p className="text-lg font-bold text-gray-900">{course.price}</p>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -110,9 +114,12 @@ export default function HomePage() {
         </div>
 
         <div className="mt-10 flex justify-center">
-          <button className="rounded-xl border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+          <Link
+            to="/courses"
+            className="rounded-xl border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+          >
             Show all courses
-          </button>
+          </Link>
         </div>
       </section>
 

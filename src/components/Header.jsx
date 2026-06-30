@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Header({ onLoginClick, onSignupClick }) {
     // Mobile menu state (commented out in your original code, left intact here)
@@ -8,28 +9,27 @@ export default function Header({ onLoginClick, onSignupClick }) {
         <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
                 {/* Logo */}
-                <div className="flex items-center gap-3">
+                <Link to="/" className="flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm">
                         <span className="text-xs font-bold">ET</span>
                     </div>
                     <div>
                         <h2 className="text-3xl font-bold sm:text-2xl">EthianTech LMS</h2>
                     </div>
-                </div>
+                </Link>
                 {/* <div className="flex items-center gap-3">
                     <img src={logo} alt="Logo" className="h-18 w-18" />
                 </div> */}
 
                 {/* Desktop Nav */}
                 <nav className="hidden items-center gap-8 md:flex">
-                    <a
-                        href="#"
+                    <Link
+                        to="/courses"
                         className="text-sm font-medium text-gray-600 transition hover:text-gray-900"
                     >
-                        Add Courses
-                    </a>
+                        Courses
+                    </Link>
 
-                    {/* Replaced <a> with <button> for accessibility and to prevent page jumps */}
                     <button
                         onClick={onLoginClick}
                         className="text-sm font-medium text-gray-600 transition hover:text-gray-900"
