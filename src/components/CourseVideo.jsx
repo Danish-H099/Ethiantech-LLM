@@ -5,7 +5,6 @@ import Footer from "./Footer";
 import CourseStructure from "./CourseStructure";
 import { LoginPopup, SignupPopup } from "./AuthPopups";
 import curriculumData from "../data/curriculumData.json";
-import demoVideo from "../assets/demo.mp4";
 import captions from "../assets/demo-captions.vtt?url";
 
 const comments = [
@@ -64,8 +63,8 @@ export default function CourseVideo() {
           <div className="min-w-0 flex-1">
             {/* Video Player */}
             <div className="overflow-hidden rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.1)]">
-              <video controls preload="metadata" className="w-full aspect-video bg-black">
-                <source src={demoVideo} type="video/mp4" />
+              <video controls preload="none" className="w-full aspect-video bg-black">
+                <source src="/videos/demo.mp4" type="video/mp4" />
                 <track kind="captions" src={captions} srcLang="en" label="English captions" />
                 Your browser does not support video.
               </video>
