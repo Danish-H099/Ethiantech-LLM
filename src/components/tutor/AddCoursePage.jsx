@@ -233,10 +233,11 @@ export default function AddCoursePage() {
       <form onSubmit={handleSubmit} noValidate>
         {/* Course Title */}
         <div className="mb-5">
-          <label className={labelBase}>
+          <label className={labelBase} htmlFor="course-title">
             Course Title
           </label>
           <input
+            id="course-title"
             type="text"
             name="title"
             value={form.title}
@@ -249,10 +250,11 @@ export default function AddCoursePage() {
 
         {/* Course Headings */}
         <div className="mb-5">
-          <label className={labelBase}>
+          <label className={labelBase} htmlFor="course-headings">
             Course Headings
           </label>
           <input
+            id="course-headings"
             type="text"
             name="headings"
             value={form.headings}
@@ -265,10 +267,11 @@ export default function AddCoursePage() {
 
         {/* Course Description */}
         <div className="mb-5">
-          <label className={labelBase}>
+          <label className={labelBase} htmlFor="course-description">
             Course Description
           </label>
           <textarea
+            id="course-description"
             name="description"
             value={form.description}
             onChange={handleChange}
@@ -284,8 +287,9 @@ export default function AddCoursePage() {
         {/* Category + Level row */}
         <div className="mb-5 flex flex-col gap-5 sm:flex-row sm:items-start">
           <div className="flex-1">
-            <label className={labelBase}>Category</label>
+            <label className={labelBase} htmlFor="course-category">Category</label>
             <select
+              id="course-category"
               name="category"
               value={form.category}
               onChange={handleChange}
@@ -300,8 +304,9 @@ export default function AddCoursePage() {
           </div>
 
           <div className="flex-1">
-            <label className={labelBase}>Level</label>
+            <label className={labelBase} htmlFor="course-level">Level</label>
             <select
+              id="course-level"
               name="level"
               value={form.level}
               onChange={handleChange}
@@ -318,10 +323,11 @@ export default function AddCoursePage() {
 
         {/* Tag */}
         <div className="mb-5">
-          <label className={labelBase}>
+          <label className={labelBase} htmlFor="course-tag">
             Course Tag <span className="text-sm text-ink/40">(optional)</span>
           </label>
           <input
+            id="course-tag"
             type="text"
             name="tag"
             value={form.tag}
@@ -335,10 +341,11 @@ export default function AddCoursePage() {
         <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-start">
           {/* Course Price */}
           <div className="flex-1">
-            <label className={labelBase}>
+            <label className={labelBase} htmlFor="course-price">
               Course Price
             </label>
             <input
+              id="course-price"
               type="text"
               name="price"
               value={form.price}
@@ -351,57 +358,57 @@ export default function AddCoursePage() {
 
           {/* Course Thumbnail */}
           <div className="flex-1">
-            <label className={labelBase}>
+            <label className={labelBase} htmlFor="course-thumbnail">
               Course Thumbnail
             </label>
-            <div
-              ref={dragRef}
-              onClick={() => !thumbnailPreview && fileInputRef.current?.click()}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              className={`relative flex h-[40px] w-full cursor-pointer items-center justify-center overflow-hidden rounded border transition ${
-                thumbnailPreview
-                  ? "border-transparent"
-                  : "border-brand bg-brand hover:opacity-90"
-              } ${errors.thumbnail ? "ring-2 ring-red-500" : ""}`}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleFileSelect(e.target.files[0])}
-              />
-              {thumbnailPreview ? (
-                <div className="relative h-full w-full">
-                  <img
-                    src={thumbnailPreview}
-                    alt="Thumbnail preview"
-                    className="h-full w-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setThumbnail(null);
-                      setThumbnailPreview(null);
-                      fileInputRef.current.value = "";
-                    }}
-                    className="absolute right-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-10 text-white"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ) : (
+            {thumbnailPreview ? (
+              <div className="relative flex h-[40px] w-full items-center justify-center overflow-hidden rounded border border-transparent">
+                <img
+                  src={thumbnailPreview}
+                  alt="Thumbnail preview"
+                  className="h-full w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setThumbnail(null);
+                    setThumbnailPreview(null);
+                    fileInputRef.current.value = "";
+                  }}
+                  className="absolute right-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-10 text-white"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                ref={dragRef}
+                onClick={() => fileInputRef.current?.click()}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                className={`relative flex h-[40px] w-full cursor-pointer items-center justify-center overflow-hidden rounded border border-brand bg-brand transition hover:opacity-90 ${
+                  errors.thumbnail ? "ring-2 ring-red-500" : ""
+                }`}
+              >
                 <div className="flex items-center gap-2 text-white">
                   <Upload size={16} />
                   <span className="text-sm">
                     Upload
                   </span>
                 </div>
-              )}
-            </div>
+              </button>
+            )}
+            <input
+              ref={fileInputRef}
+              id="course-thumbnail"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleFileSelect(e.target.files[0])}
+            />
             {errors.thumbnail && (
               <p className={errorText}>{errors.thumbnail}</p>
             )}
@@ -410,9 +417,9 @@ export default function AddCoursePage() {
 
         {/* Course Curriculum */}
         <div className="mb-6">
-          <label className={`${labelBase} text-lg font-semibold text-ink`}>
+          <h2 className={`${labelBase} text-lg font-semibold text-ink`}>
             Course Curriculum
-          </label>
+          </h2>
           <p className="mb-3 text-13 text-ink/50">
             Add sections and lessons to build your course structure.
           </p>

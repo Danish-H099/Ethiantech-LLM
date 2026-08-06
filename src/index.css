@@ -21,16 +21,22 @@
   --color-surface-soft: #F7F9FD;
   --color-ink: #252525;
   --color-ink-muted: #494949;
+  --color-ink-strong: #1F2937; /* DS-008 structural text (accordions, dropdowns) */
   --color-ink-dark: #2D2D3F;
   --color-input: #FAFAFA;
   --color-tint-pink: #FDF2F8;
   --color-toggle: #CBD6E4;
   --color-footer: #272640;
   --color-footer-input: #32304d;
+  --color-border: #E5E5E5; /* default border color (gray-200) */
 
   /* Shadows — DS-009 */
   --shadow-avatar: 0 4px 4px rgba(0, 0, 0, 0.05);
   --shadow-dropdown: 0 4px 15px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* Hero gradient — CourseListPage banner */
+  --gradient-hero: linear-gradient(135deg, #FFF1F5 0%, #E7F0FF 100%);
 }
 
 @layer base {
@@ -45,11 +51,35 @@
 
 @layer components {
   .card {
-    @apply rounded-xl border border-gray-200 bg-white shadow-sm;
+    @apply rounded-xl border border-border bg-white shadow-sm;
+  }
+
+  .card-hover {
+    @apply transition hover:shadow-card-hover;
   }
 
   .btn-brand {
-    @apply inline-flex items-center justify-center gap-2 bg-brand font-semibold text-white transition hover:opacity-90;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand font-semibold text-white transition hover:opacity-90;
+  }
+
+  .btn-brand-sm {
+    @apply px-4 py-2 text-sm;
+  }
+
+  .btn-brand-lg {
+    @apply px-8 py-3.5 text-base;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-secondary font-semibold text-white transition hover:opacity-90;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-brand font-medium text-brand transition hover:bg-brand/5;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium text-brand transition hover:opacity-80;
   }
 
   .table-header {
@@ -64,7 +94,35 @@
     @apply text-28 font-semibold text-ink;
   }
 
+  .section-title {
+    @apply text-22 font-semibold text-ink;
+  }
+
   .input {
-    @apply w-full rounded border border-ink/50 bg-white px-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white;
+    @apply w-full rounded-lg border border-ink/50 bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brand;
+  }
+
+  .input-sm {
+    @apply w-full rounded border border-ink/50 bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brand;
+  }
+
+  .label {
+    @apply mb-1 block text-sm font-medium text-ink;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-13 font-medium;
+  }
+
+  .link {
+    @apply font-medium text-brand-secondary transition hover:text-brand-secondary/80 hover:underline;
+  }
+
+  .divider {
+    @apply border-border;
+  }
+
+  .avatar {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full;
   }
 }

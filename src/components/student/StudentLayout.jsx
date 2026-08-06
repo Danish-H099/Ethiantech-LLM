@@ -23,9 +23,18 @@ export default function StudentLayout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-surface font-outfit">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+      >
+        Skip to main content
+      </a>
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+        <button
+          type="button"
+          aria-label="Close menu"
+          tabIndex={-1}
+          className="fixed inset-0 z-40 cursor-default bg-black/30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -72,7 +81,7 @@ export default function StudentLayout() {
         <div className="flex flex-1 flex-col">
           <StudentNavbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-          <main className="flex-1 overflow-auto bg-surface p-6 lg:p-8">
+          <main id="main" className="flex-1 overflow-auto bg-surface p-6 lg:p-8">
             <Outlet />
           </main>
         </div>

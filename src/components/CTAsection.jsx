@@ -2,11 +2,11 @@ export default function CTASection() {
   return (
     <section className="py-28 text-center">
 
-      <h2 className="text-5xl font-bold text-gray-800">
+      <h2 className="text-5xl font-bold text-ink">
         Learn anything, anytime, anywhere
       </h2>
 
-      <p className="mx-auto mt-6 max-w-2xl text-gray-500">
+      <p className="mx-auto mt-6 max-w-2xl text-ink-muted">
         Incididunt sint fugiat pariatur cupidatat consectetur sit
         cillum anim id veniam aliqua proident excepteur commodo do
         ea.
@@ -14,11 +14,11 @@ export default function CTASection() {
 
       <div className="mt-10 flex justify-center gap-5">
 
-        <button className="rounded-lg bg-brand px-8 py-3 font-medium text-white shadow ">
+        <button className="btn-brand px-8 py-3 shadow">
           Get started
         </button>
 
-        <button className="font-medium text-gray-700 hover:text-black">
+        <button className="font-medium text-ink-muted hover:text-ink">
           Learn more →
         </button>
 

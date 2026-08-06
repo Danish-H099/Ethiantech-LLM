@@ -8,7 +8,7 @@ export default function Testimonials() {
 
       <div className="text-center">
 
-        <p className="text-gray-500 font-medium">
+        <p className="text-ink-muted font-medium">
           Trusted by learners from
         </p>
 
@@ -25,11 +25,11 @@ export default function Testimonials() {
           ))}
         </div>
 
-        <h2 className="mt-24 text-4xl font-bold text-gray-800">
+        <h2 className="mt-24 text-4xl font-bold text-ink">
           Testimonials
         </h2>
 
-        <p className="mx-auto mt-4 max-w-3xl text-gray-500">
+        <p className="mx-auto mt-4 max-w-3xl text-ink-muted">
           Hear from our learners as they share their journeys of
           transformation, success, and how our platform has made a
           difference in their lives.
@@ -41,9 +41,9 @@ export default function Testimonials() {
         {testimonials.map((item) => (
           <div
             key={item.name}
-            className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition"
+            className="card card-hover"
           >
-            <div className="flex items-center gap-4 border-b p-5">
+            <div className="flex items-center gap-4 border-b border-border p-5">
 
               <img
                 src={item.image}
@@ -56,7 +56,7 @@ export default function Testimonials() {
                   {item.name}
                 </h4>
 
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-ink-muted">
                   {item.role}
                 </p>
               </div>
@@ -76,14 +76,14 @@ export default function Testimonials() {
 
               </div>
 
-              <p className="text-sm leading-7 text-gray-500">
+              <p className="text-sm leading-7 text-ink-muted">
                 I've been using imagify for nearly two years,
                 primarily for Instagram, and it has been
                 incredibly user-friendly, making my work much
                 easier.
               </p>
 
-              <button className="mt-6 text-sm font-medium text-pink-600 hover:underline">
+              <button className="mt-6 text-sm font-medium text-brand hover:underline">
                 Read more
               </button>
 

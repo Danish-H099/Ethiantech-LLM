@@ -5,7 +5,7 @@ export default function CourseCard({ course }) {
   return (
     <Link
       to={`/course/${course.id}`}
-      className="group block card overflow-hidden transition hover:-translate-y-1 hover:shadow-md"
+      className="group block card card-hover overflow-hidden hover:-translate-y-1"
     >
       <div className="relative h-44 w-full overflow-hidden sm:h-48">
         <img
@@ -13,22 +13,22 @@ export default function CourseCard({ course }) {
           alt={course.title}
           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
         />
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-10 font-semibold tracking-wide text-gray-700 shadow">
+        <span className="badge absolute left-3 top-3 bg-white/90 text-10 font-semibold tracking-wide text-ink-muted shadow">
           {course.tag}
         </span>
       </div>
 
       <div className="space-y-2 p-4 text-left">
-        <h3 className="line-clamp-2 text-base font-semibold leading-snug text-gray-900">
+        <h3 className="line-clamp-2 text-base font-semibold leading-snug text-ink">
           {course.title}
         </h3>
-        <p className="text-sm text-gray-500">{course.author}</p>
+        <p className="text-sm text-ink-muted">{course.author}</p>
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-gray-800">{course.rating}</span>
+          <span className="font-medium text-ink">{course.rating}</span>
           <StarRating rating={course.rating} />
-          <span className="text-gray-400">({course.reviews})</span>
+          <span className="text-ink-muted/70">({course.reviews})</span>
         </div>
-        <p className="text-lg font-bold text-gray-900">{course.price}</p>
+        <p className="text-lg font-bold text-ink">{course.price}</p>
       </div>
     </Link>
   );

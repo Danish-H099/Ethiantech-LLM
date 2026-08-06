@@ -6,6 +6,7 @@ import CourseStructure from "./CourseStructure";
 import { LoginPopup, SignupPopup } from "./AuthPopups";
 import curriculumData from "../data/curriculumData.json";
 import demoVideo from "../assets/demo.mp4";
+import captions from "../assets/demo-captions.vtt?url";
 
 const comments = [
   {
@@ -45,12 +46,13 @@ export default function CourseVideo() {
   }
 
   return (
-    <div className="relative min-h-screen bg-surface text-gray-900">
+    <div className="relative min-h-screen bg-surface text-ink">
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
       />
 
+      <main id="main" className="flex-1">
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="lg:flex lg:gap-10">
           {/* Left Column – Course Structure Sidebar */}
@@ -64,25 +66,26 @@ export default function CourseVideo() {
             <div className="overflow-hidden rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.1)]">
               <video controls preload="metadata" className="w-full aspect-video bg-black">
                 <source src={demoVideo} type="video/mp4" />
+                <track kind="captions" src={captions} srcLang="en" label="English captions" />
                 Your browser does not support video.
               </video>
             </div>
 
             {/* Tab Bar */}
-            <div className="mt-6 flex border-b border-gray-200">
+            <div className="mt-6 flex border-b border-border">
               <button
                 onClick={() => setActiveTab("description")}
                 className={`relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
                   activeTab === "description"
-                    ? "text-gray-900"
-                    : "text-gray-400 hover:text-gray-600"
+                    ? "text-ink"
+                    : "text-ink-muted/70 hover:text-ink-muted"
                 }`}
               >
                 <span
                   className={
                     activeTab === "description"
                       ? "text-brand"
-                      : "text-gray-400"
+                      : "text-ink-muted/70"
                   }
                 >
                   <svg
@@ -111,15 +114,15 @@ export default function CourseVideo() {
                 onClick={() => setActiveTab("comments")}
                 className={`relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
                   activeTab === "comments"
-                    ? "text-gray-900"
-                    : "text-gray-400 hover:text-gray-600"
+                    ? "text-ink"
+                    : "text-ink-muted/70 hover:text-ink-muted"
                 }`}
               >
                 <span
                   className={
                     activeTab === "comments"
                       ? "text-brand"
-                      : "text-gray-400"
+                      : "text-ink-muted/70"
                   }
                 >
                   <svg
@@ -147,13 +150,13 @@ export default function CourseVideo() {
                 onClick={() => setActiveTab("notes")}
                 className={`relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
                   activeTab === "notes"
-                    ? "text-gray-900"
-                    : "text-gray-400 hover:text-gray-600"
+                    ? "text-ink"
+                    : "text-ink-muted/70 hover:text-ink-muted"
                 }`}
               >
                 <span
                   className={
-                    activeTab === "notes" ? "text-brand" : "text-gray-400"
+                    activeTab === "notes" ? "text-brand" : "text-ink-muted/70"
                   }
                 >
                   <BookOpen size={16} />
@@ -167,11 +170,11 @@ export default function CourseVideo() {
 
             {/* Tab Content */}
             {activeTab === "description" && (
-              <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6">
-                <h3 className="text-lg font-bold text-gray-900">
+              <div className="card mt-6 p-6">
+                <h3 className="section-title">
                   Lecture Description
                 </h3>
-                <p className="mt-4 text-sm leading-7 text-gray-500">
+                <p className="mt-4 text-sm leading-7 text-ink-muted">
                   In this lecture we build the complete Text to Image SaaS
                   application from scratch using React, Node.js, MongoDB,
                   Express and TailwindCSS.
@@ -181,7 +184,7 @@ export default function CourseVideo() {
 
             {activeTab === "comments" && (
               <div className="mt-6">
-                <h3 className="mb-5 text-lg font-bold text-gray-900">
+                <h3 className="section-title mb-5">
                   Comments
                 </h3>
 
@@ -194,11 +197,11 @@ export default function CourseVideo() {
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                     placeholder="Add a comment..."
-                    className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand"
+                    className="input flex-1"
                   />
                   <button
                     type="submit"
-                    className="rounded-lg bg-brand px-6 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+                    className="btn-brand px-6 py-2.5 text-sm"
                   >
                     Comment
                   </button>
@@ -208,10 +211,10 @@ export default function CourseVideo() {
                   {comments.map((comment) => (
                     <div
                       key={comment.id}
-                      className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+                      className="card p-5"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+                        <div className="avatar bg-gray-200">
                           <img
                             src={comment.image}
                             alt={comment.name}
@@ -222,19 +225,19 @@ export default function CourseVideo() {
                             }}
                           />
                           <div className="hidden h-full w-full items-center justify-center">
-                            <User size={18} className="text-gray-500" />
+                            <User size={18} className="text-ink-muted" />
                           </div>
                         </div>
                         <div>
-                          <h4 className="text-sm font-semibold text-gray-900">
+                          <h4 className="text-sm font-semibold text-ink">
                             {comment.name}
                           </h4>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-ink-muted/70">
                             {comment.time}
                           </p>
                         </div>
                       </div>
-                      <p className="mt-3 text-sm leading-7 text-gray-600">
+                      <p className="mt-3 text-sm leading-7 text-ink-muted">
                         {comment.text}
                       </p>
                     </div>
@@ -242,7 +245,7 @@ export default function CourseVideo() {
                 </div>
 
                 <div className="mt-8 flex justify-center">
-                  <button className="rounded-xl border border-gray-300 bg-white px-8 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+                  <button className="rounded-xl border border-gray-300 bg-white px-8 py-3 text-sm font-medium text-ink transition hover:bg-surface-soft">
                     Load more
                   </button>
                 </div>
@@ -251,19 +254,19 @@ export default function CourseVideo() {
 
             {activeTab === "notes" && (
               <div className="mt-6">
-                <h3 className="mb-5 text-lg font-bold text-gray-900">
+                <h3 className="section-title mb-5">
                   My Notes
                 </h3>
-                <div className="rounded-xl border border-gray-200 bg-white p-6">
+                <div className="card p-6">
                   <textarea
                     value={noteText}
                     onChange={(e) => setNoteText(e.target.value)}
                     placeholder="Start writing your notes for this lecture..."
                     rows={10}
-                    className="w-full resize-y rounded-lg border border-gray-200 bg-surface-soft px-4 py-3 text-sm leading-7 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-brand focus:bg-white"
+                    className="input resize-y py-3 leading-7 bg-surface-soft"
                   />
                   <div className="mt-4 flex justify-end">
-                    <button className="rounded-lg bg-brand px-6 py-2.5 text-sm font-medium text-white transition hover:opacity-90">
+                    <button className="btn-brand px-6 py-2.5 text-sm">
                       Save Notes
                     </button>
                   </div>
@@ -273,6 +276,7 @@ export default function CourseVideo() {
           </div>
         </div>
       </section>
+      </main>
 
       <Footer />
 

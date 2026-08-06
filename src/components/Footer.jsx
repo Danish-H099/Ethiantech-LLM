@@ -68,7 +68,7 @@ export default function Footer() {
                 className="flex-1 rounded-lg border border-gray-700 bg-footer-input px-2 py-3 outline-none rounded-r-none"
               />
 
-              <button className="rounded-lg bg-brand px-2 py-3 rounded-l-none">
+              <button className="btn-brand rounded-lg rounded-l-none px-2 py-3">
                 Subscribe
               </button>
 

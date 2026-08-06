@@ -29,17 +29,18 @@ export default function CourseDetailsPage() {
 
   if (!course) {
     return (
-      <div className="relative min-h-screen bg-surface text-gray-900">
+      <div className="relative min-h-screen bg-surface text-ink">
         <Header
           onLoginClick={() => setPopupState("login")}
           onSignupClick={() => setPopupState("signup")}
         />
+        <main id="main">
         <section className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 py-32 text-center">
-          <BookOpen size={64} className="text-gray-300" />
-          <h2 className="mt-6 text-2xl font-bold text-gray-700">
+          <BookOpen size={64} className="text-ink-muted/40" />
+          <h2 className="mt-6 text-2xl font-bold text-ink">
             Course Not Found
           </h2>
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 text-ink-muted">
             The course you're looking for doesn't exist.
           </p>
           <Link
@@ -49,6 +50,7 @@ export default function CourseDetailsPage() {
             Browse Courses
           </Link>
         </section>
+        </main>
         <Footer />
         {popupState === "login" && (
           <LoginPopup
@@ -74,30 +76,31 @@ export default function CourseDetailsPage() {
   const totalDuration = "27h 25m";
 
   return (
-    <div className="relative min-h-screen bg-surface text-gray-900">
+    <div className="relative min-h-screen bg-surface text-ink">
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
       />
 
+      <main id="main">
       <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 text-left">
-        <p className="text-sm text-gray-500">
-          <Link to="/" className="hover:text-gray-700">Home</Link>
+        <p className="text-sm text-ink-muted">
+          <Link to="/" className="hover:text-ink">Home</Link>
           {" / "}
-          <Link to="/courses" className="hover:text-gray-700">Courses</Link>
+          <Link to="/courses" className="hover:text-ink">Courses</Link>
           {" / "}
-          <span className="font-medium text-gray-900">{course.title}</span>
+          <span className="font-medium text-ink">{course.title}</span>
         </p>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-left">
         <div className="lg:flex lg:gap-10">
           <div className="min-w-0 flex-1">
-            <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-[40px]">
+            <h1 className="page-title font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-[40px]">
               {course.title}
             </h1>
 
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-gray-500 sm:text-base">
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-muted sm:text-base">
               Dive deep into {course.title.toLowerCase()} and master the skills
               you need to succeed. This comprehensive course covers everything
               from foundational concepts to advanced techniques with hands-on
@@ -107,27 +110,27 @@ export default function CourseDetailsPage() {
             <div className="mt-5 flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
                 <StarRating rating={course.rating} size={18} />
-                <span className="text-sm font-semibold text-gray-800">
+                <span className="text-sm font-semibold text-ink">
                   {course.rating}
                 </span>
               </div>
               <Link
                 to="#reviews"
-                className="text-sm font-medium text-blue-600 underline underline-offset-2 hover:text-blue-800"
+                className="link text-sm underline underline-offset-2"
               >
                 ({course.reviews.toLocaleString()} ratings)
               </Link>
-              <span className="flex items-center gap-1.5 text-sm text-gray-500">
+              <span className="flex items-center gap-1.5 text-sm text-ink-muted">
                 <Users size={16} />
                 {course.students.toLocaleString()} students
               </span>
             </div>
 
-            <p className="mt-4 text-sm text-gray-500">
+            <p className="mt-4 text-sm text-ink-muted">
               Course by{" "}
               <Link
                 to="#"
-                className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                className="link"
               >
                 {course.author}
               </Link>
@@ -135,13 +138,13 @@ export default function CourseDetailsPage() {
 
             <CourseStructure sections={curriculumData} totalDuration={totalDuration} />
 
-            <hr className="my-10 border-gray-200" />
+            <hr className="divider my-10" />
 
-            <h2 className="text-xl font-bold text-gray-900 text-left">
+            <h2 className="page-title text-left">
               Course Description
             </h2>
 
-            <div className="mt-4 max-w-3xl space-y-4 text-sm leading-7 text-gray-600 text-left">
+            <div className="mt-4 max-w-3xl space-y-4 text-sm leading-7 text-ink-muted text-left">
               <p>
                 This course is designed to take you from a complete beginner to a
                 confident practitioner in <strong>{course.category.toLowerCase()}</strong>.
@@ -165,7 +168,7 @@ export default function CourseDetailsPage() {
 
           <aside className="mt-8 w-full shrink-0 lg:mt-0 lg:w-[380px]">
             <div className="sticky top-24 space-y-5">
-              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+              <div className="card overflow-hidden">
                 <div className="relative h-48 w-full overflow-hidden sm:h-52">
                   <img
                     src={course.image}
@@ -181,10 +184,10 @@ export default function CourseDetailsPage() {
                   </div>
 
                   <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-3xl font-bold text-gray-900">
+                    <span className="text-3xl font-bold text-ink">
                       {course.price}
                     </span>
-                    <span className="text-sm text-gray-400 line-through">
+                    <span className="text-sm text-ink-muted/70 line-through">
                       ${originalPrice}
                     </span>
                     <span className="rounded bg-green-100 px-1.5 py-0.5 text-xs font-semibold text-green-700">
@@ -192,7 +195,7 @@ export default function CourseDetailsPage() {
                     </span>
                   </div>
 
-                  <div className="mt-4 flex items-center gap-4 border-y border-gray-100 py-3 text-xs text-gray-500">
+                  <div className="mt-4 flex items-center gap-4 border-y border-border py-3 text-xs text-ink-muted">
                     <span className="flex items-center gap-1">
                       <Star size={14} className="fill-orange-500 text-orange-500" />
                       {course.rating}
@@ -212,7 +215,7 @@ export default function CourseDetailsPage() {
                   </button>
 
                   <div className="mt-6">
-                    <h4 className="mb-3 text-sm font-semibold text-gray-900 text-left" >
+                    <h4 className="mb-3 text-sm font-semibold text-ink text-left" >
                       What's in the course?
                     </h4>
                     <ul className="space-y-2.5">
@@ -225,11 +228,11 @@ export default function CourseDetailsPage() {
                       ].map((item, i) => (
                         <li
                           key={i}
-                          className="flex items-center gap-3 text-sm text-gray-600"
+                          className="flex items-center gap-3 text-sm text-ink-muted"
                         >
                           <item.icon
                             size={16}
-                            className="shrink-0 text-gray-400"
+                            className="shrink-0 text-ink-muted/70"
                           />
                           <span>{item.text}</span>
                         </li>
@@ -242,6 +245,7 @@ export default function CourseDetailsPage() {
           </aside>
         </div>
       </section>
+      </main>
 
       <Footer />
 

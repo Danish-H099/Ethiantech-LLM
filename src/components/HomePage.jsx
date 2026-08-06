@@ -14,7 +14,7 @@ export default function HomePage() {
   const [popupState, setPopupState] = useState('none');
 
   return (
-    <div className="relative min-h-screen bg-surface text-gray-900">
+    <div className="relative min-h-screen bg-surface text-ink">
 
       {/* Pass the state updaters to the Header */}
       <Header
@@ -22,36 +22,38 @@ export default function HomePage() {
         onSignupClick={() => setPopupState('signup')}
       />
 
+      <main id="main" className="flex-1">
+
       {/* Hero Section */}
       <section className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 sm:pt-16 lg:px-8 lg:pt-20">
         <div className="mx-auto max-w-5xl text-center">
-          <h3 className="mx-auto max-w-4xl text-3xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-2xl md:text-2xl lg:text-5xl">
+          <h3 className="mx-auto max-w-4xl text-3xl font-extrabold leading-tight tracking-tight text-ink sm:text-2xl md:text-2xl lg:text-5xl">
             Innovate Transform Accelerate
             <br />
             EthianTech LMS Platform
             <br />
-            <span className="relative inline-block text-blue-600 text-4xl font-outfit">
+            <span className="relative inline-block text-brand-secondary text-4xl font-outfit">
               Tailored for your Growth.
             </span>
           </h3>
 
-          <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-gray-500 sm:text-base">
+          <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-ink-muted sm:text-base">
             We bring together world-class instructors, interactive content, and a
             supportive community to help you achieve your personal and
             professional goals.
           </p>
 
           {/* Search Bar */}
-          <div className="mx-auto mt-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-2 shadow-sm sm:flex-row sm:items-center">
+          <div className="mx-auto mt-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-border bg-white p-2 shadow-sm sm:flex-row sm:items-center">
             <div className="flex flex-1 items-center gap-3 rounded-xl px-2 py-1">
-              <Search className="text-gray-400" size={18} />
+              <Search className="text-ink-muted/70" size={18} />
               <input
                 type="text"
                 placeholder="Search for courses"
-                className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+                className="w-full bg-transparent text-sm outline-none placeholder:text-ink-muted/70"
               />
             </div>
-            <button className="rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white transition hover:bg-pink-700 sm:px-8">
+            <button className="btn-brand rounded-xl px-6 py-3 text-sm sm:px-8">
               Search
             </button>
           </div>
@@ -61,10 +63,10 @@ export default function HomePage() {
       {/* Courses Section */}
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <h3 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+          <h3 className="text-2xl font-bold text-ink sm:text-3xl">
             Learn from the best
           </h3>
-          <p className="mt-3 text-sm leading-7 text-gray-500 sm:text-base">
+          <p className="mt-3 text-sm leading-7 text-ink-muted sm:text-base">
             Discover our top-rated courses across various categories. From coding
             and design to business and wellness, our courses are crafted to
             deliver results.
@@ -80,7 +82,7 @@ export default function HomePage() {
         <div className="mt-10 flex justify-center">
           <Link
             to="/courses"
-            className="rounded-xl border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+            className="btn-outline rounded-xl px-6 py-3 text-sm"
           >
             Show all courses
           </Link>
@@ -89,6 +91,7 @@ export default function HomePage() {
 
       <Testimonials />
       <CTASection />
+      </main>
       <Footer />
 
       {/* Auth Popups */}
