@@ -4,7 +4,33 @@
 @theme {
   --font-outfit: "Outfit", sans-serif;
   --font-inter: "Inter", sans-serif;
-  --text-md: 0.9375rem; /* 15px — DS-002 */
+
+  /* Font sizes — DS-002 (15px = text-md) */
+  --text-md: 0.9375rem;
+  --text-10: 0.625rem;
+  --text-11: 0.6875rem;
+  --text-13: 0.8125rem;
+  --text-22: 1.375rem;
+  --text-26: 1.625rem;
+  --text-28: 1.75rem;
+
+  /* Colors — DS-006/007/008 */
+  --color-brand: #D62A91;
+  --color-brand-secondary: #5F6FFF;
+  --color-surface: #F8F8FB;
+  --color-surface-soft: #F7F9FD;
+  --color-ink: #252525;
+  --color-ink-muted: #494949;
+  --color-ink-dark: #2D2D3F;
+  --color-input: #FAFAFA;
+  --color-tint-pink: #FDF2F8;
+  --color-toggle: #CBD6E4;
+  --color-footer: #272640;
+  --color-footer-input: #32304d;
+
+  /* Shadows — DS-009 */
+  --shadow-avatar: 0 4px 4px rgba(0, 0, 0, 0.05);
+  --shadow-dropdown: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 @layer base {
@@ -14,5 +40,31 @@
     min-width: 320px;
     min-height: 100vh;
     background-color: #ffffff;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-gray-200 bg-white shadow-sm;
+  }
+
+  .btn-brand {
+    @apply inline-flex items-center justify-center gap-2 bg-brand font-semibold text-white transition hover:opacity-90;
+  }
+
+  .table-header {
+    @apply border-b border-ink/20 text-left text-sm text-ink/70;
+  }
+
+  .table-row {
+    @apply border-b border-ink/15 text-sm text-ink/70 last:border-b-0;
+  }
+
+  .page-title {
+    @apply text-28 font-semibold text-ink;
+  }
+
+  .input {
+    @apply w-full rounded border border-ink/50 bg-white px-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white;
   }
 }
