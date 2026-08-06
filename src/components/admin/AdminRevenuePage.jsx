@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   AreaChart,
   Area,
@@ -10,8 +11,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { m as Motion, useReducedMotion } from "motion/react";
 import { monthlyRevenue, revenueByCategory } from "../../data/adminData";
 import { CHART_PINK } from "../../data/chartColors";
+import { fadeIn, viewportOnce, createStaggerItem } from "../../lib/animationVariants";
 
 const summaryCards = [
   { label: "Total Revenue", value: "$128,430", sub: "All time", up: true, change: "+12.5%" },
@@ -21,6 +24,12 @@ const summaryCards = [
 ];
 
 export default function AdminRevenuePage() {
+  const shouldReduceMotion = useReducedMotion();
+  const staggerItem = useMemo(
+    () => createStaggerItem(!!shouldReduceMotion),
+    [shouldReduceMotion]
+  );
+
   return (
     <div>
       <div className="mb-8">
@@ -31,9 +40,14 @@ export default function AdminRevenuePage() {
       </div>
 
       <div className="mb-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        {summaryCards.map((card) => (
-          <div
+        {summaryCards.map((card, i) => (
+          <Motion.div
             key={card.label}
+            custom={i}
+            variants={staggerItem}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
             className="card p-5"
           >
             <div className="flex items-center justify-between">
@@ -50,12 +64,18 @@ export default function AdminRevenuePage() {
               {card.value}
             </p>
             <p className="mt-0.5 text-13 text-ink-muted/70">{card.sub}</p>
-          </div>
+          </Motion.div>
         ))}
       </div>
 
       <div className="mb-8 grid gap-6 xl:grid-cols-3">
-        <div className="card p-6 xl:col-span-2">
+        <Motion.div
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="card p-6 xl:col-span-2"
+        >
           <div className="mb-6 flex items-center gap-2">
             <TrendingUp size={18} className="text-brand" />
             <h2 className="text-lg font-semibold text-ink">
@@ -98,12 +118,19 @@ export default function AdminRevenuePage() {
                 stroke={CHART_PINK}
                 strokeWidth={2.5}
                 fill="url(#revenueGrad)"
+                animationDuration={600}
               />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </Motion.div>
 
-        <div className="card p-6">
+        <Motion.div
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="card p-6"
+        >
           <h2 className="mb-6 text-lg font-semibold text-ink">
             Revenue by Category
           </h2>
@@ -134,10 +161,10 @@ export default function AdminRevenuePage() {
                 }}
                 formatter={(value) => [`$${value.toLocaleString()}`, "Revenue"]}
               />
-              <Bar dataKey="revenue" fill={CHART_PINK} radius={[0, 6, 6, 0]} barSize={24} />
+              <Bar dataKey="revenue" fill={CHART_PINK} radius={[0, 6, 6, 0]} barSize={24} animationDuration={600} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </Motion.div>
       </div>
     </div>
   );

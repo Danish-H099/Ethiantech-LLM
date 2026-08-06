@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatePresence, m as Motion } from "motion/react";
 import { User, BookOpen } from "lucide-react";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -6,6 +7,7 @@ import CourseStructure from "./CourseStructure";
 import { LoginPopup, SignupPopup } from "./AuthPopups";
 import curriculumData from "../data/curriculumData.json";
 import captions from "../assets/demo-captions.vtt?url";
+import { easeArrive } from "../lib/animationVariants";
 
 const comments = [
   {
@@ -168,7 +170,15 @@ export default function CourseVideo() {
             </div>
 
             {/* Tab Content */}
-            {activeTab === "description" && (
+            <AnimatePresence mode="wait">
+              <Motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.15, ease: easeArrive }}
+              >
+                {activeTab === "description" && (
               <div className="card mt-6 p-6">
                 <h3 className="section-title">
                   Lecture Description
@@ -217,6 +227,7 @@ export default function CourseVideo() {
                           <img
                             src={comment.image}
                             alt={comment.name}
+                            loading="lazy"
                             className="h-full w-full object-cover"
                             onError={(e) => {
                               e.target.style.display = "none";
@@ -251,27 +262,29 @@ export default function CourseVideo() {
               </div>
             )}
 
-            {activeTab === "notes" && (
-              <div className="mt-6">
-                <h3 className="section-title mb-5">
-                  My Notes
-                </h3>
-                <div className="card p-6">
-                  <textarea
-                    value={noteText}
-                    onChange={(e) => setNoteText(e.target.value)}
-                    placeholder="Start writing your notes for this lecture..."
-                    rows={10}
-                    className="input resize-y py-3 leading-7 bg-surface-soft"
-                  />
-                  <div className="mt-4 flex justify-end">
-                    <button className="btn-brand px-6 py-2.5 text-sm">
-                      Save Notes
-                    </button>
+                {activeTab === "notes" && (
+                  <div className="mt-6">
+                    <h3 className="section-title mb-5">
+                      My Notes
+                    </h3>
+                    <div className="card p-6">
+                      <textarea
+                        value={noteText}
+                        onChange={(e) => setNoteText(e.target.value)}
+                        placeholder="Start writing your notes for this lecture..."
+                        rows={10}
+                        className="input resize-y py-3 leading-7 bg-surface-soft"
+                      />
+                      <div className="mt-4 flex justify-end">
+                        <button className="btn-brand px-6 py-2.5 text-sm">
+                          Save Notes
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
+                )}
+              </Motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </section>
@@ -279,18 +292,22 @@ export default function CourseVideo() {
 
       <Footer />
 
-      {popupState === "login" && (
-        <LoginPopup
-          onClose={() => setPopupState("none")}
-          onSwitchToSignup={() => setPopupState("signup")}
-        />
-      )}
-      {popupState === "signup" && (
-        <SignupPopup
-          onClose={() => setPopupState("none")}
-          onSwitchToLogin={() => setPopupState("login")}
-        />
-      )}
+      <AnimatePresence>
+        {popupState === "login" && (
+          <LoginPopup
+            key="login"
+            onClose={() => setPopupState("none")}
+            onSwitchToSignup={() => setPopupState("signup")}
+          />
+        )}
+        {popupState === "signup" && (
+          <SignupPopup
+            key="signup"
+            onClose={() => setPopupState("none")}
+            onSwitchToLogin={() => setPopupState("login")}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

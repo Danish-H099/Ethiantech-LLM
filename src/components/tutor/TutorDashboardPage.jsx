@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { User } from "lucide-react";
+import { m as Motion, useReducedMotion } from "motion/react";
 import {
   AreaChart,
   Area,
@@ -19,10 +21,16 @@ import {
 import { tutorStats, earningsOverTime, studentsOverTime } from "../../data/tutorData";
 import studentsData from "../../data/studentsData";
 import { CHART_ACCENTS, CHART_PINK } from "../../data/chartColors";
+import { fadeIn, fadeUp, viewportOnce, createStaggerItem } from "../../lib/animationVariants";
 
 const icons = [DollarSign, Users, BookOpen, Star];
 
 export default function TutorDashboardPage() {
+  const shouldReduceMotion = useReducedMotion();
+  const staggerItem = useMemo(
+    () => createStaggerItem(!!shouldReduceMotion),
+    [shouldReduceMotion]
+  );
   const recentStudents = studentsData.slice(0, 5);
 
   return (
@@ -37,136 +45,159 @@ export default function TutorDashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="mb-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      <Motion.div
+        variants={fadeIn}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="mb-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4"
+      >
         {tutorStats.map((card, i) => {
           const Icon = icons[i];
           const accent = CHART_ACCENTS[i];
           return (
-            <div
-              key={card.label}
-              className="card p-6"
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <div
-                  className="flex h-11 w-11 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${accent}15` }}
-                >
-                  <Icon size={22} style={{ color: accent }} />
+            <Motion.div key={card.label} variants={staggerItem} custom={i}>
+              <div className="card p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <div
+                    className="flex h-11 w-11 items-center justify-center rounded-lg"
+                    style={{ backgroundColor: `${accent}15` }}
+                  >
+                    <Icon size={22} style={{ color: accent }} />
+                  </div>
+                  <span
+                    className="rounded-full px-2.5 py-1 text-13 font-medium"
+                    style={{
+                      backgroundColor: card.up ? "#DCFCE7" : "#FEE2E2",
+                      color: card.up ? "#16A34A" : "#DC2626",
+                    }}
+                  >
+                    {card.change}
+                  </span>
                 </div>
-                <span
-                  className="rounded-full px-2.5 py-1 text-13 font-medium"
-                  style={{
-                    backgroundColor: card.up ? "#DCFCE7" : "#FEE2E2",
-                    color: card.up ? "#16A34A" : "#DC2626",
-                  }}
-                >
-                  {card.change}
-                </span>
+                <p className="text-sm text-ink-muted">{card.label}</p>
+                <p className="mt-1 page-title">
+                  {card.value}
+                </p>
               </div>
-              <p className="text-sm text-ink-muted">{card.label}</p>
-              <p className="mt-1 page-title">
-                {card.value}
-              </p>
-            </div>
+            </Motion.div>
           );
         })}
-      </div>
+      </Motion.div>
 
       {/* Charts Row */}
-      <div className="mb-8 grid gap-6 xl:grid-cols-2">
+      <Motion.div
+        variants={fadeIn}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="mb-8 grid gap-6 xl:grid-cols-2"
+      >
         {/* Earnings Over Time */}
-        <div className="card p-6">
-          <div className="mb-6 flex items-center gap-2">
-            <DollarSign size={18} className="text-brand" />
-            <h2 className="text-lg font-semibold text-ink">
-              Earnings Over Time
-            </h2>
+        <Motion.div variants={fadeUp}>
+          <div className="card p-6">
+            <div className="mb-6 flex items-center gap-2">
+              <DollarSign size={18} className="text-brand" />
+              <h2 className="text-lg font-semibold text-ink">
+                Earnings Over Time
+              </h2>
+            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <AreaChart data={earningsOverTime}>
+                <defs>
+                  <linearGradient id="earningsGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={CHART_PINK} stopOpacity={0.2} />
+                    <stop offset="95%" stopColor={CHART_PINK} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fontSize: 13, fill: "#494949" }}
+                  axisLine={{ stroke: "#E5E7EB" }}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 13, fill: "#494949" }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 8,
+                    border: "1px solid #E5E7EB",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                    fontSize: 14,
+                  }}
+                  formatter={(value) => [`$${value.toLocaleString()}`, "Earnings"]}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="earnings"
+                  stroke={CHART_PINK}
+                  strokeWidth={2.5}
+                  fill="url(#earningsGrad)"
+                  animationDuration={600}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
-          <ResponsiveContainer width="100%" height={280}>
-            <AreaChart data={earningsOverTime}>
-              <defs>
-                <linearGradient id="earningsGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={CHART_PINK} stopOpacity={0.2} />
-                  <stop offset="95%" stopColor={CHART_PINK} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-              <XAxis
-                dataKey="month"
-                tick={{ fontSize: 13, fill: "#494949" }}
-                axisLine={{ stroke: "#E5E7EB" }}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 13, fill: "#494949" }}
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-              />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: 8,
-                  border: "1px solid #E5E7EB",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                  fontSize: 14,
-                }}
-                formatter={(value) => [`$${value.toLocaleString()}`, "Earnings"]}
-              />
-              <Area
-                type="monotone"
-                dataKey="earnings"
-                stroke={CHART_PINK}
-                strokeWidth={2.5}
-                fill="url(#earningsGrad)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+        </Motion.div>
 
         {/* Student Enrollment Trend */}
-        <div className="card p-6">
-          <div className="mb-6 flex items-center gap-2">
-            <Users size={18} className="text-brand" />
-            <h2 className="text-lg font-semibold text-ink">
-              Student Enrollment Trend
-            </h2>
+        <Motion.div variants={fadeUp}>
+          <div className="card p-6">
+            <div className="mb-6 flex items-center gap-2">
+              <Users size={18} className="text-brand" />
+              <h2 className="text-lg font-semibold text-ink">
+                Student Enrollment Trend
+              </h2>
+            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={studentsOverTime}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fontSize: 13, fill: "#494949" }}
+                  axisLine={{ stroke: "#E5E7EB" }}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 13, fill: "#494949" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 8,
+                    border: "1px solid #E5E7EB",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                    fontSize: 14,
+                  }}
+                  formatter={(value) => [value.toLocaleString(), "Students"]}
+                />
+                <Bar
+                  dataKey="students"
+                  fill={CHART_PINK}
+                  radius={[6, 6, 0, 0]}
+                  barSize={32}
+                  animationDuration={600}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={studentsOverTime}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-              <XAxis
-                dataKey="month"
-                tick={{ fontSize: 13, fill: "#494949" }}
-                axisLine={{ stroke: "#E5E7EB" }}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 13, fill: "#494949" }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: 8,
-                  border: "1px solid #E5E7EB",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                  fontSize: 14,
-                }}
-                formatter={(value) => [value.toLocaleString(), "Students"]}
-              />
-              <Bar
-                dataKey="students"
-                fill={CHART_PINK}
-                radius={[6, 6, 0, 0]}
-                barSize={32}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+        </Motion.div>
+      </Motion.div>
 
       {/* Recent Enrollments */}
-      <div className="card p-6">
+      <Motion.div
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+      >
+        <div className="card p-6">
         <h2 className="mb-6 text-lg font-semibold text-ink">
           Recent Enrollments
         </h2>
@@ -209,7 +240,8 @@ export default function TutorDashboardPage() {
             </tbody>
           </table>
         </div>
-      </div>
+        </div>
+      </Motion.div>
     </div>
   );
 }

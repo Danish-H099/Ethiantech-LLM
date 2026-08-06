@@ -1,5 +1,7 @@
+import { m as Motion } from "motion/react";
 import { User, MoreVertical } from "lucide-react";
 import studentsData from "../../data/studentsData";
+import { fadeIn, viewportOnce } from "../../lib/animationVariants";
 
 export default function StudentsEnrolledPage() {
   return (
@@ -13,7 +15,13 @@ export default function StudentsEnrolledPage() {
         </p>
       </div>
 
-      <div className="card overflow-x-auto">
+      <Motion.div
+        variants={fadeIn}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="card overflow-x-auto"
+      >
         <table className="w-full min-w-[600px] border-collapse">
           <thead>
             <tr className="table-header">
@@ -55,7 +63,7 @@ export default function StudentsEnrolledPage() {
             ))}
           </tbody>
         </table>
-      </div>
+      </Motion.div>
     </div>
   );
 }

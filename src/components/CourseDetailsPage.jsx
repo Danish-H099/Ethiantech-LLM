@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { m as Motion } from "motion/react";
 import Header from "./Header";
 import Footer from "./Footer";
 import courses from "../data/courses";
@@ -20,6 +21,7 @@ import { LoginPopup, SignupPopup } from "./AuthPopups";
 import StarRating from "./StarRating";
 import CourseStructure from "./CourseStructure";
 import curriculumData from "../data/curriculumData.json";
+import { fadeUp, viewportOnce } from "../lib/animationVariants";
 
 export default function CourseDetailsPage() {
   const { id } = useParams();
@@ -95,7 +97,13 @@ export default function CourseDetailsPage() {
 
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-left">
         <div className="lg:flex lg:gap-10">
-          <div className="min-w-0 flex-1">
+          <Motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+            className="min-w-0 flex-1"
+          >
             <h1 className="page-title font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-[40px]">
               {course.title}
             </h1>
@@ -164,15 +172,22 @@ export default function CourseDetailsPage() {
                 tackle complex challenges.
               </p>
             </div>
-          </div>
+          </Motion.div>
 
           <aside className="mt-8 w-full shrink-0 lg:mt-0 lg:w-[380px]">
             <div className="sticky top-24 space-y-5">
-              <div className="card overflow-hidden">
+              <Motion.div
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={viewportOnce}
+                className="card overflow-hidden"
+              >
                 <div className="relative h-48 w-full overflow-hidden sm:h-52">
                   <img
                     src={course.image}
                     alt={course.title}
+                    loading="lazy"
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -240,7 +255,7 @@ export default function CourseDetailsPage() {
                     </ul>
                   </div>
                 </div>
-              </div>
+              </Motion.div>
             </div>
           </aside>
         </div>

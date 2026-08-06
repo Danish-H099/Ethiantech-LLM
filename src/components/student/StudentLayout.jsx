@@ -49,7 +49,7 @@ export default function StudentLayout() {
             <span className="text-2xl font-semibold text-ink">
               EthianTech
             </span>
-            <span className="rounded bg-brand px-2 py-0.5 text-11 font-bold uppercase text-white">
+            <span className="rounded bg-accent-student px-2 py-0.5 text-11 font-bold uppercase text-white">
               Student
             </span>
           </div>
@@ -65,7 +65,7 @@ export default function StudentLayout() {
                   className={({ isActive }) =>
                     `flex items-center gap-3 rounded px-3 py-2.5 text-base transition-colors ${
                       isActive
-                        ? "border-l-[3px] border-brand bg-tint-pink pl-[9px] font-medium text-brand"
+                        ? "border-l-[3px] border-accent-student bg-tint-student pl-[9px] font-medium text-accent-student"
                         : "border-l-[3px] border-transparent text-ink hover:bg-gray-50"
                     }`
                   }

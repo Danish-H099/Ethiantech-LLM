@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { AnimatePresence, m as Motion } from "motion/react";
 import { Menu, X } from "lucide-react";
+import { mobileMenu } from "../lib/animationVariants";
 
 export default function Header({ onLoginClick, onSignupClick }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -62,31 +64,40 @@ export default function Header({ onLoginClick, onSignupClick }) {
             </div>
 
             {/* Mobile Nav */}
-            {mobileMenuOpen && (
-                <div className="border-t border-border bg-white md:hidden">
-                    <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6">
-                        <Link
-                            to="/courses"
-                            onClick={closeMenu}
-                            className="text-sm font-medium text-ink-muted transition hover:text-ink"
-                        >
-                            Courses
-                        </Link>
-                        <button
-                            onClick={() => { onLoginClick(); closeMenu(); }}
-                            className="text-left text-sm font-medium text-ink-muted transition hover:text-ink"
-                        >
-                            Login
-                        </button>
-                        <button
-                            onClick={() => { onSignupClick(); closeMenu(); }}
-                            className="btn-brand w-full rounded-full px-5 py-2.5 text-sm"
-                        >
-                            Create Account
-                        </button>
-                    </div>
-                </div>
-            )}
+            <AnimatePresence>
+              {mobileMenuOpen && (
+                <Motion.div
+                  key="mobile-nav"
+                  variants={mobileMenu}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="border-t border-border bg-white md:hidden"
+                >
+                  <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6">
+                    <Link
+                      to="/courses"
+                      onClick={closeMenu}
+                      className="text-sm font-medium text-ink-muted transition hover:text-ink"
+                    >
+                      Courses
+                    </Link>
+                    <button
+                      onClick={() => { onLoginClick(); closeMenu(); }}
+                      className="text-left text-sm font-medium text-ink-muted transition hover:text-ink"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={() => { onSignupClick(); closeMenu(); }}
+                      className="btn-brand w-full rounded-full px-5 py-2.5 text-sm"
+                    >
+                      Create Account
+                    </button>
+                  </div>
+                </Motion.div>
+              )}
+            </AnimatePresence>
         </header>
     );
 }

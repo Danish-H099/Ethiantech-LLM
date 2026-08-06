@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { m as Motion } from 'motion/react';
 import { X, Eye, EyeOff } from 'lucide-react';
+import { backdrop, modal } from '../lib/animationVariants';
 
 // Focus management for modal dialogs: move focus in on open, trap Tab, restore on close
 function useDialogFocus(onClose) {
@@ -68,14 +70,24 @@ export const LoginPopup = ({ onClose, onSwitchToSignup }) => {
     const dialogRef = useDialogFocus(onClose);
 
     return (
-        <div
+        <Motion.div
             ref={dialogRef}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md"
             role="dialog"
             aria-modal="true"
             aria-labelledby="login-title"
+            variants={backdrop}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
         >
-            <div className="relative w-full max-w-md rounded-lg bg-white p-8 shadow-xl">
+            <Motion.div
+                className="relative w-full max-w-md rounded-lg bg-white p-8 shadow-xl"
+                variants={modal}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+            >
                 <button
                     onClick={onClose}
                     aria-label="Close login dialog"
@@ -148,8 +160,8 @@ export const LoginPopup = ({ onClose, onSwitchToSignup }) => {
                         </button>
                     </p>
                 </div>
-            </div>
-        </div>
+            </Motion.div>
+        </Motion.div>
     );
 };
 
@@ -159,14 +171,24 @@ export const SignupPopup = ({ onClose, onSwitchToLogin }) => {
     const dialogRef = useDialogFocus(onClose);
 
     return (
-        <div
+        <Motion.div
             ref={dialogRef}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md"
             role="dialog"
             aria-modal="true"
             aria-labelledby="signup-title"
+            variants={backdrop}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
         >
-            <div className="relative w-full max-w-md rounded-lg bg-white p-8 shadow-xl">
+            <Motion.div
+                className="relative w-full max-w-md rounded-lg bg-white p-8 shadow-xl"
+                variants={modal}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+            >
                 <button
                     onClick={onClose}
                     aria-label="Close sign up dialog"
@@ -254,7 +276,7 @@ export const SignupPopup = ({ onClose, onSwitchToLogin }) => {
                         </button>
                     </p>
                 </div>
-            </div>
-        </div>
+            </Motion.div>
+        </Motion.div>
     );
 };

@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { m as Motion } from "motion/react";
 import courses, { tutorCourseMeta } from "../../data/courses";
+import { fadeIn, viewportOnce } from "../../lib/animationVariants";
 
 function StatusToggle({ initialStatus }) {
   const [isLive, setIsLive] = useState(initialStatus === "Live");
@@ -34,7 +36,13 @@ export default function TutorCoursesPage() {
         </p>
       </div>
 
-      <div className="card overflow-x-auto">
+      <Motion.div
+        variants={fadeIn}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="card overflow-x-auto"
+      >
         <table className="w-full min-w-[700px] border-collapse">
           <thead>
             <tr className="table-header">
@@ -58,6 +66,7 @@ export default function TutorCoursesPage() {
                     <img
                       src={course.image}
                       alt={course.title}
+                      loading="lazy"
                       className="h-9 w-16 rounded object-cover shadow-[0_2px_4px_rgba(0,0,0,0.1)]"
                     />
                     <span className="max-w-[320px] leading-snug text-ink">
@@ -86,7 +95,7 @@ export default function TutorCoursesPage() {
             ))}
           </tbody>
         </table>
-      </div>
+      </Motion.div>
     </div>
   );
 }

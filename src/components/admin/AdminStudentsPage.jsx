@@ -1,9 +1,18 @@
+import { useMemo } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { m as Motion, useReducedMotion } from "motion/react";
 import { regionStudents } from "../../data/adminData";
+import { fadeIn, viewportOnce, easeArrive, createStaggerItem } from "../../lib/animationVariants";
 
 const totalStudents = regionStudents.reduce((sum, r) => sum + r.value, 0);
 
 export default function AdminStudentsPage() {
+  const shouldReduceMotion = useReducedMotion();
+  const staggerItem = useMemo(
+    () => createStaggerItem(!!shouldReduceMotion),
+    [shouldReduceMotion]
+  );
+
   return (
     <div>
       <div className="mb-8">
@@ -16,7 +25,13 @@ export default function AdminStudentsPage() {
       </div>
 
       <div className="mb-8 grid gap-6 xl:grid-cols-2">
-        <div className="card p-6">
+        <Motion.div
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="card p-6"
+        >
           <h2 className="mb-4 text-lg font-semibold text-ink">
             Students by Region
           </h2>
@@ -31,6 +46,7 @@ export default function AdminStudentsPage() {
                 paddingAngle={3}
                 dataKey="value"
                 stroke="none"
+                animationDuration={600}
               >
                 {regionStudents.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
@@ -55,17 +71,30 @@ export default function AdminStudentsPage() {
               />
             </PieChart>
           </ResponsiveContainer>
-        </div>
+        </Motion.div>
 
-        <div className="card p-6">
+        <Motion.div
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="card p-6"
+        >
           <h2 className="mb-4 text-lg font-semibold text-ink">
             Region Breakdown
           </h2>
           <div className="space-y-5">
-            {regionStudents.map((region) => {
+            {regionStudents.map((region, i) => {
               const pct = ((region.value / totalStudents) * 100).toFixed(1);
               return (
-                <div key={region.name}>
+                <Motion.div
+                  key={region.name}
+                  custom={i}
+                  variants={staggerItem}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={viewportOnce}
+                >
                   <div className="mb-1.5 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <span
@@ -86,19 +115,20 @@ export default function AdminStudentsPage() {
                     </div>
                   </div>
                   <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${pct}%`,
-                        backgroundColor: region.color,
-                      }}
+                    <Motion.div
+                      initial={{ width: "0%" }}
+                      whileInView={{ width: `${pct}%` }}
+                      viewport={viewportOnce}
+                      transition={{ duration: 0.5, ease: easeArrive }}
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: region.color }}
                     />
                   </div>
-                </div>
+                </Motion.div>
               );
             })}
           </div>
-        </div>
+        </Motion.div>
       </div>
     </div>
   );

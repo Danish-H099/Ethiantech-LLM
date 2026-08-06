@@ -30,6 +30,14 @@
   --color-footer-input: #32304d;
   --color-border: #E5E5E5; /* default border color (gray-200) */
 
+  /* Role accents — Part C wayfinding (CTA stays brand everywhere) */
+  --color-accent-student: #D62A91;
+  --color-accent-tutor: #5F6FFF;
+  --color-accent-admin: #6B7280;
+  --color-tint-student: #FDF2F8;
+  --color-tint-tutor: #EEF1FF;
+  --color-tint-admin: #F3F4F6;
+
   /* Shadows — DS-009 */
   --shadow-avatar: 0 4px 4px rgba(0, 0, 0, 0.05);
   --shadow-dropdown: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -37,6 +45,20 @@
 
   /* Hero gradient — CourseListPage banner */
   --gradient-hero: linear-gradient(135deg, #FFF1F5 0%, #E7F0FF 100%);
+
+  /* Motion — Part B timing canon (ms) */
+  --duration-press: 80ms;
+  --duration-hover: 150ms;
+  --duration-slow: 200ms;
+  --duration-modal: 300ms;
+  --duration-reveal: 400ms;
+  --duration-fill: 500ms;
+  --duration-hero: 550ms;
+
+  /* Motion — Part B easing (arrive=ease-out, depart=ease-in, switch=ease-in-out) */
+  --ease-arrive: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-depart: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-switch: cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 @layer base {

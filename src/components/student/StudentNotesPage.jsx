@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { m as Motion, useReducedMotion } from "motion/react";
 import {
   Plus,
   Trash2,
@@ -9,6 +10,7 @@ import {
   FileText,
 } from "lucide-react";
 import { courseNotes } from "../../data/studentData";
+import { fadeIn, viewportOnce, createStaggerItem } from "../../lib/animationVariants";
 
 const courseColors = [
   "#C47A9B",
@@ -28,6 +30,11 @@ export default function StudentNotesPage() {
   const [newNote, setNewNote] = useState({ title: "", content: "" });
   const [editingId, setEditingId] = useState(null);
   const [editNote, setEditNote] = useState({ title: "", content: "" });
+  const shouldReduceMotion = useReducedMotion();
+  const staggerItem = useMemo(
+    () => createStaggerItem(!!shouldReduceMotion),
+    [shouldReduceMotion]
+  );
 
   const coursesWithNotes = [...new Set(notes.map((n) => n.courseName))];
   const notebookNotes = selectedCourse
@@ -127,18 +134,24 @@ export default function StudentNotesPage() {
           </p>
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {coursesWithNotes.map((name) => {
+        <Motion.div
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+          {coursesWithNotes.map((name, i) => {
             const color = getCourseColor(name);
             const noteCount = notes.filter(
               (n) => n.courseName === name
             ).length;
             return (
-              <button
-                key={name}
-                onClick={() => openNotebook(name)}
-                className="group text-left transition hover:-translate-y-1"
-              >
+              <Motion.div key={name} variants={staggerItem} custom={i}>
+                <button
+                  onClick={() => openNotebook(name)}
+                  className="group w-full text-left transition hover:-translate-y-1"
+                >
                 {/* Notebook Cover */}
                 <div
                   className="relative overflow-hidden rounded-lg shadow-[0_3px_14px_rgba(0,0,0,0.08)] transition group-hover:shadow-[0_6px_22px_rgba(0,0,0,0.13)]"
@@ -194,10 +207,11 @@ export default function StudentNotesPage() {
                 <p className="text-xs text-ink-muted/60">
                   {noteCount} notes
                 </p>
-              </button>
+                </button>
+              </Motion.div>
             );
           })}
-        </div>
+        </Motion.div>
       </div>
     );
   }
@@ -315,12 +329,18 @@ export default function StudentNotesPage() {
             </div>
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <Motion.div
+            variants={fadeIn}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          >
             {notebookNotes.map((note, index) => (
+              <Motion.div key={note.id} variants={staggerItem} custom={index}>
               <button
-                key={note.id}
                 onClick={() => openPage(note)}
-                className="card group relative overflow-hidden text-left transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
+                className="card group relative w-full overflow-hidden text-left transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
               >
                 {/* Page top accent */}
                 <div
@@ -379,8 +399,9 @@ export default function StudentNotesPage() {
                   </span>
                 </div>
               </button>
+              </Motion.div>
             ))}
-          </div>
+          </Motion.div>
         )}
       </div>
     );

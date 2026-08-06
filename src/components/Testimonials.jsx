@@ -1,12 +1,27 @@
+import { useMemo } from "react";
+import { m as Motion, useReducedMotion } from "motion/react";
 import data from "../data/testimonialsData.json";
+import { fadeIn, fadeUp, viewportOnce, createStaggerItem } from "../lib/animationVariants";
 
 const { companies, testimonials } = data;
 
 export default function Testimonials() {
+  const shouldReduceMotion = useReducedMotion();
+  const staggerItem = useMemo(
+    () => createStaggerItem(!!shouldReduceMotion),
+    [shouldReduceMotion]
+  );
+
   return (
     <section className="py-20">
 
-      <div className="text-center">
+      <Motion.div
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="text-center"
+      >
 
         <p className="text-ink-muted font-medium">
           Trusted by learners from
@@ -19,6 +34,7 @@ export default function Testimonials() {
               key={company.name}
               src={company.logo}
               alt={company.name}
+              loading="lazy"
               className="h-8 object-contain "
             //   grayscale hover:grayscale-0 transition
             />
@@ -34,19 +50,28 @@ export default function Testimonials() {
           transformation, success, and how our platform has made a
           difference in their lives.
         </p>
-      </div>
+      </Motion.div>
 
-      <div className="mx-auto mt-16 grid max-w-7xl gap-8 px-6 md:grid-cols-3">
+      <Motion.div
+        variants={fadeIn}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="mx-auto mt-16 grid max-w-7xl gap-8 px-6 md:grid-cols-3"
+      >
 
-        {testimonials.map((item) => (
-          <div
+        {testimonials.map((item, i) => (
+          <Motion.div
             key={item.name}
-            className="card card-hover"
+            variants={staggerItem}
+            custom={i}
           >
+            <div className="card card-hover h-full hover:-translate-y-1">
             <div className="flex items-center gap-4 border-b border-border p-5">
 
               <img
                 src={item.image}
+                loading="lazy"
                 className="h-12 w-12 rounded-full object-cover"
                 alt=""
               />
@@ -88,9 +113,10 @@ export default function Testimonials() {
               </button>
 
             </div>
-          </div>
+            </div>
+          </Motion.div>
         ))}
-      </div>
+      </Motion.div>
     </section>
   );
 }

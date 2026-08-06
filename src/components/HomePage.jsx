@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { AnimatePresence, m as Motion, useReducedMotion } from "motion/react";
 import Header from "./Header";
 import courses from "../data/courses";
 import Testimonials from "./Testimonials";
@@ -8,10 +9,16 @@ import Footer from "./Footer";
 import { Search } from "lucide-react";
 import { LoginPopup, SignupPopup } from "./AuthPopups";
 import CourseCard from "./CourseCard";
+import { fadeIn, staggerContainer, viewportOnce, createStaggerItem } from "../lib/animationVariants";
 
 export default function HomePage() {
   // Centralized state to manage the popups
   const [popupState, setPopupState] = useState('none');
+  const shouldReduceMotion = useReducedMotion();
+  const staggerItem = useMemo(
+    () => createStaggerItem(!!shouldReduceMotion),
+    [shouldReduceMotion]
+  );
 
   return (
     <div className="relative min-h-screen bg-surface text-ink">
@@ -26,8 +33,17 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 sm:pt-16 lg:px-8 lg:pt-20">
-        <div className="mx-auto max-w-5xl text-center">
-          <h3 className="mx-auto max-w-4xl text-3xl font-extrabold leading-tight tracking-tight text-ink sm:text-2xl md:text-2xl lg:text-5xl">
+        <Motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className="mx-auto max-w-5xl text-center"
+        >
+          <Motion.h3
+            variants={staggerItem}
+            custom={0}
+            className="mx-auto max-w-4xl text-3xl font-extrabold leading-tight tracking-tight text-ink sm:text-2xl md:text-2xl lg:text-5xl"
+          >
             Innovate Transform Accelerate
             <br />
             EthianTech LMS Platform
@@ -35,16 +51,24 @@ export default function HomePage() {
             <span className="relative inline-block text-brand-secondary text-4xl font-outfit">
               Tailored for your Growth.
             </span>
-          </h3>
+          </Motion.h3>
 
-          <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-ink-muted sm:text-base">
+          <Motion.p
+            variants={staggerItem}
+            custom={1}
+            className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-ink-muted sm:text-base"
+          >
             We bring together world-class instructors, interactive content, and a
             supportive community to help you achieve your personal and
             professional goals.
-          </p>
+          </Motion.p>
 
           {/* Search Bar */}
-          <div className="mx-auto mt-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-border bg-white p-2 shadow-sm sm:flex-row sm:items-center">
+          <Motion.div
+            variants={staggerItem}
+            custom={2}
+            className="mx-auto mt-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-border bg-white p-2 shadow-sm sm:flex-row sm:items-center"
+          >
             <div className="flex flex-1 items-center gap-3 rounded-xl px-2 py-1">
               <Search className="text-ink-muted/70" size={18} />
               <input
@@ -56,13 +80,19 @@ export default function HomePage() {
             <button className="btn-brand rounded-xl px-6 py-3 text-sm sm:px-8">
               Search
             </button>
-          </div>
-        </div>
+          </Motion.div>
+        </Motion.div>
       </section>
 
       {/* Courses Section */}
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
+        <Motion.div
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="mx-auto max-w-3xl text-center"
+        >
           <h3 className="text-2xl font-bold text-ink sm:text-3xl">
             Learn from the best
           </h3>
@@ -71,13 +101,21 @@ export default function HomePage() {
             and design to business and wellness, our courses are crafted to
             deliver results.
           </p>
-        </div>
+        </Motion.div>
 
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {courses.slice(0, 4).map((course) => (
-            <CourseCard key={course.id} course={course} />
+        <Motion.div
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4"
+        >
+          {courses.slice(0, 4).map((course, i) => (
+            <Motion.div key={course.id} variants={staggerItem} custom={i} className="h-full">
+              <CourseCard course={course} />
+            </Motion.div>
           ))}
-        </div>
+        </Motion.div>
 
         <div className="mt-10 flex justify-center">
           <Link
@@ -95,19 +133,23 @@ export default function HomePage() {
       <Footer />
 
       {/* Auth Popups */}
-      {popupState === 'login' && (
-        <LoginPopup
-          onClose={() => setPopupState('none')}
-          onSwitchToSignup={() => setPopupState('signup')}
-        />
-      )}
+      <AnimatePresence>
+        {popupState === 'login' && (
+          <LoginPopup
+            key="login"
+            onClose={() => setPopupState('none')}
+            onSwitchToSignup={() => setPopupState('signup')}
+          />
+        )}
 
-      {popupState === 'signup' && (
-        <SignupPopup
-          onClose={() => setPopupState('none')}
-          onSwitchToLogin={() => setPopupState('login')}
-        />
-      )}
+        {popupState === 'signup' && (
+          <SignupPopup
+            key="signup"
+            onClose={() => setPopupState('none')}
+            onSwitchToLogin={() => setPopupState('login')}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

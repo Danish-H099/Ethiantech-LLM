@@ -1,5 +1,7 @@
 import { User, Star } from "lucide-react";
+import { m as Motion } from "motion/react";
 import { instructors } from "../../data/adminData";
+import { fadeIn, viewportOnce } from "../../lib/animationVariants";
 
 export default function AdminInstructorsPage() {
   return (
@@ -13,7 +15,13 @@ export default function AdminInstructorsPage() {
         </p>
       </div>
 
-      <div className="card overflow-x-auto">
+      <Motion.div
+        variants={fadeIn}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="card overflow-x-auto"
+      >
         <table className="w-full min-w-[750px] border-collapse">
           <thead>
             <tr className="table-header">
@@ -58,7 +66,7 @@ export default function AdminInstructorsPage() {
             ))}
           </tbody>
         </table>
-      </div>
+      </Motion.div>
     </div>
   );
 }

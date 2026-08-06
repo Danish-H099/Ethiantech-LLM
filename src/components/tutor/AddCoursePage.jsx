@@ -1,5 +1,7 @@
 import { useState, useRef } from "react";
+import { AnimatePresence, m as Motion } from "motion/react";
 import { Upload, Plus, Trash2, ChevronDown, ChevronUp, Video } from "lucide-react";
+import { buttonPress, slideUp } from "../../lib/animationVariants";
 
 const inputBase =
   "input h-[40px]";
@@ -466,8 +468,16 @@ export default function AddCoursePage() {
                   </div>
 
                   {/* Section body (expanded) */}
-                  {isExpanded && (
-                    <div className="border-t border-ink/10 bg-white px-3 pb-3 pt-3">
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <Motion.div
+                        key="section-body"
+                        variants={slideUp}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className="border-t border-ink/10 bg-white px-3 pb-3 pt-3"
+                      >
                       {/* Section title */}
                       <input
                         type="text"
@@ -574,8 +584,9 @@ export default function AddCoursePage() {
                         <Plus size={14} />
                         Add Lesson
                       </button>
-                    </div>
-                  )}
+                      </Motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })}
@@ -593,12 +604,14 @@ export default function AddCoursePage() {
         </div>
 
         {/* ADD button */}
-        <button
+        <Motion.button
           type="submit"
+          variants={buttonPress}
+          whileTap="tap"
           className="flex h-[40px] w-full items-center justify-center rounded bg-brand text-base text-white transition hover:bg-brand/90 sm:w-[91px]"
         >
           ADD
-        </button>
+        </Motion.button>
       </form>
     </div>
   );

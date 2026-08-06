@@ -1,10 +1,19 @@
+import { useMemo } from "react";
 import { TrendingUp, Users, BookOpen, UserPlus } from "lucide-react";
+import { m as Motion, useReducedMotion } from "motion/react";
 import { statCards } from "../../data/adminData";
 import { CHART_ACCENTS } from "../../data/chartColors";
+import { viewportOnce, createStaggerItem } from "../../lib/animationVariants";
 
 const icons = [TrendingUp, Users, BookOpen, UserPlus];
 
 export default function AdminDashboardPage() {
+  const shouldReduceMotion = useReducedMotion();
+  const staggerItem = useMemo(
+    () => createStaggerItem(!!shouldReduceMotion),
+    [shouldReduceMotion]
+  );
+
   return (
     <div>
       <div className="mb-8">
@@ -21,8 +30,13 @@ export default function AdminDashboardPage() {
           const Icon = icons[i];
           const accent = CHART_ACCENTS[i];
           return (
-            <div
+            <Motion.div
               key={card.label}
+              custom={i}
+              variants={staggerItem}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
               className="card p-6"
             >
               <div className="mb-4 flex items-center justify-between">
@@ -46,7 +60,7 @@ export default function AdminDashboardPage() {
               <p className="mt-1 page-title">
                 {card.value}
               </p>
-            </div>
+            </Motion.div>
           );
         })}
       </div>

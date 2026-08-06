@@ -14,6 +14,7 @@ export default function Footer() {
 
               <img
                 src={logo}
+                loading="lazy"
                 className="h-12"
                 alt="EthianTech LLM"
               />

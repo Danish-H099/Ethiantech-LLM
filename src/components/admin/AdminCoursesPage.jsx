@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { m as Motion } from "motion/react";
 import { allCourses } from "../../data/adminData";
+import { fadeIn, viewportOnce } from "../../lib/animationVariants";
 
 function StatusBadge({ status }) {
   const isLive = status === "Live";
@@ -32,7 +34,13 @@ export default function AdminCoursesPage() {
         </div>
       </div>
 
-      <div className="card overflow-x-auto">
+      <Motion.div
+        variants={fadeIn}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="card overflow-x-auto"
+      >
         <table className="w-full min-w-[850px] border-collapse">
           <thead>
             <tr className="table-header">
@@ -58,6 +66,7 @@ export default function AdminCoursesPage() {
                     <img
                       src={course.image}
                       alt={course.title}
+                      loading="lazy"
                       className="h-9 w-16 rounded object-cover shadow-[0_2px_4px_rgba(0,0,0,0.1)]"
                     />
                     <span className="max-w-[280px] leading-snug text-ink">
@@ -84,7 +93,7 @@ export default function AdminCoursesPage() {
             ))}
           </tbody>
         </table>
-      </div>
+      </Motion.div>
     </div>
   );
 }
