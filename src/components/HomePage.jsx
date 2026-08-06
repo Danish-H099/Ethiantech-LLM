@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "./Header";
-import courses from "./CourseData";
+import courses from "../data/courses";
 import Testimonials from "./Testimonials";
 import CTASection from "./CTAsection";
 import Footer from "./Footer";
@@ -14,7 +14,7 @@ export default function HomePage() {
   const [popupState, setPopupState] = useState('none');
 
   return (
-    <div className="relative min-h-screen bg-[#f8f8fb] text-gray-900">
+    <div className="relative min-h-screen bg-surface text-gray-900">
 
       {/* Pass the state updaters to the Header */}
       <Header
@@ -51,7 +51,7 @@ export default function HomePage() {
                 className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
               />
             </div>
-            <button className="rounded-xl bg-[#D62A91] px-6 py-3 text-sm font-semibold text-white transition hover:bg-pink-700 sm:px-8">
+            <button className="rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white transition hover:bg-pink-700 sm:px-8">
               Search
             </button>
           </div>

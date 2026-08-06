@@ -1,11 +1,11 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Upload, Plus, Trash2, ChevronDown, ChevronUp, Video } from "lucide-react";
 
 const inputBase =
-  "h-[40px] w-full rounded border border-[#252525]/50 bg-white px-3 text-[14px] text-[#252525] outline-none transition focus:border-[#D62A91]";
+  "input h-[40px]";
 const labelBase =
-  "mb-1 block font-outfit text-base text-[#252525]/70";
-const errorText = "mt-1 text-[13px] text-red-500";
+  "mb-1 block text-base text-ink/70";
+const errorText = "mt-1 text-13 text-red-500";
 
 const CATEGORIES = [
   "Web Development",
@@ -63,18 +63,18 @@ export default function AddCoursePage() {
 
   function handleDrop(e) {
     e.preventDefault();
-    dragRef.current?.classList.remove("ring-2", "ring-[#D62A91]");
+    dragRef.current?.classList.remove("ring-2", "ring-brand");
     const file = e.dataTransfer.files[0];
     handleFileSelect(file);
   }
 
   function handleDragOver(e) {
     e.preventDefault();
-    dragRef.current?.classList.add("ring-2", "ring-[#D62A91]");
+    dragRef.current?.classList.add("ring-2", "ring-brand");
   }
 
   function handleDragLeave() {
-    dragRef.current?.classList.remove("ring-2", "ring-[#D62A91]");
+    dragRef.current?.classList.remove("ring-2", "ring-brand");
   }
 
   function addSection() {
@@ -224,10 +224,10 @@ export default function AddCoursePage() {
 
   return (
     <div className="w-full max-w-[560px]">
-      <h1 className="mb-2 text-[28px] font-semibold text-[#252525]">
+      <h1 className="mb-2 page-title">
         Add Course
       </h1>
-      <p className="mb-8 text-[15px] text-[#494949]">
+      <p className="mb-8 text-md text-ink-muted">
         Create a new course with details, curriculum, and media
       </p>
       <form onSubmit={handleSubmit} noValidate>
@@ -242,7 +242,7 @@ export default function AddCoursePage() {
             value={form.title}
             onChange={handleChange}
             placeholder="Type here"
-            className={`${inputBase} font-outfit ${errors.title ? "border-red-500" : ""}`}
+            className={`${inputBase} ${errors.title ? "border-red-500" : ""}`}
           />
           {errors.title && <p className={errorText}>{errors.title}</p>}
         </div>
@@ -258,7 +258,7 @@ export default function AddCoursePage() {
             value={form.headings}
             onChange={handleChange}
             placeholder="Type here"
-            className={`${inputBase} font-outfit ${errors.headings ? "border-red-500" : ""}`}
+            className={`${inputBase} ${errors.headings ? "border-red-500" : ""}`}
           />
           {errors.headings && <p className={errorText}>{errors.headings}</p>}
         </div>
@@ -274,7 +274,7 @@ export default function AddCoursePage() {
             onChange={handleChange}
             placeholder="Type here"
             rows={3}
-            className={`${inputBase} h-[82px] resize-none py-2.5 font-outfit ${errors.description ? "border-red-500" : ""}`}
+            className={`input h-[82px] resize-none py-2.5 ${errors.description ? "border-red-500" : ""}`}
           />
           {errors.description && (
             <p className={errorText}>{errors.description}</p>
@@ -289,7 +289,7 @@ export default function AddCoursePage() {
               name="category"
               value={form.category}
               onChange={handleChange}
-              className={`${inputBase} font-outfit ${!form.category ? "text-[#252525]/40" : ""} ${errors.category ? "border-red-500" : ""}`}
+              className={`${inputBase} ${!form.category ? "text-ink/40" : ""} ${errors.category ? "border-red-500" : ""}`}
             >
               <option value="" disabled>Select category</option>
               {CATEGORIES.map((cat) => (
@@ -305,7 +305,7 @@ export default function AddCoursePage() {
               name="level"
               value={form.level}
               onChange={handleChange}
-              className={`${inputBase} font-outfit ${!form.level ? "text-[#252525]/40" : ""} ${errors.level ? "border-red-500" : ""}`}
+              className={`${inputBase} ${!form.level ? "text-ink/40" : ""} ${errors.level ? "border-red-500" : ""}`}
             >
               <option value="" disabled>Select level</option>
               {LEVELS.map((lvl) => (
@@ -319,7 +319,7 @@ export default function AddCoursePage() {
         {/* Tag */}
         <div className="mb-5">
           <label className={labelBase}>
-            Course Tag <span className="text-sm text-[#252525]/40">(optional)</span>
+            Course Tag <span className="text-sm text-ink/40">(optional)</span>
           </label>
           <input
             type="text"
@@ -327,7 +327,7 @@ export default function AddCoursePage() {
             value={form.tag}
             onChange={handleChange}
             placeholder="e.g. FULL STACK, DESIGN"
-            className={`${inputBase} font-outfit`}
+            className={`${inputBase}`}
           />
         </div>
 
@@ -344,7 +344,7 @@ export default function AddCoursePage() {
               value={form.price}
               onChange={handleChange}
               placeholder="0"
-              className={`${inputBase} font-outfit ${errors.price ? "border-red-500" : ""}`}
+              className={`${inputBase} ${errors.price ? "border-red-500" : ""}`}
             />
             {errors.price && <p className={errorText}>{errors.price}</p>}
           </div>
@@ -363,7 +363,7 @@ export default function AddCoursePage() {
               className={`relative flex h-[40px] w-full cursor-pointer items-center justify-center overflow-hidden rounded border transition ${
                 thumbnailPreview
                   ? "border-transparent"
-                  : "border-[#D62A91] bg-[#D62A91] hover:opacity-90"
+                  : "border-brand bg-brand hover:opacity-90"
               } ${errors.thumbnail ? "ring-2 ring-red-500" : ""}`}
             >
               <input
@@ -388,7 +388,7 @@ export default function AddCoursePage() {
                       setThumbnailPreview(null);
                       fileInputRef.current.value = "";
                     }}
-                    className="absolute right-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] text-white"
+                    className="absolute right-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-10 text-white"
                   >
                     Remove
                   </button>
@@ -396,7 +396,7 @@ export default function AddCoursePage() {
               ) : (
                 <div className="flex items-center gap-2 text-white">
                   <Upload size={16} />
-                  <span className="font-outfit text-[14px]">
+                  <span className="text-sm">
                     Upload
                   </span>
                 </div>
@@ -410,15 +410,15 @@ export default function AddCoursePage() {
 
         {/* Course Curriculum */}
         <div className="mb-6">
-          <label className={`${labelBase} text-[18px] font-semibold text-[#252525]`}>
+          <label className={`${labelBase} text-lg font-semibold text-ink`}>
             Course Curriculum
           </label>
-          <p className="mb-3 text-[13px] text-[#252525]/50">
+          <p className="mb-3 text-13 text-ink/50">
             Add sections and lessons to build your course structure.
           </p>
 
           {errors.curriculum && (
-            <p className="mb-3 text-[13px] text-red-500">{errors.curriculum}</p>
+            <p className="mb-3 text-13 text-red-500">{errors.curriculum}</p>
           )}
 
           <div className="space-y-3">
@@ -427,7 +427,7 @@ export default function AddCoursePage() {
               return (
                 <div
                   key={sIdx}
-                  className="rounded border border-[#252525]/15 bg-[#F7F9FD]"
+                  className="rounded border border-ink/15 bg-surface-soft"
                 >
                   {/* Section header */}
                   <div className="flex items-center gap-2 px-3 py-2.5">
@@ -439,11 +439,11 @@ export default function AddCoursePage() {
                       className="flex flex-1 items-center gap-2 text-left"
                     >
                       {isExpanded ? (
-                        <ChevronUp size={16} className="shrink-0 text-[#252525]/50" />
+                        <ChevronUp size={16} className="shrink-0 text-ink/50" />
                       ) : (
-                        <ChevronDown size={16} className="shrink-0 text-[#252525]/50" />
+                        <ChevronDown size={16} className="shrink-0 text-ink/50" />
                       )}
-                      <span className="text-[13px] font-medium text-[#252525]/60">
+                      <span className="text-13 font-medium text-ink/60">
                         Section {sIdx + 1}
                       </span>
                     </button>
@@ -451,7 +451,7 @@ export default function AddCoursePage() {
                       <button
                         type="button"
                         onClick={() => removeSection(sIdx)}
-                        className="shrink-0 rounded p-1 text-[#252525]/40 transition hover:bg-red-50 hover:text-red-500"
+                        className="shrink-0 rounded p-1 text-ink/40 transition hover:bg-red-50 hover:text-red-500"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -460,7 +460,7 @@ export default function AddCoursePage() {
 
                   {/* Section body (expanded) */}
                   {isExpanded && (
-                    <div className="border-t border-[#252525]/10 bg-white px-3 pb-3 pt-3">
+                    <div className="border-t border-ink/10 bg-white px-3 pb-3 pt-3">
                       {/* Section title */}
                       <input
                         type="text"
@@ -469,7 +469,7 @@ export default function AddCoursePage() {
                           handleSectionTitleChange(sIdx, e.target.value)
                         }
                         placeholder="Section title"
-                        className={`${inputBase} mb-3 font-outfit`}
+                        className={`${inputBase} mb-3`}
                       />
 
                       {/* Lessons */}
@@ -481,7 +481,7 @@ export default function AddCoursePage() {
                               key={lIdx}
                               className="flex items-center gap-2"
                             >
-                              <span className="shrink-0 text-[12px] text-[#252525]/40">
+                              <span className="shrink-0 text-xs text-ink/40">
                                 {sIdx + 1}.{lIdx + 1}
                               </span>
                               <input
@@ -496,7 +496,7 @@ export default function AddCoursePage() {
                                   )
                                 }
                                 placeholder="Lesson title"
-                                className={`${inputBase} flex-1 font-outfit !h-[36px] text-[13px]`}
+                                className={`${inputBase} flex-1 !h-[36px] text-13`}
                               />
                               {/* Video upload */}
                               <input
@@ -515,9 +515,9 @@ export default function AddCoursePage() {
                                 }
                               />
                               {lesson.video ? (
-                                <div className="flex shrink-0 items-center gap-1.5 rounded border border-[#252525]/15 bg-[#F7F9FD] px-2 py-1">
-                                  <Video size={13} className="shrink-0 text-[#D62A91]" />
-                                  <span className="max-w-[100px] truncate text-[12px] text-[#252525]/70">
+                                <div className="flex shrink-0 items-center gap-1.5 rounded border border-ink/15 bg-surface-soft px-2 py-1">
+                                  <Video size={13} className="shrink-0 text-brand" />
+                                  <span className="max-w-[100px] truncate text-xs text-ink/70">
                                     {lesson.video.name}
                                   </span>
                                   <button
@@ -525,7 +525,7 @@ export default function AddCoursePage() {
                                     onClick={() =>
                                       removeLessonVideo(sIdx, lIdx)
                                     }
-                                    className="shrink-0 rounded text-[#252525]/40 transition hover:text-red-500"
+                                    className="shrink-0 rounded text-ink/40 transition hover:text-red-500"
                                   >
                                     <Trash2 size={12} />
                                   </button>
@@ -538,7 +538,7 @@ export default function AddCoursePage() {
                                       .get(refKey)
                                       ?.click()
                                   }
-                                  className="flex shrink-0 items-center gap-1 rounded border border-[#D62A91] bg-[#D62A91] px-2 py-1 text-[12px] text-white transition hover:opacity-90"
+                                  className="flex shrink-0 items-center gap-1 rounded border border-brand bg-brand px-2 py-1 text-xs text-white transition hover:opacity-90"
                                 >
                                   <Upload size={12} />
                                   Video
@@ -548,7 +548,7 @@ export default function AddCoursePage() {
                                 <button
                                   type="button"
                                   onClick={() => removeLesson(sIdx, lIdx)}
-                                  className="shrink-0 rounded p-1 text-[#252525]/30 transition hover:text-red-500"
+                                  className="shrink-0 rounded p-1 text-ink/30 transition hover:text-red-500"
                                 >
                                   <Trash2 size={13} />
                                 </button>
@@ -562,7 +562,7 @@ export default function AddCoursePage() {
                       <button
                         type="button"
                         onClick={() => addLesson(sIdx)}
-                        className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-[#D62A91] transition hover:text-[#D62A91]/80"
+                        className="mt-3 flex items-center gap-1.5 text-13 font-medium text-brand transition hover:text-brand/80"
                       >
                         <Plus size={14} />
                         Add Lesson
@@ -578,7 +578,7 @@ export default function AddCoursePage() {
           <button
             type="button"
             onClick={addSection}
-            className="mt-3 flex items-center gap-1.5 text-[14px] font-medium text-[#D62A91] transition hover:text-[#D62A91]/80"
+            className="mt-3 flex items-center gap-1.5 text-sm font-medium text-brand transition hover:text-brand/80"
           >
             <Plus size={15} />
             Add Section
@@ -588,7 +588,7 @@ export default function AddCoursePage() {
         {/* ADD button */}
         <button
           type="submit"
-          className="flex h-[40px] w-full items-center justify-center rounded bg-[#D62A91] font-outfit text-[16px] text-white transition hover:bg-[#D62A91]/90 sm:w-[91px]"
+          className="flex h-[40px] w-full items-center justify-center rounded bg-brand text-base text-white transition hover:bg-brand/90 sm:w-[91px]"
         >
           ADD
         </button>

@@ -1,4 +1,3 @@
-import React from "react";
 import { User, MoreVertical } from "lucide-react";
 import { allUsers } from "../../data/adminData";
 
@@ -6,10 +5,10 @@ function RoleBadge({ role }) {
   const isInstructor = role === "Instructor";
   return (
     <span
-      className={`inline-block rounded-full px-3 py-1 text-[12px] font-medium ${
+      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
         isInstructor
-          ? "bg-[#EDE9FE] text-[#7C3AED]"
-          : "bg-[#E0F2FE] text-[#0284C7]"
+          ? "bg-violet-100 text-violet-600"
+          : "bg-sky-100 text-sky-600"
       }`}
     >
       {role}
@@ -23,12 +22,12 @@ function StatusDot({ status }) {
     <div className="flex items-center gap-2">
       <span
         className={`inline-block h-2 w-2 rounded-full ${
-          isActive ? "bg-[#16A34A]" : "bg-[#9CA3AF]"
+          isActive ? "bg-green-600" : "bg-gray-400"
         }`}
       />
       <span
-        className={`text-[14px] ${
-          isActive ? "text-[#252525]" : "text-[#494949]"
+        className={`text-sm ${
+          isActive ? "text-ink" : "text-ink-muted"
         }`}
       >
         {status}
@@ -39,22 +38,22 @@ function StatusDot({ status }) {
 
 export default function AdminUsersPage() {
   return (
-    <div className="font-outfit">
+    <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[28px] font-semibold text-[#252525]">
+          <h1 className="page-title">
             User Management
           </h1>
-          <p className="mt-1 text-[15px] text-[#494949]">
+          <p className="mt-1 text-md text-ink-muted">
             {allUsers.length} users on the platform
           </p>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <div className="card overflow-x-auto">
         <table className="w-full min-w-[700px] border-collapse">
           <thead>
-            <tr className="border-b border-[#252525]/20 text-left text-[14px] text-[#252525]/70">
+            <tr className="table-header">
               <th className="w-[50px] px-5 py-4 font-medium">#</th>
               <th className="px-5 py-4 font-medium">Name</th>
               <th className="px-5 py-4 font-medium">Email</th>
@@ -71,15 +70,15 @@ export default function AdminUsersPage() {
                 style={{
                   backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
                 }}
-                className="border-b border-[#252525]/15 text-[14px] text-[#252525]/70 last:border-b-0"
+                className="table-row"
               >
                 <td className="px-5 py-4">{user.id}</td>
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-[35px] w-[35px] shrink-0 items-center justify-center rounded-full bg-[#EBEBEB]">
-                      <User size={16} className="text-[#494949]" />
+                    <div className="flex h-[35px] w-[35px] shrink-0 items-center justify-center rounded-full bg-gray-200">
+                      <User size={16} className="text-ink-muted" />
                     </div>
-                    <span className="whitespace-nowrap font-medium text-[#252525]">
+                    <span className="whitespace-nowrap font-medium text-ink">
                       {user.name}
                     </span>
                   </div>
@@ -93,7 +92,7 @@ export default function AdminUsersPage() {
                   <StatusDot status={user.status} />
                 </td>
                 <td className="px-3">
-                  <button className="text-[#252525]/50 transition hover:text-[#252525]/80">
+                  <button className="text-ink/50 transition hover:text-ink/80">
                     <MoreVertical size={16} />
                   </button>
                 </td>

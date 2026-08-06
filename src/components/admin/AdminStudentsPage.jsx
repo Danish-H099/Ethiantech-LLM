@@ -1,4 +1,3 @@
-import React from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { regionStudents } from "../../data/adminData";
 
@@ -6,19 +5,19 @@ const totalStudents = regionStudents.reduce((sum, r) => sum + r.value, 0);
 
 export default function AdminStudentsPage() {
   return (
-    <div className="font-outfit">
+    <div>
       <div className="mb-8">
-        <h1 className="text-[28px] font-semibold text-[#252525]">
+        <h1 className="page-title">
           Student Analytics
         </h1>
-        <p className="mt-1 text-[15px] text-[#494949]">
+        <p className="mt-1 text-md text-ink-muted">
           Region-wise student distribution across the platform
         </p>
       </div>
 
       <div className="mb-8 grid gap-6 xl:grid-cols-2">
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-          <h2 className="mb-4 text-[18px] font-semibold text-[#252525]">
+        <div className="card p-6">
+          <h2 className="mb-4 text-lg font-semibold text-ink">
             Students by Region
           </h2>
           <ResponsiveContainer width="100%" height={350}>
@@ -51,15 +50,15 @@ export default function AdminStudentsPage() {
                 iconType="circle"
                 iconSize={10}
                 formatter={(value) => (
-                  <span className="text-[13px] text-[#494949]">{value}</span>
+                  <span className="text-13 text-ink-muted">{value}</span>
                 )}
               />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-          <h2 className="mb-4 text-[18px] font-semibold text-[#252525]">
+        <div className="card p-6">
+          <h2 className="mb-4 text-lg font-semibold text-ink">
             Region Breakdown
           </h2>
           <div className="space-y-5">
@@ -73,15 +72,15 @@ export default function AdminStudentsPage() {
                         className="inline-block h-3 w-3 rounded-full"
                         style={{ backgroundColor: region.color }}
                       />
-                      <span className="text-[15px] font-medium text-[#252525]">
+                      <span className="text-md font-medium text-ink">
                         {region.name}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[15px] font-semibold text-[#252525]">
+                      <span className="text-md font-semibold text-ink">
                         {region.value.toLocaleString()}
                       </span>
-                      <span className="ml-2 text-[13px] text-[#494949]">
+                      <span className="ml-2 text-13 text-ink-muted">
                         ({pct}%)
                       </span>
                     </div>

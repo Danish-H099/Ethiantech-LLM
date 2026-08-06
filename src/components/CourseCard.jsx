@@ -5,7 +5,7 @@ export default function CourseCard({ course }) {
   return (
     <Link
       to={`/course/${course.id}`}
-      className="group block overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+      className="group block card overflow-hidden transition hover:-translate-y-1 hover:shadow-md"
     >
       <div className="relative h-44 w-full overflow-hidden sm:h-48">
         <img
@@ -13,7 +13,7 @@ export default function CourseCard({ course }) {
           alt={course.title}
           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
         />
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[10px] font-semibold tracking-wide text-gray-700 shadow">
+        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-10 font-semibold tracking-wide text-gray-700 shadow">
           {course.tag}
         </span>
       </div>

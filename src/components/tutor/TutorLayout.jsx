@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { LayoutDashboard, PlusSquare, BookOpen, Users } from "lucide-react";
 import TutorNavbar from "./TutorNavbar";
@@ -15,7 +15,7 @@ export default function TutorLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F8F8FB] font-outfit">
+    <div className="flex min-h-screen flex-col bg-surface font-outfit">
       {/* Mobile overlay backdrop */}
       {sidebarOpen && (
         <div
@@ -33,10 +33,10 @@ export default function TutorLayout() {
         >
           {/* Logo */}
           <div className="flex items-center gap-3 px-6 py-5">
-            <span className="text-[24px] font-semibold text-[#0E0E0E]">
+            <span className="text-2xl font-semibold text-ink">
               EthianTech
             </span>
-            <span className="rounded bg-[#D62A91] px-2 py-0.5 text-[11px] font-bold uppercase text-white">
+            <span className="rounded bg-brand px-2 py-0.5 text-11 font-bold uppercase text-white">
               Tutor
             </span>
           </div>
@@ -52,10 +52,10 @@ export default function TutorLayout() {
                   end={item.path === "/tutor/dashboard"}
                   onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 rounded px-3 py-2.5 text-[16px] transition-colors ${
+                    `flex items-center gap-3 rounded px-3 py-2.5 text-base transition-colors ${
                       isActive
-                        ? "border-l-[3px] border-[#D62A91] bg-[#FDF2F8] pl-[9px] font-medium text-[#D62A91]"
-                        : "border-l-[3px] border-transparent text-[#252525] hover:bg-gray-50"
+                        ? "border-l-[3px] border-brand bg-tint-pink pl-[9px] font-medium text-brand"
+                        : "border-l-[3px] border-transparent text-ink hover:bg-gray-50"
                     }`
                   }
                 >
@@ -72,7 +72,7 @@ export default function TutorLayout() {
           <TutorNavbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
           {/* Page content */}
-          <main className="flex-1 overflow-auto bg-[#F8F8FB] p-6 lg:p-8">
+          <main className="flex-1 overflow-auto bg-surface p-6 lg:p-8">
             <Outlet />
           </main>
         </div>

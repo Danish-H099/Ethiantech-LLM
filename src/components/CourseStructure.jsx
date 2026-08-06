@@ -31,7 +31,7 @@ export default function CourseStructure({
                 onClick={() =>
                   setExpandedIndex(expandedIndex === i ? -1 : i)
                 }
-                className="flex w-full items-center justify-between bg-[#F7F9FD] px-5 py-3 text-left text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                className="flex w-full items-center justify-between bg-surface-soft px-5 py-3 text-left text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
               >
                 <span>{section.title}</span>
                 <div className="flex items-center gap-2">

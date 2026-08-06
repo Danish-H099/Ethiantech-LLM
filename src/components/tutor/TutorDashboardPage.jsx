@@ -1,4 +1,3 @@
-import React from "react";
 import { User } from "lucide-react";
 import {
   AreaChart,
@@ -19,20 +18,20 @@ import {
 } from "lucide-react";
 import { tutorStats, earningsOverTime, studentsOverTime } from "../../data/tutorData";
 import studentsData from "../../data/studentsData";
+import { CHART_ACCENTS, CHART_PINK } from "../../data/chartColors";
 
 const icons = [DollarSign, Users, BookOpen, Star];
-const accents = ["#D62A91", "#5F6FFF", "#10B981", "#F59E0B"];
 
 export default function TutorDashboardPage() {
   const recentStudents = studentsData.slice(0, 5);
 
   return (
-    <div className="font-outfit">
+    <div>
       <div className="mb-8">
-        <h1 className="text-[28px] font-semibold text-[#252525]">
+        <h1 className="page-title">
           Dashboard
         </h1>
-        <p className="mt-1 text-[15px] text-[#494949]">
+        <p className="mt-1 text-md text-ink-muted">
           Overview of your courses, earnings, and student enrollments
         </p>
       </div>
@@ -41,11 +40,11 @@ export default function TutorDashboardPage() {
       <div className="mb-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {tutorStats.map((card, i) => {
           const Icon = icons[i];
-          const accent = accents[i];
+          const accent = CHART_ACCENTS[i];
           return (
             <div
               key={card.label}
-              className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+              className="card p-6"
             >
               <div className="mb-4 flex items-center justify-between">
                 <div
@@ -55,7 +54,7 @@ export default function TutorDashboardPage() {
                   <Icon size={22} style={{ color: accent }} />
                 </div>
                 <span
-                  className="rounded-full px-2.5 py-1 text-[13px] font-medium"
+                  className="rounded-full px-2.5 py-1 text-13 font-medium"
                   style={{
                     backgroundColor: card.up ? "#DCFCE7" : "#FEE2E2",
                     color: card.up ? "#16A34A" : "#DC2626",
@@ -64,8 +63,8 @@ export default function TutorDashboardPage() {
                   {card.change}
                 </span>
               </div>
-              <p className="text-[14px] text-[#494949]">{card.label}</p>
-              <p className="mt-1 text-[28px] font-semibold text-[#252525]">
+              <p className="text-sm text-ink-muted">{card.label}</p>
+              <p className="mt-1 page-title">
                 {card.value}
               </p>
             </div>
@@ -76,10 +75,10 @@ export default function TutorDashboardPage() {
       {/* Charts Row */}
       <div className="mb-8 grid gap-6 xl:grid-cols-2">
         {/* Earnings Over Time */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+        <div className="card p-6">
           <div className="mb-6 flex items-center gap-2">
-            <DollarSign size={18} className="text-[#D62A91]" />
-            <h2 className="text-[18px] font-semibold text-[#252525]">
+            <DollarSign size={18} className="text-brand" />
+            <h2 className="text-lg font-semibold text-ink">
               Earnings Over Time
             </h2>
           </div>
@@ -87,8 +86,8 @@ export default function TutorDashboardPage() {
             <AreaChart data={earningsOverTime}>
               <defs>
                 <linearGradient id="earningsGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#D62A91" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#D62A91" stopOpacity={0} />
+                  <stop offset="5%" stopColor={CHART_PINK} stopOpacity={0.2} />
+                  <stop offset="95%" stopColor={CHART_PINK} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
@@ -116,7 +115,7 @@ export default function TutorDashboardPage() {
               <Area
                 type="monotone"
                 dataKey="earnings"
-                stroke="#D62A91"
+                stroke={CHART_PINK}
                 strokeWidth={2.5}
                 fill="url(#earningsGrad)"
               />
@@ -125,10 +124,10 @@ export default function TutorDashboardPage() {
         </div>
 
         {/* Student Enrollment Trend */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+        <div className="card p-6">
           <div className="mb-6 flex items-center gap-2">
-            <Users size={18} className="text-[#D62A91]" />
-            <h2 className="text-[18px] font-semibold text-[#252525]">
+            <Users size={18} className="text-brand" />
+            <h2 className="text-lg font-semibold text-ink">
               Student Enrollment Trend
             </h2>
           </div>
@@ -157,7 +156,7 @@ export default function TutorDashboardPage() {
               />
               <Bar
                 dataKey="students"
-                fill="#D62A91"
+                fill={CHART_PINK}
                 radius={[6, 6, 0, 0]}
                 barSize={32}
               />
@@ -167,14 +166,14 @@ export default function TutorDashboardPage() {
       </div>
 
       {/* Recent Enrollments */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-        <h2 className="mb-6 text-[18px] font-semibold text-[#252525]">
+      <div className="card p-6">
+        <h2 className="mb-6 text-lg font-semibold text-ink">
           Recent Enrollments
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[500px] border-collapse">
             <thead>
-              <tr className="border-b border-[#252525]/20 text-left text-[14px] text-[#252525]/70">
+              <tr className="table-header">
                 <th className="w-[50px] px-5 py-3 font-medium">#</th>
                 <th className="px-5 py-3 font-medium">Student Name</th>
                 <th className="px-5 py-3 font-medium">Course</th>
@@ -188,15 +187,15 @@ export default function TutorDashboardPage() {
                   style={{
                     backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
                   }}
-                  className="border-b border-[#252525]/15 text-[14px] text-[#252525]/70 last:border-b-0"
+                  className="table-row"
                 >
                   <td className="px-5 py-3.5">{student.id}</td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full bg-[#D62A91]/10">
-                        <User size={14} className="text-[#D62A91]" />
+                      <div className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full bg-brand/10">
+                        <User size={14} className="text-brand" />
                       </div>
-                      <span className="whitespace-nowrap font-medium text-[#252525]">
+                      <span className="whitespace-nowrap font-medium text-ink">
                         {student.name}
                       </span>
                     </div>

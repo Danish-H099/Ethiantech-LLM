@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
-import courses from "./CourseData";
+import courses from "../data/courses";
 import {
   Star,
   Clock,
@@ -29,7 +29,7 @@ export default function CourseDetailsPage() {
 
   if (!course) {
     return (
-      <div className="relative min-h-screen bg-[#f8f8fb] text-gray-900">
+      <div className="relative min-h-screen bg-surface text-gray-900">
         <Header
           onLoginClick={() => setPopupState("login")}
           onSignupClick={() => setPopupState("signup")}
@@ -44,7 +44,7 @@ export default function CourseDetailsPage() {
           </p>
           <Link
             to="/courses"
-            className="mt-6 rounded-xl bg-[#D62A91] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+            className="mt-6 btn-brand rounded-xl px-6 py-3 text-sm"
           >
             Browse Courses
           </Link>
@@ -74,7 +74,7 @@ export default function CourseDetailsPage() {
   const totalDuration = "27h 25m";
 
   return (
-    <div className="relative min-h-screen bg-[#f8f8fb] text-gray-900">
+    <div className="relative min-h-screen bg-surface text-gray-900">
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
@@ -207,7 +207,7 @@ export default function CourseDetailsPage() {
                     </span>
                   </div>
 
-                  <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#D62A91] px-6 py-3.5 text-sm font-semibold text-white transition hover:opacity-90">
+                  <button className="mt-4 btn-brand w-full rounded-lg px-6 py-3.5 text-sm">
                     Enroll Now
                   </button>
 

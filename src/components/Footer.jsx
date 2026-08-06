@@ -1,6 +1,8 @@
+import logo from "../assets/logo.webp";
+
 export default function Footer() {
   return (
-    <footer className="bg-[#272640] text-white">
+    <footer className="bg-footer text-white">
 
       <div className="mx-auto max-w-7xl px-6 py-16">
 
@@ -11,9 +13,9 @@ export default function Footer() {
             <div className="flex items-center gap-3">
 
               <img
-                src="/assets/logo.webp"
+                src={logo}
                 className="h-12"
-                alt=""
+                alt="EthianTech LLM"
               />
 
               <h2 className="text-xl font-bold">
@@ -63,10 +65,10 @@ export default function Footer() {
 
               <input
                 placeholder="Enter your email"
-                className="flex-1 rounded-lg border border-gray-700 bg-[#32304d] px-2 py-3 outline-none rounded-r-none"
+                className="flex-1 rounded-lg border border-gray-700 bg-footer-input px-2 py-3 outline-none rounded-r-none"
               />
 
-              <button className="rounded-lg bg-[#D62A91] px-2 py-3 rounded-l-none">
+              <button className="rounded-lg bg-brand px-2 py-3 rounded-l-none">
                 Subscribe
               </button>
 

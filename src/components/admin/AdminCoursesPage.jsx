@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { allCourses } from "../../data/adminData";
 
 function StatusBadge({ status }) {
   const isLive = status === "Live";
   return (
     <span
-      className={`inline-block rounded-full px-3 py-1 text-[12px] font-medium ${
+      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
         isLive
-          ? "bg-[#DCFCE7] text-[#16A34A]"
-          : "bg-[#FEF3C7] text-[#D97706]"
+          ? "bg-green-100 text-green-600"
+          : "bg-amber-100 text-amber-600"
       }`}
     >
       {status}
@@ -20,22 +20,22 @@ export default function AdminCoursesPage() {
   const [courses] = useState(allCourses);
 
   return (
-    <div className="font-outfit">
+    <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-[28px] font-semibold text-[#252525]">
+          <h1 className="page-title">
             Course Management
           </h1>
-          <p className="mt-1 text-[15px] text-[#494949]">
+          <p className="mt-1 text-md text-ink-muted">
             {courses.length} courses on the platform
           </p>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <div className="card overflow-x-auto">
         <table className="w-full min-w-[850px] border-collapse">
           <thead>
-            <tr className="border-b border-[#252525]/20 text-left text-[14px] text-[#252525]/70">
+            <tr className="table-header">
               <th className="px-5 py-4 font-medium">Course</th>
               <th className="px-5 py-4 font-medium">Instructor</th>
               <th className="px-5 py-4 font-medium">Students</th>
@@ -51,7 +51,7 @@ export default function AdminCoursesPage() {
                 style={{
                   backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
                 }}
-                className="border-b border-[#252525]/15 text-[14px] text-[#252525]/70 last:border-b-0"
+                className="table-row"
               >
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-4">
@@ -60,7 +60,7 @@ export default function AdminCoursesPage() {
                       alt={course.title}
                       className="h-9 w-16 rounded object-cover shadow-[0_2px_4px_rgba(0,0,0,0.1)]"
                     />
-                    <span className="max-w-[280px] leading-snug text-[#252525]">
+                    <span className="max-w-[280px] leading-snug text-ink">
                       {course.title}
                     </span>
                   </div>
@@ -72,11 +72,11 @@ export default function AdminCoursesPage() {
                 <td className="px-5 py-4">
                   <StatusBadge status={course.status} />
                 </td>
-                <td className="px-5 py-4 text-right font-medium text-[#252525]">
+                <td className="px-5 py-4 text-right font-medium text-ink">
                   ${course.earnings.toLocaleString()}
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <button className="rounded border border-[#252525]/20 px-3 py-1.5 text-[13px] text-[#252525]/70 transition hover:border-[#D62A91] hover:text-[#D62A91]">
+                  <button className="rounded border border-ink/20 px-3 py-1.5 text-13 text-ink/70 transition hover:border-brand hover:text-brand">
                     View
                   </button>
                 </td>

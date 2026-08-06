@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X, Eye, EyeOff } from 'lucide-react';
 
 // A mock visual button for Google Sign In to remove the OAuth dependency

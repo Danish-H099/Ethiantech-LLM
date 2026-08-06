@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import coursesData from "../../data/coursesData";
+import { useState } from "react";
+import courses, { tutorCourseMeta } from "../../data/courses";
 
 function StatusToggle({ initialStatus }) {
   const [isLive, setIsLive] = useState(initialStatus === "Live");
@@ -9,7 +9,7 @@ function StatusToggle({ initialStatus }) {
       role="switch"
       aria-checked={isLive}
       onClick={() => setIsLive(!isLive)}
-      className={`relative inline-flex h-7 w-[52px] shrink-0 cursor-pointer items-center rounded-full transition-colors ${isLive ? "bg-[#D62A91]" : "bg-[#CBD6E4]"
+      className={`relative inline-flex h-7 w-[52px] shrink-0 cursor-pointer items-center rounded-full transition-colors ${isLive ? "bg-brand" : "bg-toggle"
         }`}
     >
       <span
@@ -21,19 +21,23 @@ function StatusToggle({ initialStatus }) {
 }
 
 export default function TutorCoursesPage() {
+  const tutorCourses = courses
+    .filter((course) => tutorCourseMeta[course.id])
+    .map((course) => ({ ...course, ...tutorCourseMeta[course.id] }));
+
   return (
-    <div className="font-outfit">
+    <div>
       <div className="mb-8">
-        <h1 className="text-[28px] font-semibold text-[#252525]">My Courses</h1>
-        <p className="mt-1 text-[15px] text-[#494949]">
+        <h1 className="page-title">My Courses</h1>
+        <p className="mt-1 text-md text-ink-muted">
           Manage and view all your published courses
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+      <div className="card overflow-x-auto">
         <table className="w-full min-w-[700px] border-collapse">
           <thead>
-            <tr className="border-b border-[#252525]/20 text-left text-[14px] text-[#252525]/70">
+            <tr className="table-header">
               <th className="px-5 py-4 font-medium">Course</th>
               <th className="px-5 py-4 font-medium">Students</th>
               <th className="px-5 py-4 font-medium">Status</th>
@@ -41,22 +45,22 @@ export default function TutorCoursesPage() {
             </tr>
           </thead>
           <tbody>
-            {coursesData.map((course, index) => (
+            {tutorCourses.map((course, index) => (
               <tr
                 key={course.id}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
                 }}
-                className="border-b border-[#252525]/15 text-[14px] text-[#252525]/70 last:border-b-0"
+                className="table-row"
               >
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-4">
                     <img
-                      src={course.thumbnail}
+                      src={course.image}
                       alt={course.title}
                       className="h-9 w-16 rounded object-cover shadow-[0_2px_4px_rgba(0,0,0,0.1)]"
                     />
-                    <span className="max-w-[320px] leading-snug text-[#252525]">
+                    <span className="max-w-[320px] leading-snug text-ink">
                       {course.title}
                     </span>
                   </div>
@@ -66,16 +70,16 @@ export default function TutorCoursesPage() {
                   <div className="flex items-center gap-3">
                     <StatusToggle initialStatus={course.status} />
                     <span
-                      className={`text-[14px] ${course.status === "Live"
-                          ? "text-[#D62A91]"
-                          : "text-[#252525]/60"
+                      className={`text-sm ${course.status === "Live"
+                          ? "text-brand"
+                          : "text-ink/60"
                         }`}
                     >
                       {course.status}
                     </span>
                   </div>
                 </td>
-                <td className="px-5 py-4 text-right font-medium text-[#252525]">
+                <td className="px-5 py-4 text-right font-medium text-ink">
                   ${course.earnings.toLocaleString()}
                 </td>
               </tr>

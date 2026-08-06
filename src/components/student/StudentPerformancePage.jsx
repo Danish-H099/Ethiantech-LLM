@@ -1,4 +1,3 @@
-import React from "react";
 import {
   RadarChart,
   Radar,
@@ -19,25 +18,26 @@ import {
   scoreTrend,
   courseScores,
 } from "../../data/studentData";
+import { CHART_PINK, CHART_BLUE, CHART_GREEN, CHART_AMBER } from "../../data/chartColors";
 
 const perfStats = [
-  { label: "Avg Score", value: "82%", icon: BarChart3, accent: "#D62A91" },
-  { label: "Courses Done", value: "2 / 6", icon: BookOpen, accent: "#10B981" },
-  { label: "Total Hours", value: "47.5", icon: Clock, accent: "#5F6FFF" },
-  { label: "Rank", value: "Top 15%", icon: Award, accent: "#F59E0B" },
+  { label: "Avg Score", value: "82%", icon: BarChart3, accent: CHART_PINK },
+  { label: "Courses Done", value: "2 / 6", icon: BookOpen, accent: CHART_GREEN },
+  { label: "Total Hours", value: "47.5", icon: Clock, accent: CHART_BLUE },
+  { label: "Rank", value: "Top 15%", icon: Award, accent: CHART_AMBER },
 ];
 
 function GradeBadge({ grade }) {
   const styles = {
-    A: "bg-[#DCFCE7] text-[#16A34A]",
-    "A-": "bg-[#DCFCE7] text-[#16A34A]",
-    "B+": "bg-[#FEF3C7] text-[#D97706]",
-    B: "bg-[#FEF3C7] text-[#D97706]",
-    "-": "bg-gray-100 text-[#494949]",
+    A: "bg-green-100 text-green-600",
+    "A-": "bg-green-100 text-green-600",
+    "B+": "bg-amber-100 text-amber-600",
+    B: "bg-amber-100 text-amber-600",
+    "-": "bg-gray-100 text-ink-muted",
   };
   return (
     <span
-      className={`inline-block rounded-full px-3 py-1 text-[12px] font-medium ${styles[grade] || styles["-"]}`}
+      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${styles[grade] || styles["-"]}`}
     >
       {grade}
     </span>
@@ -46,8 +46,8 @@ function GradeBadge({ grade }) {
 
 function StatusDot({ status }) {
   const colors = {
-    Completed: "#10B981",
-    "In Progress": "#D62A91",
+    Completed: CHART_GREEN,
+    "In Progress": CHART_PINK,
     "Not Started": "#9CA3AF",
   };
   return (
@@ -56,19 +56,19 @@ function StatusDot({ status }) {
         className="inline-block h-2 w-2 rounded-full"
         style={{ backgroundColor: colors[status] }}
       />
-      <span className="text-[14px] text-[#252525]">{status}</span>
+      <span className="text-sm text-ink">{status}</span>
     </div>
   );
 }
 
 export default function StudentPerformancePage() {
   return (
-    <div className="font-outfit">
+    <div>
       <div className="mb-8">
-        <h1 className="text-[28px] font-semibold text-[#252525]">
+        <h1 className="page-title">
           Performance
         </h1>
-        <p className="mt-1 text-[15px] text-[#494949]">
+        <p className="mt-1 text-md text-ink-muted">
           Your overall learning performance and course scores
         </p>
       </div>
@@ -80,7 +80,7 @@ export default function StudentPerformancePage() {
           return (
             <div
               key={card.label}
-              className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+              className="card p-6"
             >
               <div className="mb-4 flex items-center justify-between">
                 <div
@@ -90,8 +90,8 @@ export default function StudentPerformancePage() {
                   <Icon size={22} style={{ color: card.accent }} />
                 </div>
               </div>
-              <p className="text-[14px] text-[#494949]">{card.label}</p>
-              <p className="mt-1 text-[28px] font-semibold text-[#252525]">
+              <p className="text-sm text-ink-muted">{card.label}</p>
+              <p className="mt-1 page-title">
                 {card.value}
               </p>
             </div>
@@ -102,10 +102,10 @@ export default function StudentPerformancePage() {
       {/* Charts Row */}
       <div className="mb-8 grid gap-6 xl:grid-cols-2">
         {/* Radar Chart */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+        <div className="card p-6">
           <div className="mb-6 flex items-center gap-2">
-            <BarChart3 size={18} className="text-[#D62A91]" />
-            <h2 className="text-[18px] font-semibold text-[#252525]">
+            <BarChart3 size={18} className="text-brand" />
+            <h2 className="text-lg font-semibold text-ink">
               Score by Category
             </h2>
           </div>
@@ -124,8 +124,8 @@ export default function StudentPerformancePage() {
               <Radar
                 name="Score"
                 dataKey="score"
-                stroke="#D62A91"
-                fill="#D62A91"
+                stroke={CHART_PINK}
+                fill={CHART_PINK}
                 fillOpacity={0.2}
                 strokeWidth={2}
               />
@@ -143,10 +143,10 @@ export default function StudentPerformancePage() {
         </div>
 
         {/* Score Trend */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+        <div className="card p-6">
           <div className="mb-6 flex items-center gap-2">
-            <TrendingUp size={18} className="text-[#D62A91]" />
-            <h2 className="text-[18px] font-semibold text-[#252525]">
+            <TrendingUp size={18} className="text-brand" />
+            <h2 className="text-lg font-semibold text-ink">
               Score Trend
             </h2>
           </div>
@@ -178,10 +178,10 @@ export default function StudentPerformancePage() {
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#D62A91"
+                stroke={CHART_PINK}
                 strokeWidth={2.5}
-                dot={{ fill: "#D62A91", strokeWidth: 2, r: 5 }}
-                activeDot={{ r: 7, fill: "#D62A91" }}
+                dot={{ fill: CHART_PINK, strokeWidth: 2, r: 5 }}
+                activeDot={{ r: 7, fill: CHART_PINK }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -189,14 +189,14 @@ export default function StudentPerformancePage() {
       </div>
 
       {/* Course Scores Table */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-        <h2 className="mb-6 text-[18px] font-semibold text-[#252525]">
+      <div className="card p-6">
+        <h2 className="mb-6 text-lg font-semibold text-ink">
           Course-wise Scores
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[600px] border-collapse">
             <thead>
-              <tr className="border-b border-[#252525]/20 text-left text-[14px] text-[#252525]/70">
+              <tr className="table-header">
                 <th className="px-5 py-3 font-medium">Course</th>
                 <th className="px-5 py-3 font-medium">Score</th>
                 <th className="px-5 py-3 font-medium">Grade</th>
@@ -210,9 +210,9 @@ export default function StudentPerformancePage() {
                   style={{
                     backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
                   }}
-                  className="border-b border-[#252525]/15 text-[14px] text-[#252525]/70 last:border-b-0"
+                  className="table-row"
                 >
-                  <td className="px-5 py-3.5 font-medium text-[#252525]">
+                  <td className="px-5 py-3.5 font-medium text-ink">
                     {item.course}
                   </td>
                   <td className="px-5 py-3.5">
@@ -223,14 +223,14 @@ export default function StudentPerformancePage() {
                             className="h-full rounded-full"
                             style={{
                               width: `${item.score}%`,
-                              backgroundColor: item.score >= 80 ? "#10B981" : item.score >= 60 ? "#F59E0B" : "#CBD6E4",
+                              backgroundColor: item.score >= 80 ? CHART_GREEN : item.score >= 60 ? CHART_AMBER : "#CBD6E4",
                             }}
                           />
                         </div>
-                        <span className="text-[#252525]">{item.score}%</span>
+                        <span className="text-ink">{item.score}%</span>
                       </div>
                     ) : (
-                      <span className="text-[#494949]/50">-</span>
+                      <span className="text-ink-muted/50">-</span>
                     )}
                   </td>
                   <td className="px-5 py-3.5">

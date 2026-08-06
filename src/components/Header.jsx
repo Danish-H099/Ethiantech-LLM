@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 export default function Header({ onLoginClick, onSignupClick }) {
@@ -39,7 +38,7 @@ export default function Header({ onLoginClick, onSignupClick }) {
 
                     <button
                         onClick={onSignupClick}
-                        className="rounded-full bg-[#D62A91] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+                        className="btn-brand rounded-full px-5 py-2.5 text-sm"
                     >
                         Create Account
                     </button>
@@ -64,7 +63,7 @@ export default function Header({ onLoginClick, onSignupClick }) {
               <a href="#" className="text-sm font-medium text-gray-700">
                 Login
               </a>
-              <button className="w-full rounded-full bg-[#D62A91] px-5 py-2.5 text-sm font-semibold text-white">
+              <button className="btn-brand w-full rounded-full px-5 py-2.5 text-sm">
                 Create Account
               </button>
             </div>

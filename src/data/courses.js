@@ -181,4 +181,12 @@ const courses = [
   },
 ];
 
+export const tutorCourseMeta = {
+  1: { students: 565, status: "Live", earnings: 12565 },
+  2: { students: 565, status: "Live", earnings: 12565 },
+  3: { students: 565, status: "Private", earnings: 12565 },
+  4: { students: 565, status: "Private", earnings: 12565 },
+  5: { students: 565, status: "Live", earnings: 12565 },
+};
+
 export default courses;

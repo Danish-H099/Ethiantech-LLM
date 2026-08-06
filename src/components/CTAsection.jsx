@@ -14,7 +14,7 @@ export default function CTASection() {
 
       <div className="mt-10 flex justify-center gap-5">
 
-        <button className="rounded-lg bg-[#D62A91] px-8 py-3 font-medium text-white shadow ">
+        <button className="rounded-lg bg-brand px-8 py-3 font-medium text-white shadow ">
           Get started
         </button>
 

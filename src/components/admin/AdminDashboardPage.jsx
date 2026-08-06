@@ -1,18 +1,17 @@
-import React from "react";
 import { TrendingUp, Users, BookOpen, UserPlus } from "lucide-react";
 import { statCards } from "../../data/adminData";
+import { CHART_ACCENTS } from "../../data/chartColors";
 
 const icons = [TrendingUp, Users, BookOpen, UserPlus];
-const accents = ["#D62A91", "#5F6FFF", "#2563EB", "#10B981"];
 
 export default function AdminDashboardPage() {
   return (
-    <div className="font-outfit">
+    <div>
       <div className="mb-8">
-        <h1 className="text-[28px] font-semibold text-[#252525]">
+        <h1 className="page-title">
           Admin Dashboard
         </h1>
-        <p className="mt-1 text-[15px] text-[#494949]">
+        <p className="mt-1 text-md text-ink-muted">
           Overview of your platform performance
         </p>
       </div>
@@ -20,11 +19,11 @@ export default function AdminDashboardPage() {
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {statCards.map((card, i) => {
           const Icon = icons[i];
-          const accent = accents[i];
+          const accent = CHART_ACCENTS[i];
           return (
             <div
               key={card.label}
-              className="rounded-lg border border-gray-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+              className="card p-6"
             >
               <div className="mb-4 flex items-center justify-between">
                 <div
@@ -34,7 +33,7 @@ export default function AdminDashboardPage() {
                   <Icon size={22} style={{ color: accent }} />
                 </div>
                 <span
-                  className="rounded-full px-2.5 py-1 text-[13px] font-medium"
+                  className="rounded-full px-2.5 py-1 text-13 font-medium"
                   style={{
                     backgroundColor: card.up ? "#DCFCE7" : "#FEE2E2",
                     color: card.up ? "#16A34A" : "#DC2626",
@@ -43,8 +42,8 @@ export default function AdminDashboardPage() {
                   {card.change}
                 </span>
               </div>
-              <p className="text-[14px] text-[#494949]">{card.label}</p>
-              <p className="mt-1 text-[28px] font-semibold text-[#252525]">
+              <p className="text-sm text-ink-muted">{card.label}</p>
+              <p className="mt-1 page-title">
                 {card.value}
               </p>
             </div>

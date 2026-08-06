@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { User, BookOpen } from "lucide-react";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -45,7 +45,7 @@ export default function CourseVideo() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#f8f8fb] text-gray-900">
+    <div className="relative min-h-screen bg-surface text-gray-900">
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
@@ -62,7 +62,7 @@ export default function CourseVideo() {
           <div className="min-w-0 flex-1">
             {/* Video Player */}
             <div className="overflow-hidden rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.1)]">
-              <video controls className="w-full aspect-video bg-black">
+              <video controls preload="metadata" className="w-full aspect-video bg-black">
                 <source src={demoVideo} type="video/mp4" />
                 Your browser does not support video.
               </video>
@@ -81,7 +81,7 @@ export default function CourseVideo() {
                 <span
                   className={
                     activeTab === "description"
-                      ? "text-[#D62A91]"
+                      ? "text-brand"
                       : "text-gray-400"
                   }
                 >
@@ -103,7 +103,7 @@ export default function CourseVideo() {
                 </span>
                 Description
                 {activeTab === "description" && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D62A91]" />
+                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />
                 )}
               </button>
 
@@ -118,7 +118,7 @@ export default function CourseVideo() {
                 <span
                   className={
                     activeTab === "comments"
-                      ? "text-[#D62A91]"
+                      ? "text-brand"
                       : "text-gray-400"
                   }
                 >
@@ -139,7 +139,7 @@ export default function CourseVideo() {
                 </span>
                 Comments
                 {activeTab === "comments" && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D62A91]" />
+                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />
                 )}
               </button>
 
@@ -153,14 +153,14 @@ export default function CourseVideo() {
               >
                 <span
                   className={
-                    activeTab === "notes" ? "text-[#D62A91]" : "text-gray-400"
+                    activeTab === "notes" ? "text-brand" : "text-gray-400"
                   }
                 >
                   <BookOpen size={16} />
                 </span>
                 Notes
                 {activeTab === "notes" && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D62A91]" />
+                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />
                 )}
               </button>
             </div>
@@ -194,11 +194,11 @@ export default function CourseVideo() {
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                     placeholder="Add a comment..."
-                    className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-[#D62A91]"
+                    className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-brand"
                   />
                   <button
                     type="submit"
-                    className="rounded-lg bg-[#D62A91] px-6 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+                    className="rounded-lg bg-brand px-6 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
                   >
                     Comment
                   </button>
@@ -260,10 +260,10 @@ export default function CourseVideo() {
                     onChange={(e) => setNoteText(e.target.value)}
                     placeholder="Start writing your notes for this lecture..."
                     rows={10}
-                    className="w-full resize-y rounded-lg border border-gray-200 bg-[#F7F9FD] px-4 py-3 text-sm leading-7 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#D62A91] focus:bg-white"
+                    className="w-full resize-y rounded-lg border border-gray-200 bg-surface-soft px-4 py-3 text-sm leading-7 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-brand focus:bg-white"
                   />
                   <div className="mt-4 flex justify-end">
-                    <button className="rounded-lg bg-[#D62A91] px-6 py-2.5 text-sm font-medium text-white transition hover:opacity-90">
+                    <button className="rounded-lg bg-brand px-6 py-2.5 text-sm font-medium text-white transition hover:opacity-90">
                       Save Notes
                     </button>
                   </div>

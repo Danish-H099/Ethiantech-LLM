@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
-import courses from "./CourseData";
+import courses from "../data/courses";
 import {
   Search,
   Filter,
@@ -46,7 +46,7 @@ function SearchSection({ search, setSearch }) {
       )}
       <button
         onClick={handleSearch}
-        className="rounded-lg bg-[#D62A91] px-8 text-sm font-medium text-white transition hover:opacity-90"
+        className="rounded-lg bg-brand px-8 text-sm font-medium text-white transition hover:opacity-90"
       >
         Search
       </button>
@@ -76,7 +76,7 @@ function FilterPanel({
               name="category"
               checked={selectedCategory === ""}
               onChange={() => onCategoryChange("")}
-              className="accent-[#D62A91]"
+              className="accent-brand"
             />
             All Categories
           </label>
@@ -90,7 +90,7 @@ function FilterPanel({
                 name="category"
                 checked={selectedCategory === cat}
                 onChange={() => onCategoryChange(cat)}
-                className="accent-[#D62A91]"
+                className="accent-brand"
               />
               {cat}
             </label>
@@ -110,7 +110,7 @@ function FilterPanel({
               name="level"
               checked={selectedLevel === ""}
               onChange={() => onLevelChange("")}
-              className="accent-[#D62A91]"
+              className="accent-brand"
             />
             All Levels
           </label>
@@ -124,7 +124,7 @@ function FilterPanel({
                 name="level"
                 checked={selectedLevel === lvl}
                 onChange={() => onLevelChange(lvl)}
-                className="accent-[#D62A91]"
+                className="accent-brand"
               />
               {lvl}
             </label>
@@ -229,7 +229,7 @@ export default function CourseListPage() {
   const hasMore = visibleCount < filteredCourses.length;
 
   return (
-    <div className="relative min-h-screen bg-[#f8f8fb] text-gray-900">
+    <div className="relative min-h-screen bg-surface text-gray-900">
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
