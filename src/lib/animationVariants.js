@@ -7,12 +7,14 @@ const durations = {
   hover: 0.15,
   slow: 0.2,
   modal: 0.3,
-  reveal: 0.4,
+  reveal: 0.5,
   fill: 0.5,
   hero: 0.55,
 };
 
 export const viewportOnce = { once: true, amount: 0.15 };
+
+export const viewportReveal = { once: true, amount: 0 };
 
 export const fadeIn = {
   hidden: { opacity: 0 },
@@ -46,7 +48,7 @@ export const staggerItem = {
     transition: {
       duration: durations.reveal,
       ease: easeArrive,
-      delay: Math.min(index * 0.05, 0.2),
+      delay: Math.min(index * 0.1, 0.4),
     },
   }),
 };
@@ -77,7 +79,7 @@ export const modal = {
     opacity: 0,
     scale: 0.96,
     y: 8,
-    transition: { duration: 0.22, ease: easeDepart },
+    transition: { duration: durations.slow, ease: easeDepart },
   },
 };
 
@@ -87,17 +89,19 @@ export const backdrop = {
     opacity: 1,
     transition: { duration: durations.slow, ease: easeArrive },
   },
-  exit: { opacity: 0, transition: { duration: 0.15, ease: easeDepart } },
+  exit: { opacity: 0, transition: { duration: durations.hover, ease: easeDepart } },
 };
 
 export const mobileMenu = {
-  hidden: { x: "-100%" },
+  hidden: { opacity: 0, y: -8 },
   visible: {
-    x: 0,
+    opacity: 1,
+    y: 0,
     transition: { duration: durations.slow, ease: easeArrive },
   },
   exit: {
-    x: "-100%",
+    opacity: 0,
+    y: -8,
     transition: { duration: durations.slow, ease: easeDepart },
   },
 };
@@ -124,9 +128,22 @@ export const createStaggerItem = (reduced = false) => ({
     transition: {
       duration: reduced ? 0.1 : durations.reveal,
       ease: easeArrive,
-      delay: reduced ? 0 : Math.min(index * 0.05, 0.2),
+      delay: reduced ? 0 : Math.min(index * 0.1, 0.4),
     },
   }),
+});
+
+export const createReveal = (reduced = false, delay = 0) => ({
+  hidden: { opacity: 0, y: reduced ? 0 : 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: reduced ? 0.1 : durations.reveal,
+      ease: easeArrive,
+      delay: reduced ? 0 : delay,
+    },
+  },
 });
 
 export const createCardHover = (reduced = false) => ({

@@ -1,10 +1,21 @@
-import logo from "../assets/logo.webp";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import logo from "src/assets/logo.webp";
 
 export default function Footer() {
-  return (
-    <footer className="bg-footer text-white">
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
 
-      <div className="mx-auto max-w-7xl px-6 py-16">
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSubscribed(true);
+  };
+
+  return (
+    <footer className="mt-auto bg-footer text-white">
+
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
 
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
 
@@ -26,10 +37,9 @@ export default function Footer() {
             </div>
 
             <p className="mt-6 text-gray-300 leading-7">
-              Lorem Ipsum is simply dummy text of the
-              printing and typesetting industry. Lorem
-              Ipsum has been the industry's standard
-              dummy text.
+              EthianTech brings expert-led courses, interactive content,
+              and a supportive community together — learn the skills that
+              matter, anytime and anywhere.
             </p>
 
           </div>
@@ -41,17 +51,23 @@ export default function Footer() {
             </h3>
 
             <ul className="space-y-3 text-gray-300">
-
-              <li>Home</li>
-              <li>About us</li>
-              <li>Contact us</li>
-              <li>Privacy policy</li>
-
+              <li>
+                <Link to="/" className="transition hover:text-white">Home</Link>
+              </li>
+              <li>
+                <Link to="/about" className="transition hover:text-white">About us</Link>
+              </li>
+              <li>
+                <Link to="/contact" className="transition hover:text-white">Contact us</Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="transition hover:text-white">Privacy policy</Link>
+              </li>
             </ul>
 
           </div>
 
-          <div className="md:col-span-2 lg:col-span-1">
+          <div>
 
             <h3 className="font-semibold">
               Subscribe to our newsletter
@@ -62,18 +78,35 @@ export default function Footer() {
               sent to your inbox weekly.
             </p>
 
-            <div className="mt-6 flex">
-
-              <input
-                placeholder="Enter your email"
-                className="flex-1 rounded-lg border border-gray-700 bg-footer-input px-2 py-3 outline-none rounded-r-none"
-              />
-
-              <button className="btn-brand rounded-lg rounded-l-none px-2 py-3">
-                Subscribe
-              </button>
-
-            </div>
+            {subscribed ? (
+              <p
+                role="status"
+                className="mt-6 rounded-lg bg-white/10 px-4 py-3 text-sm text-white"
+              >
+                Thanks! You're subscribed.
+              </p>
+            ) : (
+              <form className="mt-6 flex" onSubmit={handleSubscribe}>
+                <label className="sr-only" htmlFor="footer-email">
+                  Email address
+                </label>
+                <input
+                  id="footer-email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="min-w-0 flex-1 rounded-lg border border-gray-700 bg-footer-input px-3 py-3 text-sm text-white outline-none transition placeholder:text-gray-400 focus:border-white rounded-r-none"
+                />
+                <button
+                  type="submit"
+                  className="btn-brand btn-brand-flat shrink-0 rounded-lg rounded-l-none px-4 py-3 text-sm"
+                >
+                  Subscribe
+                </button>
+              </form>
+            )}
 
           </div>
 
@@ -82,7 +115,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-gray-700 py-6 text-center text-sm text-gray-400">
-        Copyright © 2024 © Edemy. All Rights Reserved.
+        © 2026 EthianTech. All rights reserved.
       </div>
 
     </footer>

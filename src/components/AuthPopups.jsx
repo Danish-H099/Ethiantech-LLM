@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { m as Motion } from 'motion/react';
 import { X, Eye, EyeOff } from 'lucide-react';
-import { backdrop, modal } from '../lib/animationVariants';
+import { backdrop, modal } from 'src/lib/animationVariants';
 
 // Focus management for modal dialogs: move focus in on open, trap Tab, restore on close
 function useDialogFocus(onClose) {
@@ -148,7 +148,7 @@ export const LoginPopup = ({ onClose, onSwitchToSignup }) => {
                             </button>
                         </div>
 
-                        <button type="submit" className="btn-brand w-full rounded-lg px-4 py-2">
+                        <button type="submit" className="btn-brand btn-brand-flat w-full rounded-lg px-4 py-2">
                             Sign In
                         </button>
                     </form>
@@ -264,7 +264,7 @@ export const SignupPopup = ({ onClose, onSwitchToLogin }) => {
                             </div>
                         </div>
 
-                        <button type="submit" className="btn-brand mt-2 w-full rounded-lg px-4 py-2">
+                        <button type="submit" className="btn-brand btn-brand-flat mt-2 w-full rounded-lg px-4 py-2">
                             Create Account
                         </button>
                     </form>
