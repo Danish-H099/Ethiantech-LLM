@@ -1,8 +1,8 @@
 export const studentStats = [
-  { label: "Enrolled Courses", value: "6", change: "+2 this month", up: true },
-  { label: "Completed", value: "2", change: "33% rate", up: true },
-  { label: "Hours Learned", value: "47.5", change: "+5.2 this week", up: true },
-  { label: "Notes Written", value: "24", change: "+8 this week", up: true },
+  { label: "Enrolled Courses", value: "6", change: "+2 this month", up: true, iconName: "BookOpen" },
+  { label: "Completed", value: "2", change: "33% rate", up: true, iconName: "CheckCircle" },
+  { label: "Hours Learned", value: "47.5", change: "+5.2 this week", up: true, iconName: "Clock" },
+  { label: "Notes Written", value: "24", change: "+8 this week", up: true, iconName: "StickyNote" },
 ];
 
 export const learningActivity = [
@@ -160,4 +160,25 @@ export const recentNotes = [
   { id: 6, courseName: "Python for Data Science & Machine Learning", preview: "df.describe() for summary stats. df.groupby() for aggregation...", date: "Dec 22, 2024" },
   { id: 5, courseName: "React Router Complete Course in One Video", preview: "Use useParams hook to access route parameters...", date: "Dec 20, 2024" },
   { id: 4, courseName: "React Router Complete Course in One Video", preview: "Use Outlet for nested routing. Always define a parent route...", date: "Dec 18, 2024" },
+];
+
+/**
+ * Roster of students enrolled across courses. Consumed by tutor-facing
+ * pages (dashboard "Recent Enrollments" and the full "Students Enrolled"
+ * table). Distinct from the current learner's personal data above.
+ *
+ * @typedef {Object} EnrolledStudent
+ * @property {number} id
+ * @property {string} name
+ * @property {string} course Course title enrolled in.
+ * @property {string} date Enrollment date label.
+ */
+
+export const studentRoster = [
+  { id: 1, name: "Richard Sanford", course: "React Router Complete Course in One Video", date: "22 Aug, 2024" },
+  { id: 2, name: "Alison Powell", course: "Build AI BG Removal SaaS App in React JS", date: "22 Aug, 2024" },
+  { id: 3, name: "Alison Powell", course: "React Router Complete Course in One Video", date: "25 Sep, 2024" },
+  { id: 4, name: "Richard Sanford", course: "Build Full Stack E-Commerce App in React JS", date: "15 Oct, 2024" },
+  { id: 5, name: "Enrique Murphy", course: "Build AI BG Removal SaaS App in React JS", date: "22 Aug, 2024" },
+  { id: 6, name: "Richard Sanford", course: "Build Text to Image SaaS App in React JS", date: "25 Sep, 2024" },
 ];
