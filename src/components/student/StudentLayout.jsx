@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -7,8 +7,9 @@ import {
   Heart,
   BarChart3,
 } from "lucide-react";
-import StudentNavbar from "./StudentNavbar";
-import Footer from "../Footer";
+import StudentNavbar from "src/components/student/StudentNavbar";
+import Footer from "src/components/Footer";
+import RouteLoader from "src/components/RouteLoader";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/student/dashboard" },
@@ -22,7 +23,7 @@ export default function StudentLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface font-outfit">
+    <div data-role="student" className="flex min-h-screen flex-col bg-surface font-outfit">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
@@ -41,7 +42,7 @@ export default function StudentLayout() {
 
       <div className="flex h-screen">
         <aside
-          className={`fixed inset-y-0 left-0 z-50 flex w-[251px] flex-col border-r border-gray-300 bg-white transition-transform duration-200 lg:static lg:h-full lg:overflow-y-auto lg:translate-x-0 ${
+          className={`scrollbar-brand fixed inset-y-0 left-0 z-50 flex w-[251px] flex-col border-r border-gray-300 bg-white transition-transform duration-200 lg:static lg:h-full lg:overflow-y-auto lg:translate-x-0 ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -81,8 +82,10 @@ export default function StudentLayout() {
         <div className="flex flex-1 flex-col">
           <StudentNavbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-          <main id="main" className="flex-1 overflow-auto bg-surface p-6 lg:p-8">
-            <Outlet />
+          <main id="main" className="scrollbar-brand flex-1 overflow-auto bg-surface p-6 lg:p-8">
+            <Suspense fallback={<RouteLoader />}>
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </div>
