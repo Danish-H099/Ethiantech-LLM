@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.3.7",
     "@tailwindcss/vite": "^4.1.18",
     "lucide-react": "^1.21.0",
     "motion": "^13.0.0",
@@ -19,7 +20,7 @@
     "recharts": "^3.10.0"
   },
   "devDependencies": {
-    "@axe-core/cli": "^4.12.1",
+    "@axe-core/cli": "^4.13.0",
     "@eslint/js": "^9.39.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
