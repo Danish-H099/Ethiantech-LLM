@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { Suspense, useState } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -8,8 +8,9 @@ import {
   BookOpen,
   Users,
 } from "lucide-react";
-import AdminNavbar from "./AdminNavbar";
-import Footer from "../Footer";
+import AdminNavbar from "src/components/admin/AdminNavbar";
+import Footer from "src/components/Footer";
+import RouteLoader from "src/components/RouteLoader";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
@@ -24,25 +25,34 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F8F8FB] font-outfit">
+    <div data-role="admin" className="flex min-h-screen flex-col bg-surface font-outfit">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+      >
+        Skip to main content
+      </a>
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+        <button
+          type="button"
+          aria-label="Close menu"
+          tabIndex={-1}
+          className="fixed inset-0 z-40 cursor-default bg-black/30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       <div className="flex h-screen">
         <aside
-          className={`fixed inset-y-0 left-0 z-50 flex w-[251px] flex-col border-r border-gray-300 bg-white transition-transform duration-200 lg:static lg:h-full lg:overflow-y-auto lg:translate-x-0 ${
+          className={`scrollbar-brand fixed inset-y-0 left-0 z-50 flex w-[251px] flex-col border-r border-gray-300 bg-white transition-transform duration-200 lg:static lg:h-full lg:overflow-y-auto lg:translate-x-0 ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           <div className="flex items-center gap-3 px-6 py-5">
-            <span className="text-[24px] font-semibold text-[#0E0E0E]">
+            <span className="text-2xl font-semibold text-ink">
               EthianTech
             </span>
-            <span className="rounded bg-[#D62A91] px-2 py-0.5 text-[11px] font-bold uppercase text-white">
+            <span className="rounded bg-accent-admin px-2 py-0.5 text-11 font-bold uppercase text-white">
               Admin
             </span>
           </div>
@@ -56,10 +66,10 @@ export default function AdminLayout() {
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 rounded px-3 py-2.5 text-[16px] transition-colors ${
+                    `flex items-center gap-3 rounded px-3 py-2.5 text-base transition-colors ${
                       isActive
-                        ? "border-l-[3px] border-[#D62A91] bg-[#FDF2F8] pl-[9px] font-medium text-[#D62A91]"
-                        : "border-l-[3px] border-transparent text-[#252525] hover:bg-gray-50"
+                        ? "border-l-[3px] border-accent-admin bg-tint-admin pl-[9px] font-medium text-accent-admin"
+                        : "border-l-[3px] border-transparent text-ink hover:bg-gray-50"
                     }`
                   }
                 >
@@ -74,8 +84,10 @@ export default function AdminLayout() {
         <div className="flex flex-1 flex-col">
           <AdminNavbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-          <main className="flex-1 overflow-auto bg-[#F8F8FB] p-6 lg:p-8">
-            <Outlet />
+          <main id="main" className="scrollbar-brand flex-1 overflow-auto bg-surface p-6 lg:p-8">
+            <Suspense fallback={<RouteLoader />}>
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </div>

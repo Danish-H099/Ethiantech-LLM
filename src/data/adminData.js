@@ -1,8 +1,8 @@
 export const statCards = [
-  { label: "Total Revenue", value: "$128,430", change: "+12.5%", up: true },
-  { label: "Total Students", value: "18,750", change: "+8.2%", up: true },
-  { label: "Active Courses", value: "12", change: "+2", up: true },
-  { label: "New Enrollments", value: "342", change: "+15.3%", up: true },
+  { label: "Total Revenue", value: "$128,430", change: "+12.5%", up: true, iconName: "TrendingUp" },
+  { label: "Total Students", value: "18,750", change: "+8.2%", up: true, iconName: "Users" },
+  { label: "Active Courses", value: "12", change: "+2", up: true, iconName: "BookOpen" },
+  { label: "New Enrollments", value: "342", change: "+15.3%", up: true, iconName: "UserPlus" },
 ];
 
 export const monthlyRevenue = [
