@@ -213,24 +213,30 @@ function TestimonialsSection({ staggerItem }) {
   );
 }
 
-function CTASection({ onGetStarted }) {
+function CTASection({ onGetStarted, staggerItem }) {
   return (
     <section className="bg-tint-pink py-28 text-center">
       <Motion.div
-        variants={fadeUp}
+        variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={viewportOnce}
         className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8"
       >
-        <h2 className="page-title">Start Building Real Skills Today</h2>
+        <Motion.h2 variants={staggerItem} custom={0} className="page-title">
+          Start Building Real Skills Today
+        </Motion.h2>
 
-        <p className="mx-auto mt-6 max-w-2xl text-body-fluid leading-7 text-ink-muted">
+        <Motion.p
+          variants={staggerItem}
+          custom={1}
+          className="mx-auto mt-6 max-w-2xl text-body-fluid leading-7 text-ink-muted"
+        >
           Join thousands of learners mastering in-demand skills with expert-led courses —
           start free today.
-        </p>
+        </Motion.p>
 
-        <div className="mt-10 flex justify-center gap-5">
+        <Motion.div variants={staggerItem} custom={2} className="mt-10 flex justify-center gap-5">
           <Motion.button
             variants={buttonPress}
             whileHover="hover"
@@ -240,7 +246,7 @@ function CTASection({ onGetStarted }) {
           >
             Get started
           </Motion.button>
-        </div>
+        </Motion.div>
       </Motion.div>
     </section>
   );
@@ -326,7 +332,7 @@ export default function HomePage() {
         <StatsBar stats={stats} staggerItem={staggerItem} />
         <FeaturedCoursesSection staggerItem={staggerItem} />
         <TestimonialsSection staggerItem={staggerItem} />
-        <CTASection onGetStarted={() => setPopupState("signup")} />
+        <CTASection onGetStarted={() => setPopupState("signup")} staggerItem={staggerItem} />
         <EducatorsSection staggerItem={staggerItem} />
       </main>
       <Footer />
