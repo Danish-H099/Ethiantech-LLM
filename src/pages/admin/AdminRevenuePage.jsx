@@ -12,8 +12,9 @@ import {
 } from "recharts";
 import { TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { m as Motion, useReducedMotion } from "motion/react";
-import { monthlyRevenue, revenueByCategory } from "src/data/adminData";
+import { getMonthlyRevenue, getRevenueByCategory } from "src/data/adminData";
 import { CHART_PINK } from "src/data/chartColors";
+import { GRID_STROKE, TICK_FILL, TOOLTIP_STYLE, GRID_DEFAULTS } from "src/data/ChartDefaults";
 import { fadeIn, viewportOnce, createStaggerItem } from "src/lib/animationVariants";
 
 const summaryCards = [
@@ -29,14 +30,14 @@ export default function AdminRevenuePage() {
     () => createStaggerItem(!!shouldReduceMotion),
     [shouldReduceMotion]
   );
+  const monthlyRevenue = getMonthlyRevenue();
+  const revenueByCategory = getRevenueByCategory();
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="page-title">Revenue</h1>
-        <p className="mt-1 text-md text-ink-muted">
-          Track your platform revenue and financial performance
-        </p>
+        <p className="mt-1 text-sm-fluid text-ink-muted">Track your platform revenue and financial performance</p>
       </div>
 
       <div className="mb-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
@@ -51,19 +52,17 @@ export default function AdminRevenuePage() {
             className="card p-5"
           >
             <div className="flex items-center justify-between">
-              <p className="text-sm text-ink-muted">{card.label}</p>
+              <p className="text-sm-fluid text-ink-muted">{card.label}</p>
               <span
-                className="flex items-center gap-0.5 text-13 font-medium"
-                style={{ color: card.up ? "#16A34A" : "#DC2626" }}
+                className="flex items-center gap-0.5 text-sm-fluid font-medium"
+                style={{ color: card.up ? "var(--color-success)" : "var(--color-error)" }}
               >
                 {card.up ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
                 {card.change}
               </span>
             </div>
-            <p className="mt-2 text-26 font-semibold text-ink">
-              {card.value}
-            </p>
-            <p className="mt-0.5 text-13 text-ink-muted/70">{card.sub}</p>
+            <p className="mt-2 text-metric font-semibold text-ink">{card.value}</p>
+            <p className="mt-0.5 text-sm-fluid text-ink-muted/70">{card.sub}</p>
           </Motion.div>
         ))}
       </div>
@@ -78,9 +77,7 @@ export default function AdminRevenuePage() {
         >
           <div className="mb-6 flex items-center gap-2">
             <TrendingUp size={18} className="text-brand" />
-            <h2 className="text-lg font-semibold text-ink">
-              Monthly Revenue
-            </h2>
+            <h2 className="text-body-lg font-semibold text-ink">Monthly Revenue</h2>
           </div>
           <ResponsiveContainer width="100%" height={320}>
             <AreaChart data={monthlyRevenue}>
@@ -90,26 +87,21 @@ export default function AdminRevenuePage() {
                   <stop offset="95%" stopColor={CHART_PINK} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <CartesianGrid strokeDasharray={GRID_DEFAULTS.strokeDasharray} stroke={GRID_STROKE} />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 13, fill: "#494949" }}
-                axisLine={{ stroke: "#E5E7EB" }}
+                tick={{ fontSize: 13, fill: TICK_FILL }}
+                axisLine={{ stroke: GRID_STROKE }}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 13, fill: "#494949" }}
+                tick={{ fontSize: 13, fill: TICK_FILL }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
               />
               <Tooltip
-                contentStyle={{
-                  borderRadius: 8,
-                  border: "1px solid #E5E7EB",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                  fontSize: 14,
-                }}
+                contentStyle={TOOLTIP_STYLE}
                 formatter={(value) => [`$${value.toLocaleString()}`, "Revenue"]}
               />
               <Area
@@ -131,15 +123,13 @@ export default function AdminRevenuePage() {
           viewport={viewportOnce}
           className="card p-6"
         >
-          <h2 className="mb-6 text-lg font-semibold text-ink">
-            Revenue by Category
-          </h2>
+          <h2 className="mb-6 text-body-lg font-semibold text-ink">Revenue by Category</h2>
           <ResponsiveContainer width="100%" height={320}>
             <BarChart data={revenueByCategory} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
+              <CartesianGrid strokeDasharray={GRID_DEFAULTS.strokeDasharray} stroke={GRID_STROKE} horizontal={false} />
               <XAxis
                 type="number"
-                tick={{ fontSize: 12, fill: "#494949" }}
+                tick={{ fontSize: 12, fill: TICK_FILL }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
@@ -147,18 +137,13 @@ export default function AdminRevenuePage() {
               <YAxis
                 type="category"
                 dataKey="category"
-                tick={{ fontSize: 13, fill: "#494949" }}
+                tick={{ fontSize: 13, fill: TICK_FILL }}
                 axisLine={false}
                 tickLine={false}
                 width={80}
               />
               <Tooltip
-                contentStyle={{
-                  borderRadius: 8,
-                  border: "1px solid #E5E7EB",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                  fontSize: 14,
-                }}
+                contentStyle={TOOLTIP_STYLE}
                 formatter={(value) => [`$${value.toLocaleString()}`, "Revenue"]}
               />
               <Bar dataKey="revenue" fill={CHART_PINK} radius={[0, 6, 6, 0]} barSize={24} animationDuration={600} />
