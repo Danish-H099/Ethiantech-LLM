@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { m as Motion, useReducedMotion } from "motion/react";
 import { createCardHover } from "src/lib/animationVariants";
+import { avatarFallback } from "src/lib/assets";
 import Stars from "src/components/Stars";
 
 export default function TestimonialCard({ item, isExpanded, onToggle, quoteId }) {
@@ -13,29 +14,30 @@ export default function TestimonialCard({ item, isExpanded, onToggle, quoteId })
       initial="rest"
       whileHover="hover"
       whileTap="tap"
-      className="card card-hover"
+      className="card"
     >
-      <div className="flex items-center gap-4 border-b border-border p-5">
+      <div className="flex items-center gap-4 p-5">
         <img
           src={item.image}
           loading="lazy"
-          className="h-12 w-12 rounded-full object-cover"
+          className="h-14 w-14 rounded-full object-cover"
           alt={item.name}
+          onError={avatarFallback}
         />
         <div>
-          <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-sm text-ink-muted">{item.role}</p>
+          <h3 className="text-body-lg font-semibold text-ink">{item.name}</h3>
+          <p className="text-sm-fluid text-ink-muted">{item.role}</p>
         </div>
       </div>
 
-      <div className="p-5">
-        <div className="mb-3">
-          <Stars rating={item.rating} />
+      <div className="px-5 pb-5">
+        <div className="mb-3 flex items-center gap-1">
+          <Stars rating={item.rating} size={16} />
         </div>
 
         <p
           id={quoteId}
-          className={`text-base leading-7 text-ink-muted ${
+          className={`text-body text-ink-muted ${
             isExpanded ? "" : "line-clamp-4"
           }`}
         >
@@ -46,7 +48,7 @@ export default function TestimonialCard({ item, isExpanded, onToggle, quoteId })
           onClick={onToggle}
           aria-expanded={isExpanded}
           aria-controls={quoteId}
-          className="mt-6 text-sm font-medium text-brand-strong hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          className="mt-6 text-sm-fluid font-medium text-brand-strong hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
         >
           {isExpanded ? "Show less" : "Read more"}
         </button>

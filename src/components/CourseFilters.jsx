@@ -1,4 +1,4 @@
-﻿/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable react-refresh/only-export-components */
 import { useState } from "react";
 import { AnimatePresence, m as Motion, useReducedMotion } from "motion/react";
 import {
@@ -21,8 +21,6 @@ const WEEKS_PER_UNIT = {
   month: 4.33,
   year: 52,
 };
-
-/** Normalize a course's `duration` ("8 weeks", "6 months", "3 years") into weeks. */
 export const durationToWeeks = (duration) => {
   const match = /(\d+(?:\.\d+)?)\s*(hours?|weeks?|months?|years?)/i.exec(
     String(duration)
@@ -32,8 +30,6 @@ export const durationToWeeks = (duration) => {
   const unit = match[2].toLowerCase().replace(/s$/, "");
   return value * (WEEKS_PER_UNIT[unit] ?? 1);
 };
-
-/** Duration buckets as ascending week-ceilings; the first match wins. */
 const WEEK_BOUNDS = [
   { id: "1-4-weeks", label: "1\u20134 Weeks", max: 4 },
   { id: "1-3-months", label: "1\u20133 Months", max: 13 },
@@ -59,8 +55,6 @@ export const PRICE_OPTIONS = [
   { id: "free", label: "Free" },
   { id: "paid", label: "Paid" },
 ];
-
-/** Canonical course types, in display order (subset present in the catalog). */
 export const COURSE_TYPES = [
   "Professional Course",
   "Bootcamp",
@@ -454,15 +448,13 @@ export default function FilterPanel({
         type="button"
         onClick={onClearAll}
         disabled={!isDraftDirty && !hasActiveFilters}
-        className="mt-3 block w-full text-center text-13 font-medium text-brand-strong transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-3 block w-full text-center text-sm-fluid font-medium text-brand-strong transition hover:underline disabled:cursor-not-allowed disabled:opacity-40"
       >
         Clear all
       </button>
     </div>
   );
 }
-
-/** Single filter panel: stacked card on mobile, sticky sidebar on desktop. */
 export function CourseFilterPanels({
   open,
   facets,
