@@ -1,16 +1,18 @@
-import { User, Star } from "lucide-react";
+import { User } from "lucide-react";
 import { m as Motion } from "motion/react";
-import { instructors } from "src/data/adminData";
+import { getInstructors } from "src/data/adminData";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
+import Stars from "src/components/Stars";
 
 export default function AdminInstructorsPage() {
+  const instructors = getInstructors();
   return (
     <div>
       <div className="mb-8">
         <h1 className="page-title">
           Instructors
         </h1>
-        <p className="mt-1 text-md text-ink-muted">
+        <p className="mt-1 text-sm-fluid text-ink-muted">
           Manage and view all instructors on the platform
         </p>
       </div>
@@ -33,14 +35,8 @@ export default function AdminInstructorsPage() {
             </tr>
           </thead>
           <tbody>
-            {instructors.map((inst, index) => (
-              <tr
-                key={inst.id}
-                style={{
-                  backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
-                }}
-                className="table-row"
-              >
+            {instructors.map((inst) => (
+              <tr key={inst.id} className="table-row odd:bg-surface-soft">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
                     <div className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-brand/10">
@@ -54,9 +50,9 @@ export default function AdminInstructorsPage() {
                 <td className="px-5 py-4">{inst.courses}</td>
                 <td className="px-5 py-4">{inst.students.toLocaleString()}</td>
                 <td className="px-5 py-4">
-                  <div className="flex items-center gap-1.5">
-                    <Star size={14} className="fill-amber-500 text-amber-500" />
+                  <div className="flex items-center gap-2">
                     <span className="text-ink">{inst.rating}</span>
+                    <Stars rating={inst.rating} />
                   </div>
                 </td>
                 <td className="px-5 py-4 text-right font-medium text-ink">

@@ -1,35 +1,140 @@
-import { useMemo } from "react";
-import { User } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { m as Motion, useReducedMotion } from "motion/react";
 import {
-  AreaChart,
-  Area,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
-import {
-  CheckCircle,
-  Clock,
-  StickyNote,
+  BarChart3,
+  CalendarClock,
+  Flame,
+  GraduationCap,
+  PlayCircle,
+  Sparkles,
 } from "lucide-react";
-import { getIcon } from "src/components/IconMap";
-import {
-  studentStats,
-  learningActivity,
-  completionStatus,
-  recentNotes,
-} from "src/data/studentData";
-import { CHART_ACCENTS, CHART_PINK } from "src/data/chartColors";
-import { fadeIn, fadeUp, viewportOnce, createStaggerItem } from "src/lib/animationVariants";
+import { Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
 
-export default function StudentDashboardPage() {
+import ProgressRing from "src/components/ProgressRing";
+import { getIcon } from "src/components/IconMap";
+import StudentEmptyState from "src/components/student/StudentEmptyState";
+import Stars from "src/components/Stars";
+import { hideOnError } from "src/lib/assets";
+
+import { CHART_ACCENTS } from "src/data/chartColors";
+import {
+  enrollInCourse,
+  getEnrolledCourses,
+  getLearningActivity,
+  getRecommendedCourses,
+  getStreak,
+  getStudentProfile,
+  getUpcomingDeadlines,
+  TASK_ACTION_LABEL,
+  TASK_STATUS_LABEL,
+} from "src/data/studentRepository";
+
+import {
+  createStaggerItem,
+  easeArrive,
+  fadeIn,
+  fadeUp,
+  viewportOnce,
+} from "src/lib/animationVariants";
+import { courseImageUrl, formatDueLabel } from "src/lib/format";
+import {
+  DEFAULT_LESSON_ICON,
+  DEFAULT_LESSON_TYPE_LABEL,
+  LESSON_TYPE_ICONS,
+  LESSON_TYPE_LABELS,
+} from "src/lib/lessonTypes";
+
+const RECOMMENDATION_COUNT = 4;
+const DEADLINE_POOL_SIZE = 10;
+const CATEGORY_LIMIT = 5;
+const SWIPER_SPEED_MS = 300;
+
+/**
+ * Lesson-weighted average progress across enrolled courses, so a 40-lesson
+ * course counts more than a 10-lesson one.
+ */
+function lessonWeightedProgress(courses) {
+  const totalLessons = courses.reduce((sum, c) => sum + (c.totalLessons || 0), 0);
+  if (totalLessons === 0) return 0;
+  const weighted = courses.reduce(
+    (sum, c) => sum + (c.progress || 0) * (c.totalLessons || 0),
+    0
+  );
+  return Math.round(weighted / totalLessons);
+}
+
+/**
+ * Group enrolled courses by catalog category and average progress
+ * lesson-weighted within each. Colors come from CHART_ACCENTS — one accent
+ * per category, assigned after ranking so they stay unique on screen.
+ */
+function buildCategoryBreakdown(courses) {
+  const byCategory = new Map();
+  courses.forEach((c) => {
+    const name = c.category || "General";
+    const agg = byCategory.get(name) || { lessons: 0, weighted: 0 };
+    agg.lessons += c.totalLessons || 0;
+    agg.weighted += (c.progress || 0) * (c.totalLessons || 0);
+    byCategory.set(name, agg);
+  });
+  return [...byCategory.entries()]
+    .map(([name, agg]) => ({
+      name,
+      progress: agg.lessons === 0 ? 0 : Math.round(agg.weighted / agg.lessons),
+    }))
+    .sort((a, b) => b.progress - a.progress)
+    .slice(0, CATEGORY_LIMIT)
+    .map((entry, i) => ({
+      ...entry,
+      color: CHART_ACCENTS[i % CHART_ACCENTS.length],
+    }));
+}
+
+/**
+ * Shared responsive <img>: context-sized srcSet via courseImageUrl, skeleton
+ * shimmer while loading, static surface on error, and a guard for images that
+ * finish from cache before onLoad attaches.
+ */
+function CourseImage({ image, sizes, widths = [400, 800, 1200], eager = false }) {
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const srcSet = widths.map((w) => `${courseImageUrl(image, w)} ${w}w`).join(", ");
+
+  // Cached images may already be complete when the node attaches, in which
+  // case onLoad never fires — settle the status during commit instead.
+  const attachImg = (node) => {
+    if (!node?.complete) return;
+    if (node.naturalWidth > 0) setLoaded(true);
+    else setFailed(true);
+  };
+
+  return (
+    <>
+      {!loaded && !failed && <div className="absolute inset-0 animate-pulse bg-surface" aria-hidden="true" />}
+      {failed && <div className="absolute inset-0 bg-surface" aria-hidden="true" />}
+      <img
+        ref={attachImg}
+        src={courseImageUrl(image, widths.at(-1))}
+        srcSet={srcSet}
+        sizes={sizes}
+        alt=""
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        fetchPriority={eager ? "high" : undefined}
+        onError={() => setFailed(true)}
+        onLoad={() => setLoaded(true)}
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+      />
+    </>
+  );
+}
+
+/** Zone 2 stat pills — fluid flex-wrap row that wraps naturally as space runs out. */
+function StatPills({ stats }) {
   const shouldReduceMotion = useReducedMotion();
   const staggerItem = useMemo(
     () => createStaggerItem(!!shouldReduceMotion),
@@ -37,223 +142,476 @@ export default function StudentDashboardPage() {
   );
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="page-title">
-          Student Dashboard
-        </h1>
-        <p className="mt-1 text-md text-ink-muted">
-          Track your learning progress and manage your courses
-        </p>
+    <Motion.div
+      variants={fadeIn}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewportOnce}
+      className="mb-8 flex flex-wrap gap-4"
+    >
+      {stats.map((stat, i) => {
+        const Icon = getIcon(stat.iconName);
+        return (
+          <Motion.div key={stat.label} variants={staggerItem} custom={i} className="min-w-[150px] flex-1">
+            <div className="flex h-full items-center gap-3 rounded-xl border border-border bg-white px-4 py-3 shadow-sm">
+              <div
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                style={{ backgroundColor: `${stat.accent}15` }}
+              >
+                <Icon size={16} style={{ color: stat.accent }} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm-fluid font-medium text-ink-muted">{stat.label}</p>
+                <p className="text-metric font-semibold leading-tight text-ink">{stat.value}</p>
+                {stat.sub &&
+                  (stat.subBadge ? (
+                    <span className="mt-0.5 inline-flex w-fit items-center rounded-full bg-success-soft px-2 py-0.5 text-sm-fluid font-medium text-success">
+                      {stat.sub}
+                    </span>
+                  ) : (
+                    <p className="truncate text-sm-fluid text-ink-muted">{stat.sub}</p>
+                  ))}
+              </div>
+            </div>
+          </Motion.div>
+        );
+      })}
+    </Motion.div>
+  );
+}
+
+/** Zone 2 — learning streak badge; hidden when there is no live streak. */
+function StreakBadge({ streak }) {
+  const shouldReduceMotion = useReducedMotion();
+  if (!streak || streak.current <= 0) return null;
+
+  return (
+    <Motion.span
+      initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.35, ease: easeArrive }}
+      className="inline-flex items-center gap-1.5 rounded-full bg-tint-student px-3 py-1 text-sm-fluid font-medium text-brand-strong"
+      title={`Longest streak: ${streak.longest} ${streak.longest === 1 ? "day" : "days"}`}
+    >
+      <Flame size={14} className="text-brand" aria-hidden="true" />
+      {streak.current} {streak.current === 1 ? "day" : "days"} streak
+    </Motion.span>
+  );
+}
+
+/**
+ * Zone 2 — the learner's headline metric: overall course progress as a large
+ * ring with the percentage centered and a label below.
+ */
+function OverallProgressRing({ progress, label = "Overall Progress", sub }) {
+  const clamped = Math.min(Math.max(progress ?? 0, 0), 100);
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 py-2" role="img" aria-label={`${label}: ${clamped}%`}>
+      <div className="relative">
+        <ProgressRing progress={clamped} size={160} stroke={12} />
+        <span className="absolute inset-0 flex items-center justify-center text-metric font-semibold leading-none text-ink">
+          {clamped}%
+        </span>
+      </div>
+      <div className="text-center">
+        <p className="text-sm-fluid font-medium text-ink">{label}</p>
+        {sub && <p className="mt-0.5 text-sm-fluid text-ink-muted">{sub}</p>}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Zone 2 — per-category micro progress bars. One accent color per category,
+ * thin 8px bars, percentage right-aligned. Caps the list and hands off to the
+ * Performance page for detail.
+ */
+function CategoryProgressBars({ categories, max = CATEGORY_LIMIT }) {
+  if (!categories?.length) return null;
+
+  return (
+    <div className="flex flex-col">
+      <ul className="flex flex-col gap-4">
+        {categories.slice(0, max).map((category) => (
+          <li key={category.name}>
+            <div className="mb-1.5 flex items-center justify-between gap-3">
+              <span className="truncate text-sm-fluid text-ink">{category.name}</span>
+              <span className="shrink-0 text-sm-fluid font-medium text-ink-muted">{category.progress}%</span>
+            </div>
+            <div
+              role="progressbar"
+              aria-label={`${category.name}: ${category.progress}% complete`}
+              aria-valuenow={category.progress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              className="h-2 overflow-hidden rounded-full bg-surface"
+            >
+              <div
+                className="h-full rounded-full"
+                style={{ width: `${category.progress}%`, backgroundColor: category.color }}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+      {categories.length > max && (
+        <Link to="/student/performance" className="link mt-4 self-end text-sm-fluid">
+          View All
+        </Link>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Zone 3 — upcoming schedule grouped by course: each enrolled course appears
+ * once with its soonest-due task, due badge, status badge, and a status-aware
+ * CTA into the player.
+ */
+function UpcomingSchedule({ deadlines, maxGroups = 3 }) {
+  const byCourse = new Map();
+  (deadlines || []).forEach((task) => {
+    if (!byCourse.has(task.courseId)) {
+      byCourse.set(task.courseId, {
+        courseId: task.courseId,
+        courseTitle: task.courseTitle,
+        courseImage: task.courseImage,
+        tasks: [],
+      });
+    }
+    byCourse.get(task.courseId).tasks.push(task);
+  });
+  const visibleGroups = [...byCourse.values()].slice(0, maxGroups);
+
+  return (
+    <Motion.section variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewportOnce} className="mb-8" aria-label="Upcoming schedule">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <CalendarClock size={18} className="text-brand" />
+          <h2 className="text-body-lg font-semibold text-ink">Upcoming Schedule</h2>
+        </div>
+        {visibleGroups.length > 0 && (
+          <Link to="/student/tasks" className="link shrink-0 text-sm-fluid">
+            View All Deadlines
+          </Link>
+        )}
       </div>
 
-      {/* Stat Cards */}
-      <Motion.div
-        variants={fadeIn}
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportOnce}
-        className="mb-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4"
-      >
-        {studentStats.map((card, i) => {
-          const Icon = getIcon(card.iconName);
-          const accent = CHART_ACCENTS[i];
-          return (
-            <Motion.div
-              key={card.label}
-              variants={staggerItem}
-              custom={i}
-            >
-              <div className="card p-6">
-                <div className="mb-4 flex items-center justify-between">
-                  <div
-                    className="flex h-11 w-11 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${accent}15` }}
-                  >
-                    <Icon size={22} style={{ color: accent }} />
-                  </div>
-                  <span
-                    className="rounded-full px-2.5 py-1 text-13 font-medium"
-                    style={{
-                      backgroundColor: card.up ? "#DCFCE7" : "#FEE2E2",
-                      color: card.up ? "#16A34A" : "#DC2626",
-                    }}
-                  >
-                    {card.change}
-                  </span>
+      {visibleGroups.length === 0 ? (
+        <div className="card p-6 text-sm-fluid text-ink-muted">
+          All caught up — no upcoming deadlines right now.
+        </div>
+      ) : (
+        <ul className="card divide-y divide-border">
+          {visibleGroups.map((group) => {
+            const next = group.tasks[0];
+            const due = formatDueLabel(next.dueDate);
+            const statusLabel = TASK_STATUS_LABEL[next.status] ?? TASK_STATUS_LABEL["not-started"];
+            const actionLabel = TASK_ACTION_LABEL[next.status] ?? "Start";
+            return (
+              <li key={group.courseId} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
+                <img src={courseImageUrl(group.courseImage, 160)} alt="" loading="lazy" decoding="async" onError={hideOnError} className="h-12 w-16 shrink-0 rounded bg-surface object-cover" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm-fluid font-medium text-ink">{group.courseTitle}</p>
+                  <p className="mt-0.5 truncate text-sm-fluid text-ink-muted">{next.title}</p>
                 </div>
-                <p className="text-sm text-ink-muted">{card.label}</p>
-                <p className="mt-1 page-title">
-                  {card.value}
-                </p>
-              </div>
-            </Motion.div>
-          );
-        })}
-      </Motion.div>
-
-      {/* Charts Row */}
-      <Motion.div
-        variants={fadeIn}
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportOnce}
-        className="mb-8 grid gap-6 xl:grid-cols-2"
-      >
-        {/* Learning Activity */}
-        <Motion.div variants={fadeUp}>
-          <div className="card p-6">
-            <div className="mb-6 flex items-center gap-2">
-              <Clock size={18} className="text-brand" />
-              <h2 className="text-lg font-semibold text-ink">
-                Learning Activity
-              </h2>
-            </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <AreaChart data={learningActivity}>
-                <defs>
-                  <linearGradient id="learningGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={CHART_PINK} stopOpacity={0.2} />
-                    <stop offset="95%" stopColor={CHART_PINK} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                <XAxis
-                  dataKey="week"
-                  tick={{ fontSize: 13, fill: "#494949" }}
-                  axisLine={{ stroke: "#E5E7EB" }}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fontSize: 13, fill: "#494949" }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(v) => `${v}h`}
-                />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: 8,
-                    border: "1px solid #E5E7EB",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                    fontSize: 14,
-                  }}
-                  formatter={(value) => [`${value}h`, "Hours"]}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="hours"
-                  stroke={CHART_PINK}
-                  strokeWidth={2.5}
-                  fill="url(#learningGrad)"
-                  animationDuration={600}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </Motion.div>
-
-        {/* Course Completion */}
-        <Motion.div variants={fadeUp}>
-          <div className="card p-6">
-            <div className="mb-6 flex items-center gap-2">
-              <CheckCircle size={18} className="text-emerald-500" />
-              <h2 className="text-lg font-semibold text-ink">
-                Course Completion
-              </h2>
-            </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie
-                  data={completionStatus}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={70}
-                  outerRadius={110}
-                  paddingAngle={4}
-                  dataKey="value"
-                  stroke="none"
-                  animationDuration={600}
+                {!due.overdue && (
+                  <span className={`badge badge-status-${next.status} hidden shrink-0 sm:inline-flex`}>
+                    {statusLabel}
+                  </span>
+                )}
+                <span
+                  className={`badge shrink-0 ${due.overdue ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}
+                  aria-label={`Due: ${due.text}`}
                 >
-                  {completionStatus.map((entry, index) => (
-                    <Cell key={index} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: 8,
-                    border: "1px solid #E5E7EB",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                    fontSize: 14,
-                  }}
-                  formatter={(value) => [value, "Courses"]}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  iconType="circle"
-                  iconSize={10}
-                  formatter={(value) => (
-                    <span className="text-13 text-ink-muted">{value}</span>
-                  )}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </Motion.div>
-      </Motion.div>
+                  {due.text}
+                </span>
+                <Link to={next.resumeUrl} aria-label={`${actionLabel} ${next.title}`} className="btn-brand shrink-0 px-4 py-2 text-sm-fluid">
+                  {actionLabel}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Motion.section>
+  );
+}
 
-      {/* Recent Notes */}
-      <Motion.div
-        variants={fadeUp}
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportOnce}
-      >
-        <div className="card p-6">
-          <div className="mb-6 flex items-center gap-2">
-            <StickyNote size={18} className="text-amber-500" />
-            <h2 className="text-lg font-semibold text-ink">
-              Recent Notes
-            </h2>
-          </div>
-          <div className="overflow-x-auto scrollbar-brand">
-            <table className="w-full min-w-[500px] border-collapse">
-              <thead>
-                <tr className="table-header">
-                  <th className="px-5 py-3 font-medium">Course</th>
-                  <th className="px-5 py-3 font-medium">Note</th>
-                  <th className="px-5 py-3 font-medium">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentNotes.map((note, index) => (
-                  <tr
-                    key={note.id}
-                    style={{
-                      backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
-                    }}
-                    className="table-row"
-                  >
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full bg-brand/10">
-                          <User size={14} className="text-brand" />
-                        </div>
-                        <span className="whitespace-nowrap font-medium text-ink">
-                          {note.courseName}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span className="line-clamp-1">{note.preview}</span>
-                    </td>
-                    <td className="whitespace-nowrap px-5 py-3.5">{note.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+/**
+ * Zone 1 — Continue Learning hero: the most recently accessed in-progress
+ * course above the fold, with an empty-state fallback when nothing is in
+ * flight. Owns the resume-context derivation (icon, type label, deep link)
+ * since nothing else consumes it.
+ */
+function ContinueLearningSection({ course }) {
+  if (!course) {
+    return (
+      <section className="card mb-8 px-4 py-12">
+        <StudentEmptyState
+          icon={PlayCircle}
+          title="No courses in progress"
+          description="Pick a course back up from My Courses, or find something new in the catalog."
+          action={{ label: "Browse Catalog", to: "/courses" }}
+        />
+      </section>
+    );
+  }
+
+  const ResumeIcon = LESSON_TYPE_ICONS[course.resumeType] ?? DEFAULT_LESSON_ICON;
+  const resumeTypeLabel = LESSON_TYPE_LABELS[course.resumeType] ?? DEFAULT_LESSON_TYPE_LABEL;
+  const resumeUrl = course.resumeLessonId
+    ? `/student/course/${course.id}/play?lessonId=${course.resumeLessonId}`
+    : `/student/course/${course.id}`;
+  const completedLessons =
+    course.totalLessons > 0
+      ? Math.round((course.progress / 100) * course.totalLessons)
+      : null;
+
+  return (
+    <Motion.section variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewportOnce} className="mb-8" aria-label="Continue learning">
+      <div className="mb-4 flex items-center gap-2">
+        <PlayCircle size={18} className="text-brand" />
+        <h2 className="text-body-lg font-semibold text-ink">Continue Learning</h2>
+      </div>
+
+      <article className="flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm transition hover:shadow-card-hover md:flex-row">
+        <div className="relative aspect-video max-h-60 shrink-0 md:max-h-none md:aspect-auto md:w-[42%] md:max-w-lg">
+          <CourseImage image={course.image} sizes="(min-width:768px) min(42vw, 32rem), 100vw" widths={[480, 800, 1200, 1600]} eager />
+          <div className="absolute bottom-3 right-3 rounded-full bg-white/90 p-1 shadow-sm backdrop-blur-sm">
+            <div className="relative">
+              <ProgressRing progress={course.progress} size={52} stroke={5} />
+              <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-ink">
+                {course.progress}%
+              </span>
+            </div>
           </div>
         </div>
+
+        <div className="flex flex-1 flex-col gap-2 p-5 md:p-6">
+          <div>
+            <h3 className="line-clamp-2 text-body-lg font-semibold leading-snug text-ink">{course.title}</h3>
+            <p className="mt-1 truncate text-sm-fluid text-ink-muted">
+              {course.instructorName}
+            </p>
+            {completedLessons !== null && (
+              <p className="mt-0.5 text-sm-fluid text-ink-muted">
+                {completedLessons} of {course.totalLessons} lessons completed
+              </p>
+            )}
+          </div>
+
+          <div className="mt-auto border-t border-border pt-3">
+            <p className="text-sm-fluid font-medium text-ink-muted">Pick up where you left off</p>
+            <p className="mt-1 flex items-center gap-2 text-sm-fluid text-ink">
+              <ResumeIcon size={16} className="shrink-0 text-brand" aria-hidden="true" />
+              <span className="line-clamp-1">{course.resumeTitle}</span>
+            </p>
+          </div>
+
+          <Link
+            to={resumeUrl}
+            aria-label={`Continue ${course.title} — ${resumeTypeLabel}: ${course.resumeTitle}`}
+            className="btn-brand w-fit px-5 py-2.5 text-sm-fluid"
+          >
+            Continue Learning
+          </Link>
+        </div>
+      </article>
+    </Motion.section>
+  );
+}
+
+/**
+ * Zone 2 — progress overview: stat pills row plus the streak/overall-ring and
+ * per-category cards in an auto-fit two-up grid.
+ */
+function ProgressOverviewSection({ stats, overallProgress, completedCount, totalEnrolled, categoryBreakdown, streak }) {
+  return (
+    <>
+      <StatPills stats={stats} />
+
+      <Motion.div variants={fadeIn} initial="hidden" whileInView="visible" viewport={viewportOnce} className="mb-8 grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
+        <div className="card flex flex-col items-center justify-center gap-4 p-6">
+          <StreakBadge streak={streak} />
+          <OverallProgressRing progress={overallProgress} sub={`${completedCount} of ${totalEnrolled} courses completed`} />
+        </div>
+        <div className="card p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <BarChart3 size={18} className="text-brand" />
+            <h2 className="text-body-lg font-semibold text-ink">Progress by Category</h2>
+          </div>
+          <CategoryProgressBars categories={categoryBreakdown} />
+        </div>
       </Motion.div>
-    </div>
+    </>
+  );
+}
+
+/**
+ * Zone 4 — category-affinity recommendations carousel. Renders nothing when
+ * there is nothing to recommend; enrollment bubbles up through onEnroll so
+ * navigation stays owned by the page.
+ */
+function RecommendationsSection({ courses, onEnroll }) {
+  const shouldReduceMotion = useReducedMotion();
+  if (courses.length === 0) return null;
+
+  return (
+    <Motion.section variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewportOnce} aria-label="Recommended for you">
+      <div className="mb-4 flex items-center gap-2">
+        <Sparkles size={18} className="text-brand" />
+        <h2 className="text-body-lg font-semibold text-ink">Recommended For You</h2>
+      </div>
+
+      <Swiper modules={[Navigation]} navigation slidesPerView="auto" spaceBetween={16} speed={shouldReduceMotion ? 0 : SWIPER_SPEED_MS} className="pb-2">
+        {courses.map((course) => (
+          <SwiperSlide key={course.id} className="w-[240px] sm:w-[calc(33.333%-11px)] xl:w-[calc(25%-12px)]">
+            <article className="card card-hover flex h-full w-full flex-col overflow-hidden">
+              <Link to={`/course/${course.id}`} aria-label={`View ${course.title}`} className="relative block aspect-video shrink-0">
+                <CourseImage image={course.image} sizes="(min-width:1280px) 285px, (min-width:640px) 32vw, 240px" widths={[240, 480, 720]} />
+              </Link>
+              <div className="flex flex-1 flex-col p-4">
+                <Link
+                  to={`/course/${course.id}`}
+                  className="line-clamp-2 text-body-lg font-semibold leading-snug text-ink transition hover:text-brand-strong"
+                >
+                  {course.title}
+                </Link>
+                <p className="mt-1 truncate text-sm-fluid text-ink-muted">{course.instructorName}</p>
+                <div className="mt-1.5 flex items-center gap-2 text-sm-fluid">
+                  <span className="font-medium text-ink">{course.rating}</span>
+                  <Stars rating={course.rating} />
+                </div>
+                <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+                  <span className="text-sm-fluid font-semibold text-ink">{course.price}</span>
+                  <button type="button" onClick={() => onEnroll(course.id)} aria-label={`Enroll in ${course.title}`} className="btn-brand px-3.5 py-2 text-sm-fluid">
+                    Enroll
+                  </button>
+                </div>
+              </div>
+            </article>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </Motion.section>
+  );
+}
+
+export default function StudentDashboardPage() {
+  // Snapshot the clock once at mount so relative "last accessed" / due-date
+  // labels are stable across re-renders and rendering stays pure.
+  const [nowMs] = useState(() => Date.now());
+  const navigate = useNavigate();
+
+  // --- Data (single source of truth: studentRepository) ---
+  const student = getStudentProfile();
+  const enrolledCourses = getEnrolledCourses();
+  const urgentDeadlines = getUpcomingDeadlines(DEADLINE_POOL_SIZE);
+  const recommendedCourses = getRecommendedCourses(RECOMMENDATION_COUNT);
+  const streak = getStreak(nowMs);
+  const thisWeekHours = getLearningActivity().at(-1)?.hours ?? 0;
+
+  // --- Derived metrics ---
+  const continueCourse = enrolledCourses
+    .filter((c) => c.status === "In Progress")
+    .sort((a, b) => new Date(b.lastAccessed) - new Date(a.lastAccessed))[0];
+
+  const totalEnrolled = enrolledCourses.length;
+  const completedCount = enrolledCourses.filter((c) => c.status === "Completed").length;
+  const inProgressCount = enrolledCourses.filter((c) => c.status === "In Progress").length;
+  const notStartedCount = enrolledCourses.filter((c) => c.status === "Not Started").length;
+
+  // Hours learned = Σ(course hours × progress), NOT total course hours.
+  const hoursLearned = enrolledCourses
+    .reduce((sum, c) => sum + ((c.hours || 0) * (c.progress || 0)) / 100, 0)
+    .toFixed(1);
+
+  const overallProgress = lessonWeightedProgress(enrolledCourses);
+  const categoryBreakdown = buildCategoryBreakdown(enrolledCourses);
+
+  const statPillsData = [
+    {
+      label: "Enrolled",
+      value: totalEnrolled,
+      sub: notStartedCount > 0 ? `${notStartedCount} Not Started` : "All started",
+      iconName: "BookOpen",
+      accent: CHART_ACCENTS[0],
+    },
+    {
+      label: "Completed",
+      value: completedCount,
+      sub: `${completedCount} of ${totalEnrolled} courses`,
+      iconName: "CheckCircle",
+      accent: CHART_ACCENTS[1],
+    },
+    {
+      label: "In Progress",
+      value: inProgressCount,
+      sub: continueCourse ? `Next: ${continueCourse.resumeTitle}` : `${inProgressCount} active`,
+      iconName: "Clock",
+      accent: CHART_ACCENTS[2],
+    },
+    {
+      label: "Study Time",
+      value: hoursLearned,
+      sub: `+${thisWeekHours} hrs this week`,
+      subBadge: true,
+      iconName: "TrendingUp",
+      accent: CHART_ACCENTS[3],
+    },
+  ];
+
+  // --- Handlers ---
+  // Enrollment happens in the repository; on success land the learner inside
+  // their new course.
+  const handleEnroll = (courseId) => {
+    const result = enrollInCourse(courseId);
+    if (result.success) navigate(`/student/course/${result.courseId}`);
+  };
+
+  const pageHeader = (
+    <header className="mb-8">
+      <h1 className="page-title">Welcome back, {student.firstName}!</h1>
+      <p className="mt-1 text-sm-fluid text-ink-muted">Your courses, progress, and deadlines at a glance</p>
+    </header>
+  );
+
+  // First-time onboarding — no enrollment widgets, just direction to the catalog.
+  if (enrolledCourses.length === 0) {
+    return (
+      <>
+        {pageHeader}
+        <div className="card px-4 py-16">
+          <StudentEmptyState
+            icon={GraduationCap}
+            title={`${student.firstName}, you haven't enrolled in any courses yet`}
+            description="Browse the catalog, pick a course, and it will show up here so you can track your progress."
+            action={{ label: "Browse Catalog", to: "/courses" }}
+          />
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {pageHeader}
+
+      <ContinueLearningSection course={continueCourse} />
+
+      <ProgressOverviewSection
+        stats={statPillsData}
+        overallProgress={overallProgress}
+        completedCount={completedCount}
+        totalEnrolled={totalEnrolled}
+        categoryBreakdown={categoryBreakdown}
+        streak={streak}
+      />
+
+      <UpcomingSchedule deadlines={urgentDeadlines} />
+
+      <RecommendationsSection courses={recommendedCourses} onEnroll={handleEnroll} />
+    </>
   );
 }

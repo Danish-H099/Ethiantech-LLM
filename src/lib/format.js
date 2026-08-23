@@ -1,7 +1,3 @@
-/**
- * Format a numeric hour count into a compact duration label.
- * 12 -> "12h", 0.75 -> "45m", 2.5 -> "2h 30m".
- */
 export const formatTotalDuration = (hours) => {
   if (!Number.isFinite(hours)) return null;
   const totalMinutes = Math.round(hours * 60);
@@ -11,18 +7,17 @@ export const formatTotalDuration = (hours) => {
   if (m === 0) return `${h}h`;
   return `${h}h ${m}m`;
 };
-
-/**
- * Parse a `$`-prefixed price string (Course.price / Course.originalPrice)
- * into a number. "$10.99" -> 10.99.
- */
 export const parsePrice = (price) => Number.parseFloat(price.replace("$", ""));
-
-/**
- * Format a number into a compact, human-friendly label using a shared
- * Intl.NumberFormat instance. 1240 -> "1.2k", 5400 -> "5.4k", 760 -> "760".
- * Uppercase "K"/"M" suffixes are lowercased so students reads "98k students".
- */
+export const formatRelativeTime = (iso, now = Date.now()) => {
+  if (!iso) return null;
+  const diffMs = Math.max(0, now - new Date(iso).getTime());
+  const hours = Math.floor(diffMs / 3_600_000);
+  if (hours < 1) return "just now";
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "yesterday";
+  return `${days} days ago`;
+};
 const compactNumberFormat = new Intl.NumberFormat("en-US", {
   notation: "compact",
   maximumFractionDigits: 1,
@@ -31,4 +26,19 @@ const compactNumberFormat = new Intl.NumberFormat("en-US", {
 export const formatCompactNumber = (value) => {
   if (!Number.isFinite(value)) return null;
   return compactNumberFormat.format(value).toLowerCase();
+};
+export const formatDueLabel = (iso, now = Date.now()) => {
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const diffDays = Math.ceil((new Date(iso).getTime() - now) / DAY_MS);
+  if (diffDays < 0) return { text: `Overdue by ${Math.abs(diffDays)}d`, overdue: true };
+  if (diffDays === 0) return { text: "Due today", overdue: true };
+  if (diffDays === 1) return { text: "Due tomorrow", overdue: false };
+  return { text: `Due in ${diffDays} days`, overdue: false };
+};
+
+export const courseImageUrl = (url, width) => {
+  if (!url || !url.includes("images.unsplash.com")) return url;
+  const w = Math.max(100, Math.round(width));
+  if (url.includes("w=")) return url.replace(/([?&])w=\d+/, `$1w=${w}`);
+  return `${url}${url.includes("?") ? "&" : "?"}w=${w}`;
 };
