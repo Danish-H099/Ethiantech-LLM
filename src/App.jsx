@@ -1,36 +1,65 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import HomePage from "./components/HomePage";
-import CourseListPage from "./components/CourseListPage";
-import CourseDetailsPage from "./components/CourseDetailsPage";
-import TutorLayout from "./components/tutor/TutorLayout";
-import AddCoursePage from "./components/tutor/AddCoursePage";
-import TutorDashboardPage from "./components/tutor/TutorDashboardPage";
-import TutorCoursesPage from "./components/tutor/TutorCoursesPage";
-import StudentsEnrolledPage from "./components/tutor/StudentsEnrolledPage";
-import CourseVideo from "./components/CourseVideo";
-import AdminLayout from "./components/admin/AdminLayout";
-import AdminDashboardPage from "./components/admin/AdminDashboardPage";
-import AdminRevenuePage from "./components/admin/AdminRevenuePage";
-import AdminStudentsPage from "./components/admin/AdminStudentsPage";
-import AdminInstructorsPage from "./components/admin/AdminInstructorsPage";
-import AdminCoursesPage from "./components/admin/AdminCoursesPage";
-import AdminUsersPage from "./components/admin/AdminUsersPage";
-import StudentLayout from "./components/student/StudentLayout";
-import StudentDashboardPage from "./components/student/StudentDashboardPage";
-import StudentMyCoursesPage from "./components/student/StudentMyCoursesPage";
-import StudentNotesPage from "./components/student/StudentNotesPage";
-import StudentWishlistPage from "./components/student/StudentWishlistPage";
-import StudentPerformancePage from "./components/student/StudentPerformancePage";
-import "./App.css";
+import { Suspense, lazy, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import HomePage from "src/pages/public/HomePage";
+import CourseListPage from "src/pages/public/CourseListPage";
+import CourseDetailsPage from "src/pages/public/CourseDetailsPage";
+import TutorLayout from "src/components/tutor/TutorLayout";
+import AdminLayout from "src/components/admin/AdminLayout";
+import StudentLayout from "src/components/student/StudentLayout";
+import RouteLoader from "src/components/RouteLoader";
+import "src/App.css";
+
+// Learning player + all authenticated app pages stay lazy (route-level code splitting).
+const CourseVideo = lazy(() => import("src/pages/public/CourseVideo"));
+const AddCoursePage = lazy(() => import("src/pages/tutor/AddCoursePage"));
+const TutorDashboardPage = lazy(() => import("src/pages/tutor/TutorDashboardPage"));
+const TutorCoursesPage = lazy(() => import("src/pages/tutor/TutorCoursesPage"));
+const StudentsEnrolledPage = lazy(() => import("src/pages/tutor/StudentsEnrolledPage"));
+const AdminDashboardPage = lazy(() => import("src/pages/admin/AdminDashboardPage"));
+const AdminRevenuePage = lazy(() => import("src/pages/admin/AdminRevenuePage"));
+const AdminStudentsPage = lazy(() => import("src/pages/admin/AdminStudentsPage"));
+const AdminInstructorsPage = lazy(() => import("src/pages/admin/AdminInstructorsPage"));
+const AdminCoursesPage = lazy(() => import("src/pages/admin/AdminCoursesPage"));
+const AdminUsersPage = lazy(() => import("src/pages/admin/AdminUsersPage"));
+const StudentDashboardPage = lazy(() => import("src/pages/student/StudentDashboardPage"));
+const StudentMyCoursesPage = lazy(() => import("src/pages/student/StudentMyCoursesPage"));
+const StudentNotesPage = lazy(() => import("src/pages/student/StudentNotesPage"));
+const StudentWishlistPage = lazy(() => import("src/pages/student/StudentWishlistPage"));
+const StudentPerformancePage = lazy(() => import("src/pages/student/StudentPerformancePage"));
+
+function ScrollManager() {
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const el = document.getElementById(hash.slice(1));
+      if (el) {
+        el.scrollIntoView({ block: "start" });
+        return;
+      }
+    }
+    window.scrollTo(0, 0);
+  }, [pathname, hash]);
+
+  return null;
+}
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollManager />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/courses" element={<CourseListPage />} />
-        <Route path="/courses/video" element={<CourseVideo />} />
         <Route path="/course/:id" element={<CourseDetailsPage />} />
+        <Route
+          path="/courses/video"
+          element={
+            <Suspense fallback={<RouteLoader />}>
+              <CourseVideo />
+            </Suspense>
+          }
+        />
         <Route path="/tutor" element={<TutorLayout />}>
           <Route index element={<Navigate to="add-course" replace />} />
           <Route path="dashboard" element={<TutorDashboardPage />} />
