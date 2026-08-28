@@ -1,13 +1,13 @@
 import { User, MoreVertical } from "lucide-react";
 import { m as Motion } from "motion/react";
-import { allUsers } from "src/data/adminData";
+import { getAllUsers } from "src/data/adminData";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 
 function RoleBadge({ role }) {
   const isInstructor = role === "Instructor";
   return (
     <span
-      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+      className={`inline-block rounded-full px-3 py-1 text-sm-fluid font-medium ${
         isInstructor
           ? "bg-violet-100 text-violet-600"
           : "bg-sky-100 text-sky-600"
@@ -28,7 +28,7 @@ function StatusDot({ status }) {
         }`}
       />
       <span
-        className={`text-sm ${
+        className={`text-sm-fluid ${
           isActive ? "text-ink" : "text-ink-muted"
         }`}
       >
@@ -39,6 +39,7 @@ function StatusDot({ status }) {
 }
 
 export default function AdminUsersPage() {
+  const allUsers = getAllUsers();
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
@@ -46,7 +47,7 @@ export default function AdminUsersPage() {
           <h1 className="page-title">
             User Management
           </h1>
-          <p className="mt-1 text-md text-ink-muted">
+          <p className="mt-1 text-sm-fluid text-ink-muted">
             {allUsers.length} users on the platform
           </p>
         </div>
@@ -72,14 +73,8 @@ export default function AdminUsersPage() {
             </tr>
           </thead>
           <tbody>
-            {allUsers.map((user, index) => (
-              <tr
-                key={user.id}
-                style={{
-                  backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
-                }}
-                className="table-row"
-              >
+            {allUsers.map((user) => (
+              <tr key={user.id} className="table-row odd:bg-surface-soft">
                 <td className="px-5 py-4">{user.id}</td>
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">

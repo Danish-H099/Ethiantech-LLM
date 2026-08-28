@@ -26,7 +26,7 @@ export default function SearchBar({ search, onSearch, className }) {
         onChange={(e) => setValue(e.target.value)}
         placeholder="Search courses"
         aria-label="Search courses"
-        className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-ink-muted"
+        className="w-full min-w-0 bg-transparent text-sm-fluid outline-none placeholder:text-ink-muted"
       />
       {value && (
         <button

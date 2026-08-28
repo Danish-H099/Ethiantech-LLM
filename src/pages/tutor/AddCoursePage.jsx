@@ -6,8 +6,8 @@ import { buttonPress, slideUp } from "src/lib/animationVariants";
 const inputBase =
   "input h-[40px]";
 const labelBase =
-  "mb-1 block text-base text-ink/70";
-const errorText = "mt-1 text-13 text-red-500";
+  "mb-1 block text-sm-fluid text-ink/70";
+const errorText = "mt-1 text-sm-fluid text-red-500";
 
 const CATEGORIES = [
   "Web Development",
@@ -229,7 +229,7 @@ export default function AddCoursePage() {
       <h1 className="mb-2 page-title">
         Add Course
       </h1>
-      <p className="mb-8 text-md text-ink-muted">
+      <p className="mb-8 text-sm-fluid text-ink-muted">
         Create a new course with details, curriculum, and media
       </p>
       <form onSubmit={handleSubmit} noValidate>
@@ -326,7 +326,7 @@ export default function AddCoursePage() {
         {/* Tag */}
         <div className="mb-5">
           <label className={labelBase} htmlFor="course-tag">
-            Course Tag <span className="text-sm text-ink/40">(optional)</span>
+            Course Tag <span className="text-sm-fluid text-ink/40">(optional)</span>
           </label>
           <input
             id="course-tag"
@@ -378,7 +378,7 @@ export default function AddCoursePage() {
                     setThumbnailPreview(null);
                     fileInputRef.current.value = "";
                   }}
-                  className="absolute right-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-10 text-white"
+                  className="absolute right-1 top-1 rounded bg-black/60 px-1.5 py-0.5 text-sm-fluid text-white"
                 >
                   Remove
                 </button>
@@ -397,7 +397,7 @@ export default function AddCoursePage() {
               >
                 <div className="flex items-center gap-2 text-white">
                   <Upload size={16} />
-                  <span className="text-sm">
+                  <span className="text-sm-fluid">
                     Upload
                   </span>
                 </div>
@@ -419,15 +419,15 @@ export default function AddCoursePage() {
 
         {/* Course Curriculum */}
         <div className="mb-6">
-          <h2 className={`${labelBase} text-lg font-semibold text-ink`}>
+          <h2 className={`${labelBase} text-body-lg font-semibold text-ink`}>
             Course Curriculum
           </h2>
-          <p className="mb-3 text-13 text-ink/50">
+          <p className="mb-3 text-sm-fluid text-ink/50">
             Add sections and lessons to build your course structure.
           </p>
 
           {errors.curriculum && (
-            <p className="mb-3 text-13 text-red-500">{errors.curriculum}</p>
+            <p className="mb-3 text-sm-fluid text-red-500">{errors.curriculum}</p>
           )}
 
           <div className="space-y-3">
@@ -452,7 +452,7 @@ export default function AddCoursePage() {
                       ) : (
                         <ChevronDown size={16} className="shrink-0 text-ink/50" />
                       )}
-                      <span className="text-13 font-medium text-ink/60">
+                      <span className="text-sm-fluid font-medium text-ink/60">
                         Section {sIdx + 1}
                       </span>
                     </button>
@@ -498,7 +498,7 @@ export default function AddCoursePage() {
                               key={lIdx}
                               className="flex items-center gap-2"
                             >
-                              <span className="shrink-0 text-xs text-ink/40">
+                              <span className="shrink-0 text-sm-fluid text-ink/40">
                                 {sIdx + 1}.{lIdx + 1}
                               </span>
                               <input
@@ -513,7 +513,7 @@ export default function AddCoursePage() {
                                   )
                                 }
                                 placeholder="Lesson title"
-                                className={`${inputBase} flex-1 !h-[36px] text-13`}
+                                className={`${inputBase} flex-1 !h-[36px] text-sm-fluid`}
                               />
                               {/* Video upload */}
                               <input
@@ -534,7 +534,7 @@ export default function AddCoursePage() {
                               {lesson.video ? (
                                 <div className="flex shrink-0 items-center gap-1.5 rounded border border-ink/15 bg-surface-soft px-2 py-1">
                                   <Video size={13} className="shrink-0 text-brand" />
-                                  <span className="max-w-[100px] truncate text-xs text-ink/70">
+                                  <span className="max-w-[100px] truncate text-sm-fluid text-ink/70">
                                     {lesson.video.name}
                                   </span>
                                   <button
@@ -555,7 +555,7 @@ export default function AddCoursePage() {
                                       .get(refKey)
                                       ?.click()
                                   }
-                                  className="flex shrink-0 items-center gap-1 rounded border border-brand bg-brand px-2 py-1 text-xs text-white transition hover:opacity-90"
+                                  className="flex shrink-0 items-center gap-1 rounded border border-brand bg-brand px-2 py-1 text-sm-fluid text-white transition hover:opacity-90"
                                 >
                                   <Upload size={12} />
                                   Video
@@ -579,7 +579,7 @@ export default function AddCoursePage() {
                       <button
                         type="button"
                         onClick={() => addLesson(sIdx)}
-                        className="mt-3 flex items-center gap-1.5 text-13 font-medium text-brand transition hover:text-brand/80"
+                        className="mt-3 flex items-center gap-1.5 text-sm-fluid font-medium text-brand transition hover:text-brand/80"
                       >
                         <Plus size={14} />
                         Add Lesson
@@ -596,7 +596,7 @@ export default function AddCoursePage() {
           <button
             type="button"
             onClick={addSection}
-            className="mt-3 flex items-center gap-1.5 text-sm font-medium text-brand transition hover:text-brand/80"
+            className="mt-3 flex items-center gap-1.5 text-sm-fluid font-medium text-brand transition hover:text-brand/80"
           >
             <Plus size={15} />
             Add Section
@@ -608,7 +608,7 @@ export default function AddCoursePage() {
           type="submit"
           variants={buttonPress}
           whileTap="tap"
-          className="flex h-[40px] w-full items-center justify-center rounded bg-brand text-base text-white transition hover:bg-brand/90 sm:w-[91px]"
+          className="flex h-[40px] w-full items-center justify-center rounded bg-brand text-sm-fluid text-white transition hover:bg-brand/90 sm:w-[91px]"
         >
           ADD
         </Motion.button>

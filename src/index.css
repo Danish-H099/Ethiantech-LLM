@@ -5,40 +5,57 @@
   --font-outfit: "Outfit", sans-serif;
   --font-inter: "Inter", sans-serif;
 
-  /* Font sizes — DS-002 (15px = text-md) */
-  --text-md: 0.9375rem;
-  --text-10: 0.625rem;
-  --text-11: 0.6875rem;
-  --text-13: 0.8125rem;
-  --text-22: 1.375rem;
-  --text-26: 1.625rem;
-  --text-28: 1.75rem;
+  /* Fixed micro-chrome sizes — deliberate exceptions to the fluid system below.
+      Bound to fixed-geometry containers (badges, count bubbles, ring centers,
+      overlay chips, dense tables/dialogs) where growth would break layout or
+      density; they intentionally do not scale with the viewport. */
+  --text-xxs: 0.625rem;
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
 
-  /* Semantic typography — fluid, responsive, readable. Every clamp ramps linearly
-     from its mobile size (≤ 375px viewport) to its desktop size (≥ 1920px), so all
-     tiers grow in lockstep; the vw slope is derived from each token's own range,
-     not hand-picked. Same-tier tokens (e.g. text-title/text-stat) share the exact
-     same clamp so they can never drift apart. text-hero is the deliberate
-     exception — it keeps a steep slope so the headline always dominates every
-     other text size at every viewport. */
-  --text-hero: clamp(1.875rem, 1.25rem + 2.5vw, 3.375rem);
-  --text-hero--line-height: 1.2;
+/* Semantic typography — fluid, responsive, readable. Every clamp ramps linearly
+      from its mobile size (≤ 375px viewport) to its desktop size (≥ 1920px), so all
+      tiers grow in lockstep; the vw slope is derived from each token's own range,
+      not hand-picked. Same-tier tokens (e.g. text-heading/text-metric) share the
+      exact same clamp so they can never drift apart. text-hero is the deliberate
+      exception — it keeps a steep slope so the headline always dominates every
+      other text size at every viewport. */
+  --text-hero: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+  --text-hero--line-height: 1.1;
   --text-hero--letter-spacing: -0.02em;
-  --text-hero-sub: clamp(1.4rem, 1.206rem + 0.829vw, 2.2rem);
-  --text-hero-sub--line-height: 1.3;
-  --text-hero-sub--letter-spacing: -0.01em;
-  --text-title: clamp(1.75rem, 1.568rem + 0.777vw, 2.5rem);
-  --text-title--line-height: 1.2;
+  --text-subhero: clamp(1.4rem, 1.206rem + 0.829vw, 1.6rem);
+  --text-subhero--line-height: 1.3;
+  --text-subhero--letter-spacing: -0.01em;
+  --text-hero-subtitle: clamp(1rem, 0.9rem + 1.5vw, 1.375rem);
+  --text-hero-subtitle--line-height: 1.6;
+  --text-logo: clamp(2rem, 1.5rem + 1.5vw, 2.5rem);
+  --text-logo--line-height: 1;
+  --text-header-brand: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  --text-header-brand--line-height: 1.2;
+  --text-eyebrow: clamp(0.875rem, 0.825rem + 0.5vw, 1.125rem);
+  --text-eyebrow--line-height: 1.5;
+  --text-eyebrow--letter-spacing: 0.05em;
+  --text-heading: clamp(1.75rem, 1.568rem + 0.777vw, 2.5rem);
+  --text-heading--line-height: 1.2;
+  --text-heading--letter-spacing: -0.015em;
+  /* In-page content section headers (e.g. CourseDetailsPage) — bridges the
+      gap between text-subtitle (20px) and text-heading (40px). */
+  --text-section: clamp(1.25rem, 1.125rem + 0.52vw, 1.75rem);
+  --text-section--line-height: 1.3;
   --text-body-lg: clamp(1.125rem, 1.095rem + 0.129vw, 1.25rem);
   --text-body-lg--line-height: 1.65;
   --text-body: clamp(1rem, 0.97rem + 0.129vw, 1.125rem);
   --text-body--line-height: 1.65;
-  --text-body-fluid: clamp(1rem, 0.97rem + 0.129vw, 1.125rem);
-  --text-body-fluid--line-height: 1.65;
+  --text-subtitle: clamp(1rem, 0.95rem + 1.2vw, 1.25rem);
+  --text-subtitle--line-height: 1.6;
   --text-sm-fluid: clamp(0.875rem, 0.845rem + 0.129vw, 1rem);
   --text-sm-fluid--line-height: 1.65;
-  --text-stat: clamp(1.75rem, 1.568rem + 0.777vw, 2.5rem);
-  --text-stat--line-height: 1.2;
+  /* Navigation tier — one step below body so chrome reads lighter than content
+      (matches DS-011 text-md at desktop); header nav links + their CTAs. */
+  --text-nav: clamp(0.875rem, 0.86rem + 0.065vw, 0.9375rem);
+  --text-nav--line-height: 1.5;
+  --text-metric: clamp(1.75rem, 1.568rem + 0.777vw, 2.5rem);
+  --text-metric--line-height: 1.2;
 
   /* Colors — DS-006/007/008 */
   --color-brand: #D62A91;
@@ -56,6 +73,9 @@
   --color-toggle: #CBD6E4;
   --color-footer: #272640;
   --color-footer-input: #32304d;
+  --color-footer-muted: rgba(255, 255, 255, 0.6);
+  --color-footer-faint: rgba(255, 255, 255, 0.4);
+  --color-footer-border: rgba(255, 255, 255, 0.2);
   --color-border: #E5E5E5; /* default border color (gray-200) */
 
   /* Role accents — Part C wayfinding (CTA stays brand everywhere) */
@@ -69,6 +89,8 @@
   /* Status colors — DS-014 (success badges / status dots) */
   --color-success: #15803D;
   --color-success-soft: #DCFCE7;
+  --color-error: #DC2626;
+  --color-error-soft: #FEE2E2;
 
   /* Shadows — DS-009 */
   --shadow-avatar: 0 4px 4px rgba(0, 0, 0, 0.05);
@@ -107,6 +129,11 @@
   :where(a, button, input, select, textarea, [tabindex]):focus-visible {
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
+  }
+
+  /* Footer — high-contrast focus ring on dark surface */
+  footer :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline-color: white;
   }
 
   /* Pointer cursor on interactive elements — Tailwind v4 preflight resets buttons to default */
@@ -152,25 +179,31 @@
     outline-offset: 2px;
   }
 
-  .table-header {
-    @apply border-b border-ink/20 text-left text-sm text-ink/70;
+.table-header {
+    @apply border-b border-ink/20 text-left text-sm-fluid text-ink/70;
   }
 
   .table-row {
-    @apply border-b border-ink/15 text-sm text-ink/70 last:border-b-0;
+    @apply border-b border-ink/15 text-sm-fluid text-ink/70 last:border-b-0;
   }
 
   .page-title {
-    @apply text-title font-semibold text-ink;
+    @apply text-heading font-semibold text-ink;
   }
 
   .section-title {
-    @apply text-22 font-semibold text-ink;
+    @apply text-heading font-semibold text-ink;
+  }
+
+  /* In-page content section headers on detail pages — one step below page-title
+      so they don't compete with the 40px page-level titles. */
+  .detail-section-title {
+    @apply text-section font-semibold text-ink;
   }
 
   .input,
   .input-sm {
-    @apply w-full border border-ink/50 bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brand;
+    @apply w-full border border-ink/50 bg-white px-3 py-2 text-sm-fluid text-ink outline-none transition focus:border-brand;
   }
 
   .input {
@@ -182,19 +215,46 @@
   }
 
   .label {
-    @apply mb-1 block text-sm font-medium text-ink;
+    @apply mb-1 block text-sm-fluid font-medium text-ink;
   }
 
   .badge {
-    @apply inline-flex items-center rounded-full px-3 py-1 text-13 font-medium;
+    @apply inline-flex items-center rounded-full px-3 py-1 text-sm font-medium;
+  }
+
+  /* Task status badges — color pairs with text (DESIGN_KNOWLEDGE.md). Reused
+      across the dashboard deadline rows and the Tasks page, so defined once here
+      rather than as a style variable in a JS file. */
+  .badge-status-not-started {
+    @apply bg-gray-100 text-ink-muted;
+  }
+
+  .badge-status-drafting {
+    @apply bg-blue-100 text-blue-700;
+  }
+
+  .badge-status-submitted {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .badge-status-completed {
+    @apply bg-success-soft text-success;
   }
 
   .link {
     @apply font-medium text-brand-secondary-strong transition hover:text-brand-secondary-strong/90 hover:underline;
   }
 
+  /* Active page indicator for header nav (aria-current="page") — brand underline
+      drawn via inset shadow so it never shifts layout. Pairs with navLinkClass()
+      in Header.jsx, which swaps the muted/hover utilities out on active links. */
+  .nav-link-active {
+    @apply font-semibold text-ink;
+    box-shadow: inset 0 -2px 0 var(--color-brand);
+  }
+
   .skip-link {
-    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white;
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm-fluid focus:font-medium focus:text-white;
   }
 
   .divider {
@@ -215,7 +275,7 @@
 }
 
 .card-meta-row {
-  @apply flex items-center gap-3 text-sm-fluid text-ink-muted;
+  @apply flex items-center gap-4 text-sm-fluid text-ink-muted;
 }
 
 .card-meta-icon {
@@ -292,4 +352,10 @@ input[type="search"]::-webkit-search-results-decoration {
 
 [data-role="admin"] {
   --scrollbar-accent: var(--color-accent-admin);
+}
+
+/* Swiper controls — brand-matched via tokens (swiper-carousel-migration-decisions.md) */
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--color-brand);
 }

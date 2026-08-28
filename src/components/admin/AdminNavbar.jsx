@@ -31,7 +31,7 @@ export default function AdminNavbar({ sidebarOpen, setSidebarOpen }) {
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className="flex items-center gap-2"
         >
-          <span className="hidden text-md text-ink-muted sm:inline">
+          <span className="hidden text-sm-fluid text-ink-muted sm:inline">
             Hi! <span className="font-medium text-ink">Admin</span>
           </span>
           <div className="relative flex h-[45px] w-[45px] items-center justify-center overflow-hidden rounded-full bg-brand/10 shadow-[0_4px_4px_rgba(0,0,0,0.05)]">
@@ -44,7 +44,7 @@ export default function AdminNavbar({ sidebarOpen, setSidebarOpen }) {
           <div className="absolute right-0 top-full mt-2 w-[194px] rounded border border-gray-200 bg-surface-soft shadow-[0_4px_15px_rgba(0,0,0,0.1)]">
             <button
               onClick={() => setDropdownOpen(false)}
-              className="flex w-full items-center gap-3 px-5 py-3 text-left text-md text-gray-800 transition hover:bg-gray-100"
+              className="flex w-full items-center gap-3 px-5 py-3 text-left text-sm-fluid text-gray-800 transition hover:bg-gray-100"
             >
               <User size={16} />
               My Profile
@@ -52,7 +52,7 @@ export default function AdminNavbar({ sidebarOpen, setSidebarOpen }) {
             <div className="border-t border-gray-200" />
             <button
               onClick={() => setDropdownOpen(false)}
-              className="flex w-full items-center gap-3 px-5 py-3 text-left text-md text-gray-800 transition hover:bg-gray-100"
+              className="flex w-full items-center gap-3 px-5 py-3 text-left text-sm-fluid text-gray-800 transition hover:bg-gray-100"
             >
               <LogOut size={16} />
               Logout

@@ -2,53 +2,48 @@ import { Link } from "react-router-dom";
 import { m as Motion } from "motion/react";
 import { Clock, BookOpen, Check, PlayCircle } from "lucide-react";
 import { buttonPress } from "src/lib/animationVariants";
+import { hideOnError } from "src/lib/assets";
 
 const MotionLink = Motion.create(Link);
 
 export default function EnrollCard({ course, totalDuration, totalLectures, discountPercent }) {
   return (
     <>
-      <div className="relative h-48 w-full overflow-hidden sm:h-52">
+      <div className="relative h-48 w-full overflow-hidden bg-surface sm:h-52">
         <img
           src={course.image}
           alt={course.title}
           loading="lazy"
           className="h-full w-full object-cover"
+          onError={hideOnError}
         />
       </div>
 
       <div className="p-5">
-        <div className="absolute top-3 left-3 flex items-center gap-1">
-          <span
-            className={`px-2 py-1 text-xs font-semibold rounded ${course.level === "Beginner" ? "bg-primary-soft text-primary" : course.level === "Intermediate" ? "bg-secondary-soft text-secondary" : "bg-success-soft text-success"}`}
-          >
-            {course.level}
-          </span>
-        </div>
         {course.isFree ? (
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-brand">Free</span>
+            <span className="text-metric font-bold text-brand">Free</span>
             <span className="text-sm-fluid text-ink-muted/70">
               Enroll now — no payment required
             </span>
           </div>
         ) : (
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-ink">
+            <span className="text-metric font-bold text-ink">
               {course.price}
             </span>
             <span className="text-sm-fluid text-ink-muted/70 line-through">
               {course.originalPrice}
             </span>
             {discountPercent && (
-              <span className="rounded bg-success-soft px-1.5 py-0.5 text-xs font-semibold text-success">
+              <span className="rounded bg-success-soft px-1.5 py-0.5 text-sm-fluid font-semibold text-success">
                 {discountPercent}% off
               </span>
             )}
           </div>
         )}
 
-        <div className="mt-4 flex items-center gap-3 text-xs text-ink-muted">
+        <div className="mt-4 flex items-center gap-3 text-sm-fluid text-ink-muted">
           <span className="flex items-center gap-1">
             <Clock size={14} /> {totalDuration}
           </span>

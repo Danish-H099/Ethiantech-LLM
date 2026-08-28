@@ -27,3 +27,14 @@ export const studentsOverTime = [
   { month: "Nov", students: 720 },
   { month: "Dec", students: 565 },
 ];
+
+// Function wrappers — pages should call these instead of importing arrays directly.
+export function getTutorStats() {
+  return tutorStats;
+}
+export function getEarningsOverTime() {
+  return earningsOverTime;
+}
+export function getStudentsOverTime() {
+  return studentsOverTime;
+}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { AnimatePresence, m as Motion, useReducedMotion } from "motion/react";
+import * as Dialog from "@radix-ui/react-dialog";
+import { m as Motion, useReducedMotion } from "motion/react";
 import Header from "src/components/Header";
 import Footer from "src/components/Footer";
 import Breadcrumbs from "src/components/Breadcrumbs";
@@ -9,17 +10,21 @@ import EnrollCard from "src/components/EnrollCard";
 import CourseSectionNav from "src/components/CourseSectionNav";
 import { getCourseById, getRelatedCourses as exportGetRelatedCourses } from "src/data/courses";
 import {
-  Star,
   BookOpen,
   Users,
   FolderKanban,
   ChevronDown,
   CheckCircle2,
+  X,
+  Building2,
 } from "lucide-react";
-import { LoginPopup, SignupPopup } from "src/components/AuthPopups";
-import CourseStructure from "src/components/CourseStructure";
+import { AuthPopupGate } from "src/components/AuthPopups";
+import WishlistHeartButton from "src/components/student/WishlistHeartButton";
+import PublicCourseStructure from "src/components/PublicCourseStructure";
 import Stars from "src/components/Stars";
+import { AVATAR_PLACEHOLDER, avatarFallback } from "src/lib/assets";
 import { getCourseReviews } from "src/data/reviewsData";
+import { getLessonMedia } from "src/data/lessonMedia";
 import { formatTotalDuration, parsePrice } from "src/lib/format";
 import {
   fadeUp,
@@ -44,17 +49,21 @@ function SectionReveal({ className, id, children }) {
   );
 }
 
-function CheckListSection({ title, items, icon, id, cardClassName }) {
+function CheckListSection({ title, items, icon, id, containerClassName }) {
   const Icon = icon;
   return (
     <section id={id} className={id ? "scroll-mt-28" : undefined}>
-      <h2 className="page-title">{title}</h2>
-      <div className={`card mt-4 p-5 sm:p-6${cardClassName ? ` ${cardClassName}` : ""}`}>
+      <h2 className="detail-section-title">{title}</h2>
+      <div
+        className={`mt-4 rounded-xl bg-surface-soft p-5 sm:p-6${
+          containerClassName ? ` ${containerClassName}` : ""
+        }`}
+      >
         <ul className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
           {items.map((item) => (
             <li
               key={item}
-              className="flex items-start gap-3 text-sm-fluid leading-6 text-ink-muted"
+              className="flex items-start gap-3 text-body text-ink-muted"
             >
               <Icon
                 size={18}
@@ -73,7 +82,7 @@ function CheckListSection({ title, items, icon, id, cardClassName }) {
 function CourseSkills({ skills = [], tools = [] }) {
   return (
     <section>
-      <h2 className="page-title">Skills you'll gain</h2>
+      <h2 className="detail-section-title">Skills you'll gain</h2>
       <div className="mt-3 flex flex-wrap gap-2">
         {skills.map((skill) => (
           <Link
@@ -88,7 +97,7 @@ function CourseSkills({ skills = [], tools = [] }) {
 
       {tools.length > 0 && (
         <>
-          <h3 className="mt-6 text-sm-fluid font-semibold text-ink">
+          <h3 className="mt-6 detail-section-title font-semibold text-ink">
             Tools you'll use
           </h3>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -111,7 +120,7 @@ function CourseSkills({ skills = [], tools = [] }) {
 function InstructorSection({ instructors }) {
   return (
     <section id="instructor" className="scroll-mt-28">
-      <h2 className="page-title">
+      <h2 className="detail-section-title">
         {instructors.length > 1 ? "Your Instructors" : "Your Instructor"}
       </h2>
       <div className="card mt-4 divide-y divide-border p-5">
@@ -124,20 +133,17 @@ function InstructorSection({ instructors }) {
               src={instructor.photo}
               alt={instructor.name}
               loading="lazy"
-              className="h-20 w-20 shrink-0 rounded-xl object-cover"
+              onError={avatarFallback}
+              className="h-20 w-20 shrink-0 rounded-xl bg-surface object-cover"
             />
             <div>
-              <h3 className="font-semibold text-ink">{instructor.name}</h3>
+              <h3 className="text-body-lg font-semibold text-ink">{instructor.name}</h3>
               <p className="text-sm-fluid font-medium text-brand-strong">
                 {instructor.title}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm-fluid text-ink-muted">
                 <span className="flex items-center gap-1.5">
-                  <Star
-                    size={14}
-                    className="fill-orange-500 text-orange-500"
-                    aria-hidden="true"
-                  />
+                  <Stars rating={instructor.rating} />
                   {instructor.rating} instructor rating
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -145,7 +151,7 @@ function InstructorSection({ instructors }) {
                   {instructor.students.toLocaleString()} students
                 </span>
               </div>
-              <p className="mt-2 text-sm-fluid leading-6 text-ink-muted">
+              <p className="mt-2 text-body text-ink-muted">
                 {instructor.bio}
               </p>
             </div>
@@ -160,10 +166,10 @@ function ReviewsSection({ course, reviews }) {
   return (
     <section id="reviews" className="scroll-mt-28">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="page-title">Reviews</h2>
+        <h2 className="detail-section-title">Reviews</h2>
         <div className="flex items-center gap-3">
           <Stars rating={course.rating} size={20} />
-          <span className="text-lg font-bold text-ink">{course.rating}</span>
+          <span className="text-body-lg font-bold text-ink">{course.rating}</span>
           <span className="text-sm-fluid text-ink-muted">
             · {course.reviews.toLocaleString()} ratings
           </span>
@@ -173,28 +179,26 @@ function ReviewsSection({ course, reviews }) {
         {reviews.map((review) => (
           <article key={review.id} className="py-5 first:pt-0 last:pb-0">
             <div className="flex items-start gap-3">
-              <span
-                aria-hidden="true"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tint-tutor text-sm font-bold text-brand-secondary-strong"
-              >
-                {review.author
-                  .split(" ")
-                  .map((name) => name[0])
-                  .slice(0, 2)
-                  .join("")}
-              </span>
+              <img
+                src={review.avatar || AVATAR_PLACEHOLDER}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                onError={avatarFallback}
+                className="h-10 w-10 shrink-0 rounded-full object-cover"
+              />
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <h3 className="text-sm-fluid font-semibold text-ink">
+                  <h3 className="text-body font-semibold text-ink">
                     {review.author}
                   </h3>
-                  <span className="text-xs text-ink-muted">{review.date}</span>
+                  <span className="text-sm-fluid text-ink-muted">{review.date}</span>
                 </div>
-                <p className="text-xs text-ink-muted">{review.role}</p>
+                <p className="text-sm-fluid text-ink-muted">{review.role}</p>
                 <div className="mt-1.5">
                   <Stars rating={review.rating} size={14} />
                 </div>
-                <p className="mt-2 text-sm-fluid leading-6 text-ink-muted">
+                <p className="mt-2 text-body text-ink-muted">
                   {review.text}
                 </p>
               </div>
@@ -211,7 +215,7 @@ function CourseFaq({ faq }) {
 
   return (
     <section id="faq" className="scroll-mt-28">
-      <h2 className="page-title">Frequently Asked Questions</h2>
+      <h2 className="detail-section-title">Frequently Asked Questions</h2>
       <div className="card mt-4 divide-y divide-border overflow-hidden">
         {faq.map((item, i) => {
           const open = openIndex === i;
@@ -225,7 +229,7 @@ function CourseFaq({ faq }) {
                 onClick={() => setOpenIndex(open ? -1 : i)}
                 aria-expanded={open}
                 aria-controls={panelId}
-                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm-fluid font-semibold text-ink transition hover:bg-surface-soft"
+                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-body font-semibold text-ink transition hover:bg-surface-soft"
               >
                 <span>{item.question}</span>
                 <ChevronDown
@@ -241,7 +245,7 @@ function CourseFaq({ faq }) {
                 role="region"
                 aria-labelledby={triggerId}
                 hidden={!open}
-                className="px-5 pb-5 text-sm-fluid leading-7 text-ink-muted"
+                className="px-5 pb-5 text-body text-ink-muted"
               >
                 {item.answer}
               </div>
@@ -256,7 +260,7 @@ function CourseFaq({ faq }) {
 function RelatedCourses({ courses, staggerItem }) {
   return (
     <section>
-      <h2 className="page-title">Students also enrolled in</h2>
+      <h2 className="detail-section-title">Students also enrolled in</h2>
       <Motion.div
         variants={staggerContainer}
         initial="hidden"
@@ -276,7 +280,7 @@ function RelatedCourses({ courses, staggerItem }) {
 
 function BulletList({ items }) {
   return (
-    <ul className="mt-4 max-w-3xl list-disc space-y-2 pl-5 text-body-fluid leading-7 text-ink-muted">
+    <ul className="mt-4 max-w-3xl list-disc space-y-2 pl-5 text-body text-ink-muted">
       {items.map((item) => (
         <li key={item}>{item}</li>
       ))}
@@ -284,7 +288,7 @@ function BulletList({ items }) {
   );
 }
 
-function CourseHero({ course, staggerItem, mobileCardRef, enrollProps }) {
+function CourseHero({ course, staggerItem, mobileCardRef, enrollProps, onLoginClick }) {
   return (
     <Motion.div
       variants={staggerContainer}
@@ -303,7 +307,7 @@ function CourseHero({ course, staggerItem, mobileCardRef, enrollProps }) {
             ) : (
               <span
                 aria-hidden="true"
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-tint-tutor text-10 font-bold text-brand-secondary-strong"
+                className="flex h-6 w-6 items-center justify-center rounded-full bg-tint-tutor text-sm-fluid font-bold text-brand-secondary-strong"
               >
                 {course.institution.name.slice(0, 2).toUpperCase()}
               </span>
@@ -318,7 +322,7 @@ function CourseHero({ course, staggerItem, mobileCardRef, enrollProps }) {
       <Motion.h1
         variants={staggerItem}
         custom={1}
-        className="text-hero font-extrabold text-ink"
+        className="text-heading font-bold text-ink tracking-tight"
       >
         {course.title}
       </Motion.h1>
@@ -326,7 +330,7 @@ function CourseHero({ course, staggerItem, mobileCardRef, enrollProps }) {
       <Motion.p
         variants={staggerItem}
         custom={2}
-        className="mt-4 max-w-2xl text-body-fluid leading-7 text-ink-muted"
+        className="mt-4 max-w-2xl text-subtitle text-ink-muted"
       >
         {course.promise}
       </Motion.p>
@@ -357,12 +361,10 @@ function CourseHero({ course, staggerItem, mobileCardRef, enrollProps }) {
       <Motion.div
         variants={staggerItem}
         custom={4}
-        className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm-fluid text-ink-muted"
+        className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm-fluid text-ink-muted"
       >
         <span>{course.level}</span>
-        <span aria-hidden="true" className="text-ink-muted/40">•</span>
         <span>{course.language}</span>
-        <span aria-hidden="true" className="text-ink-muted/40">•</span>
         <span>Last updated {course.lastUpdated}</span>
       </Motion.div>
 
@@ -376,7 +378,8 @@ function CourseHero({ course, staggerItem, mobileCardRef, enrollProps }) {
             src={course.instructors[0].photo}
             aria-hidden="true"
             alt=""
-            className="h-9 w-9 rounded-full object-cover"
+            onError={avatarFallback}
+            className="h-9 w-9 rounded-full bg-surface object-cover"
           />
           Course by{" "}
           <Link to="#instructor" className="link">
@@ -395,12 +398,22 @@ function CourseHero({ course, staggerItem, mobileCardRef, enrollProps }) {
         className="card mt-10 overflow-hidden lg:hidden"
       >
         <EnrollCard {...enrollProps} />
+        <div className="border-t border-border p-4">
+            <WishlistHeartButton
+              courseId={course.id}
+              title={course.title}
+              onLoginClick={onLoginClick}
+              withLabel
+              size={18}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-brand px-4 py-2.5 text-sm-fluid font-medium text-brand-strong transition hover:bg-brand hover:text-white"
+            />
+        </div>
       </Motion.div>
     </Motion.div>
   );
 }
 
-function CourseContent({ course, reviews, relatedCourses, staggerItem, totalDuration }) {
+function CourseContent({ course, reviews, relatedCourses, staggerItem, totalDuration, onPreviewClick }) {
   return (
     <>
       <div className="mt-10 space-y-10">
@@ -418,20 +431,21 @@ function CourseContent({ course, reviews, relatedCourses, staggerItem, totalDura
         </SectionReveal>
       </div>
 
-      <SectionReveal id="curriculum" className="mt-16 scroll-mt-28">
-        <CourseStructure
-          sections={course.curriculum}
-          totalDuration={totalDuration}
-          title="Course content"
-          courseId={course.id}
-        />
-      </SectionReveal>
+        <SectionReveal id="curriculum" className="mt-16 scroll-mt-28">
+          <PublicCourseStructure
+            sections={course.curriculum}
+            totalDuration={totalDuration}
+            title="Course content"
+            courseId={course.id}
+            onPreviewClick={onPreviewClick}
+          />
+        </SectionReveal>
 
       <hr className="divider my-10" />
 
       <SectionReveal>
-        <h2 className="page-title">Course Description</h2>
-        <div className="mt-4 max-w-3xl space-y-4 text-body-fluid leading-7 text-ink-muted">
+        <h2 className="detail-section-title">Course Description</h2>
+        <div className="mt-4 max-w-3xl space-y-4 text-body text-ink-muted">
           {course.description.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
@@ -445,7 +459,7 @@ function CourseContent({ course, reviews, relatedCourses, staggerItem, totalDura
               title="Projects you'll build"
               items={course.projects}
               icon={FolderKanban}
-              cardClassName="max-w-3xl"
+              containerClassName="max-w-3xl"
             />
           </SectionReveal>
         )}
@@ -453,7 +467,7 @@ function CourseContent({ course, reviews, relatedCourses, staggerItem, totalDura
         {course.requirements.length > 0 && (
           <SectionReveal>
             <section>
-              <h2 className="page-title">Requirements</h2>
+              <h2 className="detail-section-title">Requirements</h2>
               <BulletList items={course.requirements} />
             </section>
           </SectionReveal>
@@ -462,7 +476,7 @@ function CourseContent({ course, reviews, relatedCourses, staggerItem, totalDura
         {course.targetAudience.length > 0 && (
           <SectionReveal>
             <section>
-              <h2 className="page-title">Who this course is for</h2>
+              <h2 className="detail-section-title">Who this course is for</h2>
               <BulletList items={course.targetAudience} />
             </section>
           </SectionReveal>
@@ -490,12 +504,22 @@ function CourseContent({ course, reviews, relatedCourses, staggerItem, totalDura
   );
 }
 
-function CourseSidebar({ enrollProps }) {
+function CourseSidebar({ enrollProps, course, onLoginClick }) {
   return (
     <aside className="hidden w-full shrink-0 lg:block lg:w-[380px]">
       <div className="sticky top-28 space-y-5">
         <SectionReveal className="card scrollbar-brand max-h-[calc(100vh-7rem)] overflow-y-auto">
           <EnrollCard {...enrollProps} />
+          <div className="border-t border-border p-4">
+            <WishlistHeartButton
+              courseId={course.id}
+              title={course.title}
+              onLoginClick={onLoginClick}
+              withLabel
+              size={18}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-brand px-4 py-2.5 text-sm-fluid font-medium text-brand-strong transition hover:bg-brand hover:text-white"
+            />
+          </div>
         </SectionReveal>
       </div>
     </aside>
@@ -508,17 +532,20 @@ function MobilePurchaseBar({ course }) {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
         <div className="min-w-0">
           {course.isFree ? (
-            <p className="text-lg font-bold text-brand">Free</p>
+            <p className="text-body-lg font-bold text-brand">Free</p>
           ) : (
             <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-ink">{course.price}</span>
-              <span className="text-xs text-ink-muted line-through">
+              <span className="text-body-lg font-bold text-ink">{course.price}</span>
+              <span className="text-sm-fluid text-ink-muted line-through">
                 {course.originalPrice}
               </span>
             </div>
           )}
-          <span className="truncate text-xs text-ink-muted">
-            {course.rating} · {course.students.toLocaleString()} students
+          <span className="flex min-w-0 items-center gap-1.5 text-sm-fluid text-ink-muted">
+            <Stars rating={course.rating} size={12} />
+            <span className="truncate">
+              {course.rating} · {course.students.toLocaleString()} students
+            </span>
           </span>
         </div>
         <Motion.button
@@ -535,9 +562,76 @@ function MobilePurchaseBar({ course }) {
   );
 }
 
+function VideoPreviewModal({ preview, onClose }) {
+  const { lesson, meta } = preview || {};
+  const { courseId, sectionIndex, lessonIndex } = meta || {};
+  const media =
+    lesson && courseId != null
+      ? getLessonMedia(`${courseId}-s${sectionIndex}-l${lessonIndex}`)
+      : null;
+
+  return (
+    <Dialog.Root
+      open={!!preview}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-[min(94vw,960px,calc((100dvh-4rem)*16/9))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-white shadow-2xl">
+          <Dialog.Title className="sr-only">
+            {lesson?.title ?? "Lesson preview"}
+          </Dialog.Title>
+          <Dialog.Description className="sr-only">
+            Free preview lesson video.
+          </Dialog.Description>
+
+          <div className="relative bg-black">
+            <Dialog.Close asChild>
+              <button
+                type="button"
+                className="absolute right-2 top-2 z-10 rounded-full bg-black/50 p-1.5 text-white/90 transition hover:bg-black/80"
+                aria-label="Close preview"
+              >
+                <X size={20} />
+              </button>
+            </Dialog.Close>
+            {media ? (
+              // Captions are provided when the media descriptor includes them.
+              // eslint-disable-next-line jsx-a11y/media-has-caption
+              <video
+                controls
+                autoPlay
+                className="aspect-video w-full bg-black"
+                src={media.videoSrc}
+              >
+                {media.captionSrc && (
+                  <track
+                    kind="captions"
+                    src={media.captionSrc}
+                    srcLang="en"
+                    label="English captions"
+                  />
+                )}
+                Your browser does not support video.
+              </video>
+            ) : (
+              <div className="flex aspect-video items-center justify-center bg-black text-sm-fluid text-white/70">
+                Preview video unavailable.
+              </div>
+            )}
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
 export default function CourseDetailsPage() {
   const { id } = useParams();
   const [popupState, setPopupState] = useState("none");
+  const [preview, setPreview] = useState(null);
   const mobileCardRef = useRef(null);
   const [showPurchaseBar, setShowPurchaseBar] = useState(false);
 
@@ -566,20 +660,9 @@ export default function CourseDetailsPage() {
     return () => observer.disconnect();
   }, []);
 
-  const authPopups =
-    popupState === "login" ? (
-      <LoginPopup
-        key="login"
-        onClose={() => setPopupState("none")}
-        onSwitchToSignup={() => setPopupState("signup")}
-      />
-    ) : popupState === "signup" ? (
-      <SignupPopup
-        key="signup"
-        onClose={() => setPopupState("none")}
-        onSwitchToLogin={() => setPopupState("login")}
-      />
-    ) : null;
+  const authPopups = (
+    <AuthPopupGate state={popupState} onStateChange={setPopupState} />
+  );
 
   if (!course) {
     return (
@@ -591,7 +674,7 @@ export default function CourseDetailsPage() {
         <main id="main" className="flex-1">
           <section className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 py-32 text-center">
             <BookOpen size={64} className="text-ink-muted/40" />
-            <h2 className="mt-6 text-2xl font-bold text-ink">Course Not Found</h2>
+            <h2 className="mt-6 page-title">Course Not Found</h2>
             <p className="mt-2 text-ink-muted">
               The course you're looking for doesn't exist.
             </p>
@@ -646,6 +729,7 @@ export default function CourseDetailsPage() {
                 staggerItem={staggerItem}
                 mobileCardRef={mobileCardRef}
                 enrollProps={enrollProps}
+                onLoginClick={() => setPopupState("login")}
               />
               <CourseContent
                 course={course}
@@ -653,9 +737,14 @@ export default function CourseDetailsPage() {
                 relatedCourses={relatedCourses}
                 staggerItem={staggerItem}
                 totalDuration={totalDuration}
+                onPreviewClick={(lesson, meta) => setPreview({ lesson, meta })}
               />
             </div>
-            <CourseSidebar enrollProps={enrollProps} />
+            <CourseSidebar
+              enrollProps={enrollProps}
+              course={course}
+              onLoginClick={() => setPopupState("login")}
+            />
           </div>
         </section>
       </main>
@@ -665,7 +754,11 @@ export default function CourseDetailsPage() {
       )}
 
       <Footer />
-      <AnimatePresence mode="wait">{authPopups}</AnimatePresence>
+      {authPopups}
+      <VideoPreviewModal
+        preview={preview}
+        onClose={() => setPreview(null)}
+      />
     </div>
   );
 }
