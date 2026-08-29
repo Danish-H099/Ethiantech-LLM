@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Heart } from "lucide-react";
-import { toggleWishlist, isCourseWishlisted } from "src/data/studentRepository";
+import { toggleWishlist, isCourseWishlisted } from "src/services/studentRepository";
 import { isStudentAuthed } from "src/utils/authMock";
 export default function WishlistHeartButton({
   courseId,

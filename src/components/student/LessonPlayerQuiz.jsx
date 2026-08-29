@@ -10,7 +10,7 @@ import {
   clearQuizDraftAnswers,
   submitQuizAttempt,
   hasRemainingAttempts,
-} from "src/data/studentRepository";
+} from "src/services/studentRepository";
 import { createReveal } from "src/lib/animationVariants";
 import * as Dialog from "@radix-ui/react-dialog";
 import LessonCompleteButton from "src/components/student/LessonCompleteButton";

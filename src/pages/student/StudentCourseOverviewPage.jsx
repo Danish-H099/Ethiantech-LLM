@@ -39,7 +39,7 @@ import {
   getEnrolledCourseData,
   getCourseAnnouncementsFor,
   getCourseResourcesFor,
-} from "src/data/studentRepository";
+} from "src/services/studentRepository";
 
 const COURSE_TABS = [
   { value: "syllabus", label: "Syllabus" },

@@ -9,12 +9,13 @@ import {
   Bell,
 } from "lucide-react";
 import { clearMockAuth } from "src/utils/authMock";
-import { getStudentProfile } from "src/data/studentRepository";
+import { getStudentProfile, getUnreadCount } from "src/services/studentRepository";
 import { avatarFallback } from "src/lib/assets";
 
 export default function StudentNavbar({ sidebarOpen, setSidebarOpen, hamburgerRef }) {
   const navigate = useNavigate();
   const student = getStudentProfile();
+  const unreadCount = getUnreadCount();
 
   function handleLogout() {
     clearMockAuth();
@@ -35,16 +36,18 @@ export default function StudentNavbar({ sidebarOpen, setSidebarOpen, hamburgerRe
       <div className="flex items-center gap-3">
         <NavLink
           to="/student/notifications"
-          aria-label="Notifications, 3 unread"
+          aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
           className="relative rounded p-3 text-gray-700 transition hover:bg-gray-50 hover:text-ink"
         >
           <Bell size={20} />
-          <span
-            aria-hidden="true"
-            className="absolute -top-1 -right-1 rounded-full bg-accent-student px-1.5 text-sm-fluid font-bold text-white"
-          >
-            3
-          </span>
+          {unreadCount > 0 && (
+            <span
+              aria-hidden="true"
+              className="absolute -top-1 -right-1 rounded-full bg-accent-student px-1.5 text-sm-fluid font-bold text-white"
+            >
+              {unreadCount}
+            </span>
+          )}
         </NavLink>
 
         {/* Profile dropdown — desktop only; on mobile the profile actions

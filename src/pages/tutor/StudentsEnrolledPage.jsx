@@ -1,6 +1,6 @@
 import { m as Motion } from "motion/react";
 import { User, MoreVertical } from "lucide-react";
-import { studentRoster } from "src/data/fixtures/studentRoster";
+import { studentRoster } from "src/data/roster";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 
 export default function StudentsEnrolledPage() {

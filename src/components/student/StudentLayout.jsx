@@ -24,7 +24,7 @@ const navItems = [
   { label: "My Courses", icon: BookOpen, path: "/student/my-courses" },
     { label: "Tasks", icon: ClipboardList, path: "/student/tasks" },
   { label: "Grades", icon: Award, path: "/student/grades" },
-  { label: "Performance", icon: BarChart3, path: "/student/performance" },
+  { label: "Analytics", icon: BarChart3, path: "/student/analytics" },
   { label: "Wishlist", icon: Heart, path: "/student/wishlist" },
   { label: "Notes", icon: StickyNote, path: "/student/notes" },
 ];

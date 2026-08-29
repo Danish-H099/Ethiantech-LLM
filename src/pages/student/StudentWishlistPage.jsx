@@ -7,7 +7,7 @@ import {
   getWishlistedCourses,
   enrollFromWishlist,
   getEnrolledCourses,
-} from "src/data/studentRepository";
+} from "src/services/studentRepository";
 import {
   fadeIn,
   viewportOnce,

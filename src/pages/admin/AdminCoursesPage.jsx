@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { m as Motion } from "motion/react";
-import { getAllCourses } from "src/data/adminData";
+import { getAllCourses } from "src/services/adminData";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 
 function StatusBadge({ status }) {

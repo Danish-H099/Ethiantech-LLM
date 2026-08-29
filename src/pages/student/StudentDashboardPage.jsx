@@ -8,6 +8,7 @@ import {
   GraduationCap,
   PlayCircle,
   Sparkles,
+  Target,
 } from "lucide-react";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -20,18 +21,18 @@ import StudentEmptyState from "src/components/student/StudentEmptyState";
 import Stars from "src/components/Stars";
 import { hideOnError } from "src/lib/assets";
 
-import { CHART_ACCENTS } from "src/data/chartColors";
+import { CHART_ACCENTS } from "src/data/chart";
 import {
   enrollInCourse,
   getEnrolledCourses,
   getLearningActivity,
+  getLearningPace,
   getRecommendedCourses,
   getStreak,
   getStudentProfile,
   getUpcomingDeadlines,
-  TASK_ACTION_LABEL,
-  TASK_STATUS_LABEL,
-} from "src/data/studentRepository";
+} from "src/services/studentRepository";
+import { TASK_ACTION_LABEL, TASK_STATUS, TASK_STATUS_LABEL } from "src/lib/statuses";
 
 import {
   createStaggerItem,
@@ -46,7 +47,7 @@ import {
   DEFAULT_LESSON_TYPE_LABEL,
   LESSON_TYPE_ICONS,
   LESSON_TYPE_LABELS,
-} from "src/lib/lessonTypes";
+} from "src/lib/lesson";
 
 const RECOMMENDATION_COUNT = 4;
 const DEADLINE_POOL_SIZE = 10;
@@ -224,7 +225,7 @@ function OverallProgressRing({ progress, label = "Overall Progress", sub }) {
 /**
  * Zone 2 — per-category micro progress bars. One accent color per category,
  * thin 8px bars, percentage right-aligned. Caps the list and hands off to the
- * Performance page for detail.
+ * Learning Analytics page for detail.
  */
 function CategoryProgressBars({ categories, max = CATEGORY_LIMIT }) {
   if (!categories?.length) return null;
@@ -255,7 +256,7 @@ function CategoryProgressBars({ categories, max = CATEGORY_LIMIT }) {
         ))}
       </ul>
       {categories.length > max && (
-        <Link to="/student/performance" className="link mt-4 self-end text-sm-fluid">
+        <Link to="/student/analytics" className="link mt-4 self-end text-sm-fluid">
           View All
         </Link>
       )}
@@ -306,8 +307,8 @@ function UpcomingSchedule({ deadlines, maxGroups = 3 }) {
           {visibleGroups.map((group) => {
             const next = group.tasks[0];
             const due = formatDueLabel(next.dueDate);
-            const statusLabel = TASK_STATUS_LABEL[next.status] ?? TASK_STATUS_LABEL["not-started"];
-            const actionLabel = TASK_ACTION_LABEL[next.status] ?? "Start";
+            const statusLabel = TASK_STATUS_LABEL[next.status] ?? TASK_STATUS_LABEL[TASK_STATUS.NOT_STARTED];
+            const actionLabel = TASK_ACTION_LABEL[next.status] ?? TASK_ACTION_LABEL[TASK_STATUS.NOT_STARTED];
             return (
               <li key={group.courseId} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
                 <img src={courseImageUrl(group.courseImage, 160)} alt="" loading="lazy" decoding="async" onError={hideOnError} className="h-12 w-16 shrink-0 rounded bg-surface object-cover" />
@@ -344,7 +345,7 @@ function UpcomingSchedule({ deadlines, maxGroups = 3 }) {
  * flight. Owns the resume-context derivation (icon, type label, deep link)
  * since nothing else consumes it.
  */
-function ContinueLearningSection({ course }) {
+function ContinueLearningSection({ course, paceEntry }) {
   if (!course) {
     return (
       <section className="card mb-8 px-4 py-12">
@@ -407,6 +408,16 @@ function ContinueLearningSection({ course }) {
               <ResumeIcon size={16} className="shrink-0 text-brand" aria-hidden="true" />
               <span className="line-clamp-1">{course.resumeTitle}</span>
             </p>
+            {paceEntry?.estCompletion && (
+              <p className="mt-2 inline-flex items-center gap-1.5 text-sm-fluid text-ink-muted">
+                <CalendarClock size={13} aria-hidden="true" />
+                Est. finish{" "}
+                {paceEntry.estCompletion.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </p>
+            )}
           </div>
 
           <Link
@@ -423,10 +434,44 @@ function ContinueLearningSection({ course }) {
 }
 
 /**
- * Zone 2 — progress overview: stat pills row plus the streak/overall-ring and
- * per-category cards in an auto-fit two-up grid.
+ * Zone 2 — weekly study goal: how many hours the learner has logged this week
+ * against a fixed target, rendered as a progress ring with a supportive label.
  */
-function ProgressOverviewSection({ stats, overallProgress, completedCount, totalEnrolled, categoryBreakdown, streak }) {
+function WeeklyGoalCard({ thisWeekHours, goalHours }) {
+  const pct = goalHours > 0 ? Math.min(100, Math.round((thisWeekHours / goalHours) * 100)) : 0;
+  const reached = thisWeekHours >= goalHours;
+  return (
+    <div className="card flex flex-col gap-4 p-6">
+      <div className="flex items-center gap-2">
+        <Target size={18} className="text-brand" aria-hidden="true" />
+        <h2 className="text-body-lg font-semibold text-ink">Weekly Study Goal</h2>
+      </div>
+      <div className="flex items-center gap-5">
+        <div className="relative h-20 w-20 shrink-0">
+          <ProgressRing progress={pct} size={80} stroke={9} />
+          <span className="absolute inset-0 flex items-center justify-center text-sm-fluid font-semibold text-ink">
+            {pct}%
+          </span>
+        </div>
+        <div className="min-w-0">
+          <p className="text-metric font-semibold text-ink">
+            {thisWeekHours}
+            <span className="text-sm-fluid font-normal text-ink-muted"> / {goalHours} hrs</span>
+          </p>
+          <p className={`mt-0.5 text-sm-fluid ${reached ? "text-success" : "text-ink-muted"}`}>
+            {reached ? "Goal reached — great work!" : "Keep going to hit your goal"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Zone 2 — progress overview: stat pills row plus the streak/overall-ring,
+ * per-category cards, and the weekly goal in an auto-fit grid.
+ */
+function ProgressOverviewSection({ stats, overallProgress, completedCount, totalEnrolled, categoryBreakdown, streak, weeklyGoal }) {
   return (
     <>
       <StatPills stats={stats} />
@@ -443,6 +488,7 @@ function ProgressOverviewSection({ stats, overallProgress, completedCount, total
           </div>
           <CategoryProgressBars categories={categoryBreakdown} />
         </div>
+        <WeeklyGoalCard thisWeekHours={weeklyGoal.thisWeekHours} goalHours={weeklyGoal.goalHours} />
       </Motion.div>
     </>
   );
@@ -511,6 +557,12 @@ export default function StudentDashboardPage() {
   const recommendedCourses = getRecommendedCourses(RECOMMENDATION_COUNT);
   const streak = getStreak(nowMs);
   const thisWeekHours = getLearningActivity().at(-1)?.hours ?? 0;
+  const WEEKLY_GOAL_HOURS = 5;
+  const { pace } = getLearningPace(nowMs);
+  const paceByCourse = useMemo(
+    () => Object.fromEntries(pace.map((p) => [p.courseId, p])),
+    [pace]
+  );
 
   // --- Derived metrics ---
   const continueCourse = enrolledCourses
@@ -598,7 +650,10 @@ export default function StudentDashboardPage() {
     <>
       {pageHeader}
 
-      <ContinueLearningSection course={continueCourse} />
+      <ContinueLearningSection
+        course={continueCourse}
+        paceEntry={continueCourse ? paceByCourse[continueCourse.id] : null}
+      />
 
       <ProgressOverviewSection
         stats={statPillsData}
@@ -607,6 +662,7 @@ export default function StudentDashboardPage() {
         totalEnrolled={totalEnrolled}
         categoryBreakdown={categoryBreakdown}
         streak={streak}
+        weeklyGoal={{ thisWeekHours, goalHours: WEEKLY_GOAL_HOURS }}
       />
 
       <UpcomingSchedule deadlines={urgentDeadlines} />

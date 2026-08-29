@@ -8,7 +8,7 @@ import Breadcrumbs from "src/components/Breadcrumbs";
 import CourseCard from "src/components/CourseCard";
 import EnrollCard from "src/components/EnrollCard";
 import CourseSectionNav from "src/components/CourseSectionNav";
-import { getCourseById, getRelatedCourses as exportGetRelatedCourses } from "src/data/courses";
+import { getCourseById, getRelatedCourses as exportGetRelatedCourses } from "src/services/courses";
 import {
   BookOpen,
   Users,
@@ -23,8 +23,8 @@ import WishlistHeartButton from "src/components/student/WishlistHeartButton";
 import PublicCourseStructure from "src/components/PublicCourseStructure";
 import Stars from "src/components/Stars";
 import { AVATAR_PLACEHOLDER, avatarFallback } from "src/lib/assets";
-import { getCourseReviews } from "src/data/reviewsData";
-import { getLessonMedia } from "src/data/lessonMedia";
+import { getCourseReviews } from "src/services/courses";
+import { getLessonMedia } from "src/services/lessonMedia";
 import { formatTotalDuration, parsePrice } from "src/lib/format";
 import {
   fadeUp,
