@@ -1,13 +1,13 @@
 /**
- * Mock learner reviews, shaped like a single API list resource.
- * Each review references its course via `courseId`; the helper below
- * filters this list the same way a `/reviews?courseId=` query would.
+ * Mock learner reviews. Each review references its course via `courseId`;
+ * the course query layer (src/services/courses.js) filters this list the same
+ * way a `/reviews?courseId=` query would.
  *
  * Avatars are production-quality placeholder portraits from randomuser.me
  * (readymade internet resource — see DECISIONS.md → Architecture & data →
  * Placeholder assets). Reviewers appearing more than once share one photo;
  * a missing avatar falls back to the standard placeholder asset
- * (`public/avatar-placeholder.png`).
+ * (`src/assets/avatar-placeholder.png`).
  *
  * @typedef {Object} CourseReview
  * @property {number} id
@@ -20,6 +20,7 @@
  * @property {string} text
  */
 
+/** @type {CourseReview[]} */
 export const reviews = [
   { id: 1, courseId: 1, author: "Marcus Webber", avatar: "https://randomuser.me/api/portraits/men/1.jpg", role: "Freelance Developer", rating: 5, date: "Jul 2026", text: "Built and shipped my own SaaS in under six weeks — the API integration section finally made async flows click." },
   { id: 2, courseId: 1, author: "Priya Nair", avatar: "https://randomuser.me/api/portraits/women/1.jpg", role: "Frontend Engineer", rating: 4, date: "Jun 2026", text: "Great project-based pacing. I'd have liked a bit more on testing, but the deployment walkthrough is gold." },
@@ -97,6 +98,3 @@ export const reviews = [
   { id: 56, courseId: 19, author: "Mohammed Khan", avatar: "https://randomuser.me/api/portraits/men/62.jpg", role: "Data Scientist", rating: 5, date: "May 2026", text: "Rigorous, applied research with a real defense panel. I published from my work." },
   { id: 57, courseId: 19, author: "Clara Becker", avatar: "https://randomuser.me/api/portraits/women/21.jpg", role: "PhD Candidate", rating: 4, date: "Apr 2026", text: "Demanding but fair. The methods labs prepared me well for independent research." },
 ];
-
-export const getCourseReviews = (courseId) =>
-  reviews.filter((review) => review.courseId === courseId);

@@ -1,4 +1,23 @@
-{
+/**
+ * Per-course curriculum, keyed by course id (the catalog course id space).
+ *
+ * @typedef {Object} CurriculumLesson
+ * @property {string} title
+ * @property {string} duration Display duration label ("10 mins").
+ * @property {"video"|"article"|"quiz"|"exercise"|"project"|"resource"} [type]
+ * @property {boolean} [preview] Free-preview lesson (watchable before enrollment).
+ *
+ * @typedef {Object} CurriculumSection
+ * @property {string} title
+ * @property {number} lectures
+ * @property {string} duration
+ * @property {CurriculumLesson[]} lessons
+ *
+ * @typedef {Object<string, CurriculumSection[]>} Curriculum
+ */
+
+/** @type {Curriculum} */
+const curriculum = {
   "1": [
     {
       "title": "Project Introduction",
@@ -3103,4 +3122,6 @@
       ]
     }
   ]
-}
+};
+
+export default curriculum;

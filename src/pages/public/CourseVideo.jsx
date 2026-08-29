@@ -7,7 +7,7 @@ import Footer from "src/components/Footer";
 import Breadcrumbs from "src/components/Breadcrumbs";
 import CourseStructure from "src/components/CourseStructure";
 import { LoginPopup, SignupPopup } from "src/components/AuthPopups";
-import { getCourseById } from "src/data/courses";
+import { getCourseById } from "src/services/courses";
 import captions from "src/assets/demo-captions.vtt?url";
 import { easeArrive } from "src/lib/animationVariants";
 

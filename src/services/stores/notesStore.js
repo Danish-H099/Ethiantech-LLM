@@ -1,27 +1,13 @@
-// Private persistence adapter for learner-authored course notes.
-//
-// UI never touches localStorage directly — every read/write goes through
-// studentRepository, which composes this module with the catalog. The shape is
-// intentionally simple and backend-shaped so a future API client can replace the
-// localStorage calls without changing the repository's public signatures.
-//
-// Stored shape:
-// {
-//   notes: Note[],          // { id, courseId, courseName, title, content, date }
-//   nextId: number
-// }
-
-import { courseNotes } from "src/data/student/notes";
+import { notes } from "src/data/notes";
 
 const STORAGE_KEY = "ethiantech-student-notes";
 
-// In-memory mirror so repeated reads in one session don't re-parse localStorage.
 let memoryStore = null;
 
 function seedStore() {
-  const notes = courseNotes.map((n) => ({ ...n }));
-  const nextId = notes.reduce((max, n) => Math.max(max, Number(n.id) || 0), 0) + 1;
-  return { notes, nextId };
+  const seed = notes.map((n) => ({ ...n }));
+  const nextId = seed.reduce((max, n) => Math.max(max, Number(n.id) || 0), 0) + 1;
+  return { notes: seed, nextId };
 }
 
 function readStore() {
@@ -32,11 +18,10 @@ function readStore() {
       typeof localStorage !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
     if (raw) parsed = JSON.parse(raw);
   } catch {
-    // Corrupt JSON — start clean rather than throwing.
+
     parsed = null;
   }
-  // Reject anything that isn't a plain object with a notes array so a malformed
-  // top-level value can't poison downstream reads.
+
   if (
     !parsed ||
     typeof parsed !== "object" ||
@@ -62,7 +47,7 @@ function writeStore(store) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
     }
   } catch {
-    // Quota exceeded or privacy mode — degrade to in-memory only.
+    return;
   }
 }
 
@@ -74,18 +59,15 @@ function formatNoteDate() {
   });
 }
 
-/** All notes, in stored order. */
 export function getAllNotes() {
   return readStore().notes.slice();
 }
 
-/** Notes for one course (lookup by stable courseId, not courseName). */
 export function getNotesForCourse(courseId) {
   const numericId = Number(courseId);
   return readStore().notes.filter((n) => Number(n.courseId) === numericId);
 }
 
-/** Create a note. Returns the created Note. */
 export function addNote(courseId, courseName, title, content) {
   const store = readStore();
   const note = {
@@ -102,7 +84,6 @@ export function addNote(courseId, courseName, title, content) {
   return note;
 }
 
-/** Update a note's title/content. Returns the updated Note, or null when not found. */
 export function updateNote(noteId, title, content) {
   const store = readStore();
   const idx = store.notes.findIndex((n) => n.id === noteId);
@@ -112,7 +93,6 @@ export function updateNote(noteId, title, content) {
   return store.notes[idx];
 }
 
-/** Delete a note. Returns true when something was removed. */
 export function deleteNote(noteId) {
   const store = readStore();
   const next = store.notes.filter((n) => n.id !== noteId);
@@ -122,14 +102,6 @@ export function deleteNote(noteId) {
   return true;
 }
 
-/**
- * Notes scoped to a single lesson within a course. Looks up by the stable
- * courseId + opaque lessonId; course-level notes (no lessonId) are excluded.
- *
- * @param {string|number} courseId
- * @param {string} lessonId
- * @returns {Note[]}
- */
 export function getNotesForLesson(courseId, lessonId) {
   const numericId = Number(courseId);
   const lid = String(lessonId);
@@ -138,18 +110,6 @@ export function getNotesForLesson(courseId, lessonId) {
   );
 }
 
-/**
- * Create a per-lesson note. Returns the created Note. `lessonId`/`lessonTitle`
- * are optional so the same store backs both course- and lesson-level notes.
- *
- * @param {string|number} courseId
- * @param {string} courseName
- * @param {string} lessonId
- * @param {string} lessonTitle
- * @param {string} title
- * @param {string} content
- * @returns {Note}
- */
 export function addLessonNote(courseId, courseName, lessonId, lessonTitle, title, content) {
   const store = readStore();
   const note = {
@@ -168,11 +128,6 @@ export function addLessonNote(courseId, courseName, lessonId, lessonTitle, title
   return note;
 }
 
-/**
- * Most recent N notes by date descending, shaped for dashboard summary cards:
- * { id, courseId, courseName, preview, date }. Presentation-only fields
- * (e.g. course thumbnails) are composed downstream by studentRepository.
- */
 export function getRecentNotes(limit = 5) {
   const notes = readStore().notes.slice();
   notes.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));

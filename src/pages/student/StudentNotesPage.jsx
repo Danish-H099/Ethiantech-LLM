@@ -14,11 +14,11 @@ import {
   addNote,
   updateNote,
   deleteNote,
-} from "src/data/studentRepository";
+} from "src/services/studentRepository";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
 import { fadeIn, viewportOnce, createStaggerItem } from "src/lib/animationVariants";
-import { NOTEBOOK_COLORS } from "src/data/chartColors";
-import { GRID_STROKE } from "src/data/ChartDefaults";
+import { NOTEBOOK_COLORS } from "src/data/chart";
+import { GRID_STROKE } from "src/data/chart";
 
 const courseColors = NOTEBOOK_COLORS;
 

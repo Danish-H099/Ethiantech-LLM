@@ -2,16 +2,24 @@
  * Mock course announcements for the student course overview.
  *
  * Keyed by catalog course id with a `default` fallback so every enrolled
- * course renders something even when no course-specific seed exists. Dates are
- * generated relative to "now" so the demo always shows a believable recency
- * mix. Replace this whole module with a real `GET /courses/:id/announcements`
- * response without touching the page or presentation components.
+ * course renders something even when no specific course record exists. Dates
+ * are generated relative to "now" so the demo always shows a believable
+ * recency mix. Consumed only via studentRepository.getCourseAnnouncementsFor.
+ *
+ * @typedef {Object} Announcement
+ * @property {string} id Stable id ("c3-a1").
+ * @property {string} title
+ * @property {string} body
+ * @property {string} date ISO timestamp (generated relative to "now").
+ * @property {string} author
+ * @property {boolean} [pinned]
  */
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const daysAgo = (d) => new Date(Date.now() - d * DAY_MS).toISOString();
 
-const SEED = {
+/** @type {Object<string, Announcement[]>} */
+export const announcements = {
   3: [
     {
       id: "c3-a1",
@@ -53,9 +61,3 @@ const SEED = {
     },
   ],
 };
-
-/** Returns announcements for a course, newest first. */
-export const getCourseAnnouncements = (courseId) =>
-  [...(SEED[courseId] ?? SEED.default)].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );

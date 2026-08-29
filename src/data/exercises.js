@@ -25,7 +25,7 @@
  * @property {string[]} [hints]       Optional step-by-step hints shown collapsed.
  */
 
-const exerciseData = {
+const exercises = {
   // Course 1 — Build Text-to-Image SaaS App in React JS
   "1-s1-l3": {
     title: "Initial Git Repository Setup",
@@ -155,4 +155,4 @@ const exerciseData = {
   },
 };
 
-export default exerciseData;
+export default exercises;

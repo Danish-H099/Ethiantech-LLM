@@ -83,8 +83,6 @@ export const allUsers = [
   { id: 15, name: "Emma Brown", email: "emma@student.com", role: "Student", joined: "Jun 19, 2024", status: "Active" },
 ];
 
-// Function wrappers — pages should call these instead of importing arrays directly.
-// This keeps data access consistent with studentRepository and makes future API swaps trivial.
 export function getAdminStats() {
   return statCards;
 }

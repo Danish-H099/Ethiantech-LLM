@@ -20,7 +20,7 @@ import SortSelect, { sortCourses } from "src/components/SortSelect";
 import SubcategoryBar from "src/components/SubcategoryBar";
 import { AuthPopupGate } from "src/components/AuthPopups";
 
-import courses from "src/data/courses";
+import courses from "src/services/courses";
 
 import {
   createStaggerItem,

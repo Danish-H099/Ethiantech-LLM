@@ -1,8 +1,3 @@
-/**
- * Dashboard metrics for the logged-in tutor.
- * Exported as named values so tutor pages can import only what they need.
- */
-
 export const tutorStats = [
   { label: "Total Earnings", value: "$62,025", change: "+12.5%", up: true, iconName: "DollarSign" },
   { label: "Total Students", value: "2,820", change: "+8.2%", up: true, iconName: "Users" },
@@ -28,7 +23,6 @@ export const studentsOverTime = [
   { month: "Dec", students: 565 },
 ];
 
-// Function wrappers — pages should call these instead of importing arrays directly.
 export function getTutorStats() {
   return tutorStats;
 }

@@ -26,7 +26,7 @@
  * @property {number|null} maxAttempts null = unlimited; otherwise exactly N attempts.
  * @property {QuizQuestion[]} questions
  */
-const quizData = {
+const quizzes = {
   "3-s2-l0": {
     passingScore: 60,
     maxAttempts: 3,
@@ -308,4 +308,4 @@ const quizData = {
   },
 };
 
-export default quizData;
+export default quizzes;

@@ -7,7 +7,7 @@ import {
   saveSubmissionDraft,
   submitAssignmentAttempt,
   resetSubmission,
-} from "src/data/studentRepository";
+} from "src/services/studentRepository";
 import { createReveal } from "src/lib/animationVariants";
 import {
   HelpCircle,

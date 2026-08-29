@@ -1,8 +1,17 @@
-// Tutor-domain roster — learners enrolled across courses, consumed by
-// tutor-facing pages (dashboard "Recent Enrollments" and the full
-// "Students Enrolled" table). Distinct from the current learner's personal
-// enrollment data (src/data/student/enrollment).
+/**
+ * Tutor-domain roster — learners enrolled across courses, consumed by
+ * tutor-facing pages (dashboard "Recent Enrollments" and the full
+ * "Students Enrolled" table). Distinct from the current learner's personal
+ * enrollment records (src/data/enrollments.js).
+ *
+ * @typedef {Object} EnrolledStudent
+ * @property {number} id
+ * @property {string} name
+ * @property {string} course Catalog course title.
+ * @property {string} date Enrollment date label ("22 Aug, 2024").
+ */
 
+/** @type {EnrolledStudent[]} */
 export const studentRoster = [
   { id: 1, name: "Richard Sanford", course: "React Router Complete Course in One Video", date: "22 Aug, 2024" },
   { id: 2, name: "Alison Powell", course: "Build AI BG Removal SaaS App in React JS", date: "22 Aug, 2024" },
