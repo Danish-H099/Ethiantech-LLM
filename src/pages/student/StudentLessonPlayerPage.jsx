@@ -23,8 +23,8 @@ import {
   User,
 } from "lucide-react";
 
-import Breadcrumbs from "src/components/Breadcrumbs";
-import ProgressRing from "src/components/ProgressRing";
+import Breadcrumbs from "src/components/ui/Breadcrumbs";
+import ProgressRing from "src/components/ui/ProgressRing";
 import CourseSyllabus from "src/components/student/CourseSyllabus";
 import LessonStatusIcon from "src/components/student/LessonStatusIcon";
 import LessonPlayerPlaceholder from "src/components/student/LessonPlayerPlaceholder";

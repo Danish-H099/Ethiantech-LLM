@@ -1,18 +1,7 @@
-/* eslint-disable react-hooks/static-components -- Icon resolved from IconMap per render via getIcon() is the project convention */
-import { getIcon } from "src/components/IconMap";
+﻿/* eslint-disable react-hooks/static-components -- Icon resolved from IconMap per render via getIcon() is the project convention */
+import { getIcon } from "src/components/ui/IconMap";
 
-/**
- * DashboardStatCard — shared stat card for admin/tutor dashboards.
- * Shows an icon, label, value, and a trend badge.
- *
- * @param {string} label - Stat label
- * @param {string} value - Stat value (already formatted)
- * @param {string} change - Trend text e.g. "+12.5%"
- * @param {boolean} up - true = green up, false = red down
- * @param {string} accent - Icon/accent color (hex)
- * @param {string} iconName - lucide icon name (resolved via IconMap)
- * @param {React.Component} icon - Direct icon component (alternative to iconName)
- */
+
 export default function DashboardStatCard({ label, value, change, up, accent, iconName, icon: IconProp }) {
   const Icon = IconProp || getIcon(iconName);
   return (
@@ -39,3 +28,4 @@ export default function DashboardStatCard({ label, value, change, up, accent, ic
     </div>
   );
 }
+

@@ -15,10 +15,10 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 
-import ProgressRing from "src/components/ProgressRing";
-import { getIcon } from "src/components/IconMap";
+import ProgressRing from "src/components/ui/ProgressRing";
+import { getIcon } from "src/components/ui/IconMap";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
-import Stars from "src/components/Stars";
+import Stars from "src/components/ui/Stars";
 import { hideOnError } from "src/lib/assets";
 
 import { CHART_ACCENTS } from "src/data/chart";

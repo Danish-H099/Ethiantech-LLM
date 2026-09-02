@@ -4,7 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { m as Motion, useReducedMotion } from "motion/react";
 import Header from "src/components/Header";
 import Footer from "src/components/Footer";
-import Breadcrumbs from "src/components/Breadcrumbs";
+import Breadcrumbs from "src/components/ui/Breadcrumbs";
 import CourseCard from "src/components/CourseCard";
 import EnrollCard from "src/components/EnrollCard";
 import CourseSectionNav from "src/components/CourseSectionNav";
@@ -21,7 +21,7 @@ import {
 import { AuthPopupGate } from "src/components/AuthPopups";
 import WishlistHeartButton from "src/components/student/WishlistHeartButton";
 import PublicCourseStructure from "src/components/PublicCourseStructure";
-import Stars from "src/components/Stars";
+import Stars from "src/components/ui/Stars";
 import { AVATAR_PLACEHOLDER, avatarFallback } from "src/lib/assets";
 import { getCourseReviews } from "src/services/courses";
 import { getLessonMedia } from "src/services/lessonMedia";

@@ -13,7 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { DollarSign, Users } from "lucide-react";
-import { getIcon } from "src/components/IconMap";
+import { getIcon } from "src/components/ui/IconMap";
 import { getTutorStats, getEarningsOverTime, getStudentsOverTime } from "src/services/tutorDashboard";
 import { studentRoster } from "src/data/roster";
 import { CHART_ACCENTS, CHART_PINK } from "src/data/chart";

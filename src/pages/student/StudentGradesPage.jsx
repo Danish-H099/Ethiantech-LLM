@@ -19,8 +19,8 @@ import { formatRelativeTime } from "src/lib/format";
 import { fadeIn } from "src/lib/animationVariants";
 import { hideOnError } from "src/lib/assets";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
-import StatusBadge from "src/components/StatusBadge";
-import ProgressRing from "src/components/ProgressRing";
+import StatusBadge from "src/components/ui/StatusBadge";
+import ProgressRing from "src/components/ui/ProgressRing";
 
 const GPA_SCALE = { A: 4.0, "A-": 3.7, "B+": 3.3, B: 3.0, "B-": 2.7, "C+": 2.3, C: 2.0 };
 

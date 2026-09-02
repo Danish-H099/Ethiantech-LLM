@@ -6,7 +6,7 @@ import CourseDetailsPage from "src/pages/public/CourseDetailsPage";
 import TutorLayout from "src/components/tutor/TutorLayout";
 import AdminLayout from "src/components/admin/AdminLayout";
 import StudentLayout from "src/components/student/StudentLayout";
-import RouteLoader from "src/components/RouteLoader";
+import RouteLoader from "src/components/ui/RouteLoader";
 import "src/App.css";
 
 // Learning player + all authenticated app pages stay lazy (route-level code splitting).

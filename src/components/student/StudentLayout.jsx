@@ -17,7 +17,7 @@ import {
 import { clearMockAuth } from "src/utils/authMock";
 import StudentNavbar from "src/components/student/StudentNavbar";
 import Footer from "src/components/Footer";
-import RouteLoader from "src/components/RouteLoader";
+import RouteLoader from "src/components/ui/RouteLoader";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/student/dashboard" },

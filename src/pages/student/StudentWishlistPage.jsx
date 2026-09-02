@@ -16,7 +16,7 @@ import {
 } from "src/lib/animationVariants";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
 import WishlistHeartButton from "src/components/student/WishlistHeartButton";
-import Stars from "src/components/Stars";
+import Stars from "src/components/ui/Stars";
 import { hideOnError } from "src/lib/assets";
 
 // ---------------------------------------------------------------- sections

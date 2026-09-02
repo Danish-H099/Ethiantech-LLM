@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { m as Motion, useReducedMotion } from "motion/react";
 import { createCardHover } from "src/lib/animationVariants";
 import { avatarFallback } from "src/lib/assets";
-import Stars from "src/components/Stars";
+import Stars from "src/components/ui/Stars";
 
 export default function TestimonialCard({ item, isExpanded, onToggle, quoteId }) {
   const shouldReduceMotion = useReducedMotion();

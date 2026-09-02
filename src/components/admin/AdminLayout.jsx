@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import AdminNavbar from "src/components/admin/AdminNavbar";
 import Footer from "src/components/Footer";
-import RouteLoader from "src/components/RouteLoader";
+import RouteLoader from "src/components/ui/RouteLoader";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
