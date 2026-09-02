@@ -7,6 +7,7 @@ import TutorLayout from "src/components/tutor/TutorLayout";
 import AdminLayout from "src/components/admin/AdminLayout";
 import StudentLayout from "src/components/student/StudentLayout";
 import RouteLoader from "src/components/ui/RouteLoader";
+import { Toaster } from "sonner";
 import "src/App.css";
 
 // Learning player + all authenticated app pages stay lazy (route-level code splitting).
@@ -53,6 +54,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/courses" element={<CourseListPage />} />

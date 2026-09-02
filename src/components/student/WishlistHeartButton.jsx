@@ -1,51 +1,58 @@
 import { useState } from "react";
-import { Heart } from "lucide-react";
-import { toggleWishlist, isCourseWishlisted } from "src/services/studentRepository";
+import { Heart, Check } from "lucide-react";
+import { addCourseToWishlist, isCourseWishlisted } from "src/services/studentRepository";
 import { isStudentAuthed } from "src/utils/authMock";
+
 export default function WishlistHeartButton({
   courseId,
   title,
-  onToggle,
+  onSave,
   onLoginClick,
   size = 18,
   withLabel = false,
   className = "",
 }) {
   const numericId = Number(courseId);
-  const [wishlisted, setWishlisted] = useState(() => isCourseWishlisted(numericId));
+  const [saved, setSaved] = useState(() => isCourseWishlisted(numericId));
 
   function handleClick(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (onLoginClick && !isStudentAuthed()) {
-      onLoginClick();
+    if (!isStudentAuthed()) {
+      try {
+        sessionStorage.setItem(
+          "ethiantech_login_return_to",
+          window.location.pathname
+        );
+      } catch {
+        // ignore storage failures (private mode, quota, etc.)
+      }
+      if (onLoginClick) onLoginClick();
       return;
     }
-    const result = toggleWishlist(numericId);
-    setWishlisted(result.added);
-    if (onToggle) onToggle(result.added, numericId);
+    addCourseToWishlist(numericId);
+    setSaved(true);
+    if (onSave) onSave();
   }
 
   const courseLabel = title || "course";
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      aria-pressed={wishlisted}
-      aria-label={
-        wishlisted
-          ? `Remove ${courseLabel} from wishlist`
-          : `Add ${courseLabel} to wishlist`
-      }
-      className={className}
-    >
-      <Heart size={size} className={wishlisted ? "fill-brand text-brand" : "text-ink-muted"} />
-      {withLabel && (
-        <span>
-          {wishlisted ? "Saved to wishlist" : "Save to wishlist"}
-        </span>
-      )}
-    </button>
+      <button
+        type="button"
+        onClick={saved ? undefined : handleClick}
+        aria-label={
+          saved ? "Saved to wishlist" : `Add ${courseLabel} to wishlist`
+        }
+        disabled={saved}
+        className={`${className} select-none whitespace-nowrap`}
+      >
+        {saved ? (
+          <Check size={size} className="fill-current text-current" aria-hidden="true" />
+        ) : (
+          <Heart size={size} className="text-current" aria-hidden="true" />
+        )}
+        {withLabel && <span>{saved ? "Saved to wishlist" : "Save to wishlist"}</span>}
+      </button>
   );
 }

@@ -1233,18 +1233,7 @@ export { getCommentsForLesson, addComment };
 
 export function getWishlistedCourses() {
   return getWishlistIds()
-    .map((id) => {
-      const course = getCourseById(id);
-      if (!course) return null;
-      return {
-        id: course.id,
-        title: course.title,
-        image: course.image,
-        instructor: course.instructors?.[0]?.name || "Instructor",
-        rating: course.rating,
-        price: course.price,
-      };
-    })
+    .map((id) => getCourseById(id))
     .filter(Boolean);
 }
 

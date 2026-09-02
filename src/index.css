@@ -171,7 +171,7 @@
   }
 
   .btn-outline {
-    @apply border border-brand font-medium text-brand-strong hover:bg-brand hover:text-white active:scale-[0.97] active:duration-press;
+    @apply border border-brand font-medium text-brand-strong hover:bg-brand hover:text-white active:scale-[0.97] active:duration-press disabled:scale-100 disabled:border-border disabled:bg-transparent disabled:text-ink-muted disabled:opacity-70 disabled:shadow-none disabled:cursor-default;
   }
 
   .btn-outline:focus-visible {
@@ -375,4 +375,46 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 .tooltip-content[data-state="closed"] {
   animation: tooltipOut 100ms var(--ease-depart);
+}
+
+/* ------------------------------------------------------------------
+   Sonner toast — themed to match DS-006/009 design tokens.
+   Uses text-sm-fluid for responsive text, card-like styling with
+   border + shadow-dropdown, and project color tokens throughout.
+   ------------------------------------------------------------------ */
+[data-sonner-toaster] {
+  --normal-bg: white;
+  --normal-border: var(--color-border);
+  --normal-text: var(--color-ink);
+  --success-bg: var(--color-success-soft);
+  --success-border: var(--color-success);
+  --success-text: var(--color-ink);
+  --error-bg: var(--color-error-soft);
+  --error-border: var(--color-error);
+  --error-text: var(--color-ink);
+  --loader-color: var(--color-brand);
+  font-family: var(--font-inter);
+}
+
+[data-sonner-toaster] [data-sonner-toast] {
+  background: var(--normal-bg);
+  border: 1px solid var(--normal-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-dropdown);
+  font-size: var(--text-sm-fluid);
+  line-height: 1.65;
+  color: var(--normal-text);
+  padding: 0.75rem 1rem;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="success"] {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-text);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] {
+  background: var(--error-bg);
+  border-color: var(--error-border);
+  color: var(--error-text);
 }
