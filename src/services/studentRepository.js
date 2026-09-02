@@ -368,15 +368,7 @@ export function getRecommendedCourses(limit = 4) {
           (a, b) => b.matchCount - a.matchCount || b.rating - a.rating
         );
 
-  return ranked.slice(0, limit).map((candidate) => ({
-    id: candidate.id,
-    title: candidate.title,
-    image: candidate.image,
-    instructorName: candidate.instructorName,
-    rating: candidate.rating,
-    price: candidate.price,
-    category: candidate.category,
-  }));
+  return ranked.slice(0, limit).map((c) => getCourseById(c.id)).filter(Boolean);
 }
 
 function materializeModel(courseId) {
@@ -1233,18 +1225,7 @@ export { getCommentsForLesson, addComment };
 
 export function getWishlistedCourses() {
   return getWishlistIds()
-    .map((id) => {
-      const course = getCourseById(id);
-      if (!course) return null;
-      return {
-        id: course.id,
-        title: course.title,
-        image: course.image,
-        instructor: course.instructors?.[0]?.name || "Instructor",
-        rating: course.rating,
-        price: course.price,
-      };
-    })
+    .map((id) => getCourseById(id))
     .filter(Boolean);
 }
 
@@ -1260,6 +1241,10 @@ export function toggleWishlist(courseId) {
 
 export function isCourseWishlisted(courseId) {
   return isInWishlist(courseId);
+}
+
+export function addCourseToWishlist(courseId) {
+  addToWishlist(courseId);
 }
 
 export function enrollFromWishlist(courseId) {

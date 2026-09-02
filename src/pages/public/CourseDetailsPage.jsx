@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import * as Dialog from "@radix-ui/react-dialog";
 import { m as Motion, useReducedMotion } from "motion/react";
 import Header from "src/components/Header";
 import Footer from "src/components/Footer";
-import Breadcrumbs from "src/components/Breadcrumbs";
+import Breadcrumbs from "src/components/ui/Breadcrumbs";
 import CourseCard from "src/components/CourseCard";
 import EnrollCard from "src/components/EnrollCard";
 import CourseSectionNav from "src/components/CourseSectionNav";
@@ -19,9 +19,9 @@ import {
   Building2,
 } from "lucide-react";
 import { AuthPopupGate } from "src/components/AuthPopups";
-import WishlistHeartButton from "src/components/student/WishlistHeartButton";
 import PublicCourseStructure from "src/components/PublicCourseStructure";
-import Stars from "src/components/Stars";
+import WishlistHeartButton from "src/components/student/WishlistHeartButton";
+import Stars from "src/components/ui/Stars";
 import { AVATAR_PLACEHOLDER, avatarFallback } from "src/lib/assets";
 import { getCourseReviews } from "src/services/courses";
 import { getLessonMedia } from "src/services/lessonMedia";
@@ -33,6 +33,7 @@ import {
   createStaggerItem,
   buttonPress,
 } from "src/lib/animationVariants";
+import { toast } from "sonner";
 
 function SectionReveal({ className, id, children }) {
   return (
@@ -289,6 +290,7 @@ function BulletList({ items }) {
 }
 
 function CourseHero({ course, staggerItem, mobileCardRef, enrollProps, onLoginClick }) {
+  const navigate = useNavigate();
   return (
     <Motion.div
       variants={staggerContainer}
@@ -356,6 +358,25 @@ function CourseHero({ course, staggerItem, mobileCardRef, enrollProps, onLoginCl
           <Users size={16} />
           {course.students.toLocaleString()} students
         </span>
+        <WishlistHeartButton
+          courseId={course.id}
+          title={course.title}
+          withLabel
+          onLoginClick={onLoginClick}
+          onSave={() => {
+            requestAnimationFrame(() => {
+              toast.success("Course saved to wishlist", {
+                id: "wishlist",
+                duration: 8000,
+                action: {
+                  label: "View Wishlist",
+                  onClick: () => navigate("/student/wishlist"),
+                },
+              });
+            });
+          }}
+          className="btn-outline px-3 py-1.5 text-sm-fluid"
+        />
       </Motion.div>
 
       <Motion.div
@@ -398,16 +419,6 @@ function CourseHero({ course, staggerItem, mobileCardRef, enrollProps, onLoginCl
         className="card mt-10 overflow-hidden lg:hidden"
       >
         <EnrollCard {...enrollProps} />
-        <div className="border-t border-border p-4">
-            <WishlistHeartButton
-              courseId={course.id}
-              title={course.title}
-              onLoginClick={onLoginClick}
-              withLabel
-              size={18}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-brand px-4 py-2.5 text-sm-fluid font-medium text-brand-strong transition hover:bg-brand hover:text-white"
-            />
-        </div>
       </Motion.div>
     </Motion.div>
   );
@@ -504,22 +515,12 @@ function CourseContent({ course, reviews, relatedCourses, staggerItem, totalDura
   );
 }
 
-function CourseSidebar({ enrollProps, course, onLoginClick }) {
+function CourseSidebar({ enrollProps }) {
   return (
     <aside className="hidden w-full shrink-0 lg:block lg:w-[380px]">
       <div className="sticky top-28 space-y-5">
         <SectionReveal className="card scrollbar-brand max-h-[calc(100vh-7rem)] overflow-y-auto">
           <EnrollCard {...enrollProps} />
-          <div className="border-t border-border p-4">
-            <WishlistHeartButton
-              courseId={course.id}
-              title={course.title}
-              onLoginClick={onLoginClick}
-              withLabel
-              size={18}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-brand px-4 py-2.5 text-sm-fluid font-medium text-brand-strong transition hover:bg-brand hover:text-white"
-            />
-          </div>
         </SectionReveal>
       </div>
     </aside>
@@ -742,8 +743,6 @@ export default function CourseDetailsPage() {
             </div>
             <CourseSidebar
               enrollProps={enrollProps}
-              course={course}
-              onLoginClick={() => setPopupState("login")}
             />
           </div>
         </section>

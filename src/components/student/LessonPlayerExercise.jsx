@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback, useId, useRef } from "react";
 import { m as Motion, useReducedMotion } from "motion/react";
-import * as Dialog from "@radix-ui/react-dialog";
 import {
   getExerciseData,
   getSubmissionRecord,
@@ -10,7 +9,6 @@ import {
 } from "src/services/studentRepository";
 import { createReveal } from "src/lib/animationVariants";
 import {
-  HelpCircle,
   Send,
   CheckCircle2,
   RotateCcw,
@@ -24,6 +22,7 @@ import {
 } from "lucide-react";
 import LessonPlayerPlaceholder from "src/components/student/LessonPlayerPlaceholder";
 import LessonCompleteButton from "src/components/student/LessonCompleteButton";
+import ConfirmDialog from "src/components/ui/ConfirmDialog";
 
 const MODE_INSTRUCTIONS = "instructions";
 const MODE_EDIT = "edit";
@@ -365,105 +364,6 @@ function SubmissionEditor({ spec, content, attachments, error, isReadOnly, onCha
   );
 }
 
-// ------------------------------------------------------ confirm dialog
-
-function SubmissionConfirmDialog({
-  open,
-  onConfirm,
-  onCancel,
-  typeLabel = "assignment",
-  content = "",
-  attachmentCount = 0,
-  isSubmitting = false,
-}) {
-  const contentLength = content.trim().length;
-  return (
-    <Dialog.Root open={open} onOpenChange={(o) => !o && onCancel()}>
-      <Dialog.Portal forceMount>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40" />
-        <Dialog.Content
-          asChild
-          aria-describedby={undefined}
-          onOpenAutoFocus={(e) => {
-            if (isSubmitting) {
-              e.preventDefault();
-              return;
-            }
-            e.preventDefault();
-            const btn = e.currentTarget.querySelector("[data-confirm]");
-            btn?.focus();
-          }}
-        >
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                  <HelpCircle size={22} aria-hidden="true" />
-                </div>
-                <div className="min-w-0">
-                  <Dialog.Title className="mb-1 text-body-lg font-semibold text-ink">
-                    Submit your {typeLabel.toLowerCase()}?
-                  </Dialog.Title>
-                  <Dialog.Description className="text-sm-fluid text-ink-muted">
-                    {isSubmitting
-                      ? "Submitting…"
-                      : "Review your submission before sending. After submitting, the lesson is marked complete and you'll see a read-only copy of your work."}
-                  </Dialog.Description>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-lg bg-surface p-3 text-sm-fluid">
-                <div className="flex justify-between py-1">
-                  <span className="text-ink-muted">Content length</span>
-                  <span className="font-medium text-ink">{contentLength} characters</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-ink-muted">Attachments</span>
-                  <span className="font-medium text-ink">{attachmentCount}</span>
-                </div>
-              </div>
-
-              <p className="mt-4 text-sm-fluid text-ink-muted">
-                Note: Files are saved to your browser only for this prototype.
-                Backend upload is not available yet.
-              </p>
-
-              <div className="mt-6 flex justify-end gap-3">
-                <Dialog.Close asChild>
-                  <button
-                    type="button"
-                    data-cancel
-                    disabled={isSubmitting}
-                    className="btn-outline px-4 py-2 text-sm-fluid disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-                </Dialog.Close>
-                <button
-                  type="button"
-                  data-confirm
-                  onClick={onConfirm}
-                  disabled={isSubmitting}
-                  className="btn-brand px-4 py-2 text-sm-fluid disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    "Submitting…"
-                  ) : (
-                    <>
-                      <Send size={16} aria-hidden="true" />
-                      Submit {typeLabel.toLowerCase()}
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
-  );
-}
-
 // ------------------------------------------------------- results screen
 
 function SubmissionResults({ attempt, typeLabel = "Assignment", onReset }) {
@@ -795,15 +695,40 @@ export default function LessonPlayerExercise({ resolved, courseId, isCompleted, 
           )}
         </div>
 
-        <SubmissionConfirmDialog
+        <ConfirmDialog
           open={showConfirm}
           onConfirm={handleConfirmSubmit}
           onCancel={() => setShowConfirm(false)}
-          typeLabel={typeLabel}
-          content={draft.content}
-          attachmentCount={draft.attachments.length}
-          isSubmitting={isSubmitting}
-        />
+          variant="warning"
+          isLoading={isSubmitting}
+          title={`Submit your ${typeLabel.toLowerCase()}?`}
+          description={
+            isSubmitting
+              ? "Submitting…"
+              : "Review your submission before sending. After submitting, the lesson is marked complete and you'll see a read-only copy of your work."
+          }
+          confirmLabel={`Submit ${typeLabel.toLowerCase()}`}
+          confirmIcon={Send}
+          loadingLabel="Submitting…"
+        >
+          <div className="mt-4 rounded-lg bg-surface p-3 text-sm-fluid">
+            <div className="flex justify-between py-1">
+              <span className="text-ink-muted">Content length</span>
+              <span className="font-medium text-ink">
+                {draft.content.trim().length} characters
+              </span>
+            </div>
+            <div className="flex justify-between py-1">
+              <span className="text-ink-muted">Attachments</span>
+              <span className="font-medium text-ink">{draft.attachments.length}</span>
+            </div>
+          </div>
+
+          <p className="mt-4 text-sm-fluid text-ink-muted">
+            Note: Files are saved to your browser only for this prototype.
+            Backend upload is not available yet.
+          </p>
+        </ConfirmDialog>
       </>
     );
   }

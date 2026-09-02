@@ -6,7 +6,7 @@ import { BookOpen, GraduationCap, Play } from "lucide-react";
 
 import { getEnrolledCourses } from "src/services/studentRepository";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
-import StatusBadge from "src/components/StatusBadge";
+import StatusBadge from "src/components/ui/StatusBadge";
 import LessonProgressBar from "src/components/student/LessonProgressBar";
 import {
   UnderlineTabList,

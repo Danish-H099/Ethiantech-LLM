@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+﻿import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { m as Motion, useReducedMotion } from "motion/react";
 import {
   BarChart3,
@@ -10,20 +10,16 @@ import {
   Sparkles,
   Target,
 } from "lucide-react";
-import { Navigation } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
 
-import ProgressRing from "src/components/ProgressRing";
-import { getIcon } from "src/components/IconMap";
+
+import ProgressRing from "src/components/ui/ProgressRing";
+import { getIcon } from "src/components/ui/IconMap";
+import CourseCard from "src/components/CourseCard";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
-import Stars from "src/components/Stars";
 import { hideOnError } from "src/lib/assets";
 
 import { CHART_ACCENTS } from "src/data/chart";
 import {
-  enrollInCourse,
   getEnrolledCourses,
   getLearningActivity,
   getLearningPace,
@@ -52,12 +48,8 @@ import {
 const RECOMMENDATION_COUNT = 4;
 const DEADLINE_POOL_SIZE = 10;
 const CATEGORY_LIMIT = 5;
-const SWIPER_SPEED_MS = 300;
 
-/**
- * Lesson-weighted average progress across enrolled courses, so a 40-lesson
- * course counts more than a 10-lesson one.
- */
+
 function lessonWeightedProgress(courses) {
   const totalLessons = courses.reduce((sum, c) => sum + (c.totalLessons || 0), 0);
   if (totalLessons === 0) return 0;
@@ -68,11 +60,7 @@ function lessonWeightedProgress(courses) {
   return Math.round(weighted / totalLessons);
 }
 
-/**
- * Group enrolled courses by catalog category and average progress
- * lesson-weighted within each. Colors come from CHART_ACCENTS — one accent
- * per category, assigned after ranking so they stay unique on screen.
- */
+
 function buildCategoryBreakdown(courses) {
   const byCategory = new Map();
   courses.forEach((c) => {
@@ -95,18 +83,14 @@ function buildCategoryBreakdown(courses) {
     }));
 }
 
-/**
- * Shared responsive <img>: context-sized srcSet via courseImageUrl, skeleton
- * shimmer while loading, static surface on error, and a guard for images that
- * finish from cache before onLoad attaches.
- */
+
 function CourseImage({ image, sizes, widths = [400, 800, 1200], eager = false }) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const srcSet = widths.map((w) => `${courseImageUrl(image, w)} ${w}w`).join(", ");
 
   // Cached images may already be complete when the node attaches, in which
-  // case onLoad never fires — settle the status during commit instead.
+  // case onLoad never fires â€” settle the status during commit instead.
   const attachImg = (node) => {
     if (!node?.complete) return;
     if (node.naturalWidth > 0) setLoaded(true);
@@ -134,7 +118,7 @@ function CourseImage({ image, sizes, widths = [400, 800, 1200], eager = false })
   );
 }
 
-/** Zone 2 stat pills — fluid flex-wrap row that wraps naturally as space runs out. */
+
 function StatPills({ stats }) {
   const shouldReduceMotion = useReducedMotion();
   const staggerItem = useMemo(
@@ -181,7 +165,7 @@ function StatPills({ stats }) {
   );
 }
 
-/** Zone 2 — learning streak badge; hidden when there is no live streak. */
+
 function StreakBadge({ streak }) {
   const shouldReduceMotion = useReducedMotion();
   if (!streak || streak.current <= 0) return null;
@@ -200,10 +184,7 @@ function StreakBadge({ streak }) {
   );
 }
 
-/**
- * Zone 2 — the learner's headline metric: overall course progress as a large
- * ring with the percentage centered and a label below.
- */
+
 function OverallProgressRing({ progress, label = "Overall Progress", sub }) {
   const clamped = Math.min(Math.max(progress ?? 0, 0), 100);
   return (
@@ -222,11 +203,7 @@ function OverallProgressRing({ progress, label = "Overall Progress", sub }) {
   );
 }
 
-/**
- * Zone 2 — per-category micro progress bars. One accent color per category,
- * thin 8px bars, percentage right-aligned. Caps the list and hands off to the
- * Learning Analytics page for detail.
- */
+
 function CategoryProgressBars({ categories, max = CATEGORY_LIMIT }) {
   if (!categories?.length) return null;
 
@@ -264,11 +241,7 @@ function CategoryProgressBars({ categories, max = CATEGORY_LIMIT }) {
   );
 }
 
-/**
- * Zone 3 — upcoming schedule grouped by course: each enrolled course appears
- * once with its soonest-due task, due badge, status badge, and a status-aware
- * CTA into the player.
- */
+
 function UpcomingSchedule({ deadlines, maxGroups = 3 }) {
   const byCourse = new Map();
   (deadlines || []).forEach((task) => {
@@ -283,6 +256,12 @@ function UpcomingSchedule({ deadlines, maxGroups = 3 }) {
     byCourse.get(task.courseId).tasks.push(task);
   });
   const visibleGroups = [...byCourse.values()].slice(0, maxGroups);
+
+  const shouldReduceMotion = useReducedMotion();
+  const staggerItem = useMemo(
+    () => createStaggerItem(!!shouldReduceMotion),
+    [shouldReduceMotion]
+  );
 
   return (
     <Motion.section variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewportOnce} className="mb-8" aria-label="Upcoming schedule">
@@ -300,51 +279,67 @@ function UpcomingSchedule({ deadlines, maxGroups = 3 }) {
 
       {visibleGroups.length === 0 ? (
         <div className="card p-6 text-sm-fluid text-ink-muted">
-          All caught up — no upcoming deadlines right now.
+          All caught up â€” no upcoming deadlines right now.
         </div>
       ) : (
-        <ul className="card divide-y divide-border">
-          {visibleGroups.map((group) => {
+        <Motion.div
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="space-y-4"
+        >
+          {visibleGroups.map((group, i) => {
             const next = group.tasks[0];
             const due = formatDueLabel(next.dueDate);
             const statusLabel = TASK_STATUS_LABEL[next.status] ?? TASK_STATUS_LABEL[TASK_STATUS.NOT_STARTED];
             const actionLabel = TASK_ACTION_LABEL[next.status] ?? TASK_ACTION_LABEL[TASK_STATUS.NOT_STARTED];
             return (
-              <li key={group.courseId} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
-                <img src={courseImageUrl(group.courseImage, 160)} alt="" loading="lazy" decoding="async" onError={hideOnError} className="h-12 w-16 shrink-0 rounded bg-surface object-cover" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm-fluid font-medium text-ink">{group.courseTitle}</p>
-                  <p className="mt-0.5 truncate text-sm-fluid text-ink-muted">{next.title}</p>
+              <Motion.div key={group.courseId} variants={staggerItem} custom={i}>
+                <div className="card card-hover flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-5 sm:px-5">
+                  <img
+                    src={courseImageUrl(group.courseImage, 160)}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    onError={hideOnError}
+                    className="hidden h-20 w-28 shrink-0 rounded-lg bg-surface object-cover sm:block"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm-fluid font-semibold text-ink">{group.courseTitle}</p>
+                    <p className="mt-0.5 truncate text-sm-fluid text-ink-muted">{next.title}</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {!due.overdue && (
+                        <span className={`badge badge-status-${next.status}`}>
+                          {statusLabel}
+                        </span>
+                      )}
+                      <span
+                        className={`badge ${due.overdue ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}
+                        aria-label={`Due: ${due.text}`}
+                      >
+                        {due.text}
+                      </span>
+                    </div>
+                  </div>
+                  <Link
+                    to={next.resumeUrl}
+                    aria-label={`${actionLabel} ${next.title}`}
+                    className="btn-brand w-full shrink-0 px-4 py-2 text-sm-fluid sm:w-auto"
+                  >
+                    {actionLabel}
+                  </Link>
                 </div>
-                {!due.overdue && (
-                  <span className={`badge badge-status-${next.status} hidden shrink-0 sm:inline-flex`}>
-                    {statusLabel}
-                  </span>
-                )}
-                <span
-                  className={`badge shrink-0 ${due.overdue ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}
-                  aria-label={`Due: ${due.text}`}
-                >
-                  {due.text}
-                </span>
-                <Link to={next.resumeUrl} aria-label={`${actionLabel} ${next.title}`} className="btn-brand shrink-0 px-4 py-2 text-sm-fluid">
-                  {actionLabel}
-                </Link>
-              </li>
+              </Motion.div>
             );
           })}
-        </ul>
+        </Motion.div>
       )}
     </Motion.section>
   );
 }
 
-/**
- * Zone 1 — Continue Learning hero: the most recently accessed in-progress
- * course above the fold, with an empty-state fallback when nothing is in
- * flight. Owns the resume-context derivation (icon, type label, deep link)
- * since nothing else consumes it.
- */
+
 function ContinueLearningSection({ course, paceEntry }) {
   if (!course) {
     return (
@@ -422,7 +417,7 @@ function ContinueLearningSection({ course, paceEntry }) {
 
           <Link
             to={resumeUrl}
-            aria-label={`Continue ${course.title} — ${resumeTypeLabel}: ${course.resumeTitle}`}
+            aria-label={`Continue ${course.title} â€” ${resumeTypeLabel}: ${course.resumeTitle}`}
             className="btn-brand w-fit px-5 py-2.5 text-sm-fluid"
           >
             Continue Learning
@@ -433,10 +428,7 @@ function ContinueLearningSection({ course, paceEntry }) {
   );
 }
 
-/**
- * Zone 2 — weekly study goal: how many hours the learner has logged this week
- * against a fixed target, rendered as a progress ring with a supportive label.
- */
+
 function WeeklyGoalCard({ thisWeekHours, goalHours }) {
   const pct = goalHours > 0 ? Math.min(100, Math.round((thisWeekHours / goalHours) * 100)) : 0;
   const reached = thisWeekHours >= goalHours;
@@ -459,7 +451,7 @@ function WeeklyGoalCard({ thisWeekHours, goalHours }) {
             <span className="text-sm-fluid font-normal text-ink-muted"> / {goalHours} hrs</span>
           </p>
           <p className={`mt-0.5 text-sm-fluid ${reached ? "text-success" : "text-ink-muted"}`}>
-            {reached ? "Goal reached — great work!" : "Keep going to hit your goal"}
+            {reached ? "Goal reached â€” great work!" : "Keep going to hit your goal"}
           </p>
         </div>
       </div>
@@ -467,10 +459,7 @@ function WeeklyGoalCard({ thisWeekHours, goalHours }) {
   );
 }
 
-/**
- * Zone 2 — progress overview: stat pills row plus the streak/overall-ring,
- * per-category cards, and the weekly goal in an auto-fit grid.
- */
+
 function ProgressOverviewSection({ stats, overallProgress, completedCount, totalEnrolled, categoryBreakdown, streak, weeklyGoal }) {
   return (
     <>
@@ -494,52 +483,27 @@ function ProgressOverviewSection({ stats, overallProgress, completedCount, total
   );
 }
 
-/**
- * Zone 4 — category-affinity recommendations carousel. Renders nothing when
- * there is nothing to recommend; enrollment bubbles up through onEnroll so
- * navigation stays owned by the page.
- */
-function RecommendationsSection({ courses, onEnroll }) {
-  const shouldReduceMotion = useReducedMotion();
+
+function RecommendationsSection({ courses }) {
   if (courses.length === 0) return null;
 
   return (
     <Motion.section variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewportOnce} aria-label="Recommended for you">
-      <div className="mb-4 flex items-center gap-2">
-        <Sparkles size={18} className="text-brand" />
-        <h2 className="text-body-lg font-semibold text-ink">Recommended For You</h2>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <Sparkles size={18} className="text-brand" />
+          <h2 className="text-body-lg font-semibold text-ink">Recommended For You</h2>
+        </div>
+        <Link to="/courses" className="link shrink-0 text-sm-fluid">
+          Browse Catalog
+        </Link>
       </div>
 
-      <Swiper modules={[Navigation]} navigation slidesPerView="auto" spaceBetween={16} speed={shouldReduceMotion ? 0 : SWIPER_SPEED_MS} className="pb-2">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {courses.map((course) => (
-          <SwiperSlide key={course.id} className="w-[240px] sm:w-[calc(33.333%-11px)] xl:w-[calc(25%-12px)]">
-            <article className="card card-hover flex h-full w-full flex-col overflow-hidden">
-              <Link to={`/course/${course.id}`} aria-label={`View ${course.title}`} className="relative block aspect-video shrink-0">
-                <CourseImage image={course.image} sizes="(min-width:1280px) 285px, (min-width:640px) 32vw, 240px" widths={[240, 480, 720]} />
-              </Link>
-              <div className="flex flex-1 flex-col p-4">
-                <Link
-                  to={`/course/${course.id}`}
-                  className="line-clamp-2 text-body-lg font-semibold leading-snug text-ink transition hover:text-brand-strong"
-                >
-                  {course.title}
-                </Link>
-                <p className="mt-1 truncate text-sm-fluid text-ink-muted">{course.instructorName}</p>
-                <div className="mt-1.5 flex items-center gap-2 text-sm-fluid">
-                  <span className="font-medium text-ink">{course.rating}</span>
-                  <Stars rating={course.rating} />
-                </div>
-                <div className="mt-auto flex items-center justify-between gap-3 pt-3">
-                  <span className="text-sm-fluid font-semibold text-ink">{course.price}</span>
-                  <button type="button" onClick={() => onEnroll(course.id)} aria-label={`Enroll in ${course.title}`} className="btn-brand px-3.5 py-2 text-sm-fluid">
-                    Enroll
-                  </button>
-                </div>
-              </div>
-            </article>
-          </SwiperSlide>
+          <CourseCard key={course.id} course={course} />
         ))}
-      </Swiper>
+      </div>
     </Motion.section>
   );
 }
@@ -548,7 +512,6 @@ export default function StudentDashboardPage() {
   // Snapshot the clock once at mount so relative "last accessed" / due-date
   // labels are stable across re-renders and rendering stays pure.
   const [nowMs] = useState(() => Date.now());
-  const navigate = useNavigate();
 
   // --- Data (single source of truth: studentRepository) ---
   const student = getStudentProfile();
@@ -574,7 +537,7 @@ export default function StudentDashboardPage() {
   const inProgressCount = enrolledCourses.filter((c) => c.status === "In Progress").length;
   const notStartedCount = enrolledCourses.filter((c) => c.status === "Not Started").length;
 
-  // Hours learned = Σ(course hours × progress), NOT total course hours.
+  // Hours learned = Î£(course hours Ã— progress), NOT total course hours.
   const hoursLearned = enrolledCourses
     .reduce((sum, c) => sum + ((c.hours || 0) * (c.progress || 0)) / 100, 0)
     .toFixed(1);
@@ -614,14 +577,6 @@ export default function StudentDashboardPage() {
     },
   ];
 
-  // --- Handlers ---
-  // Enrollment happens in the repository; on success land the learner inside
-  // their new course.
-  const handleEnroll = (courseId) => {
-    const result = enrollInCourse(courseId);
-    if (result.success) navigate(`/student/course/${result.courseId}`);
-  };
-
   const pageHeader = (
     <header className="mb-8">
       <h1 className="page-title">Welcome back, {student.firstName}!</h1>
@@ -629,7 +584,7 @@ export default function StudentDashboardPage() {
     </header>
   );
 
-  // First-time onboarding — no enrollment widgets, just direction to the catalog.
+  // First-time onboarding â€” no enrollment widgets, just direction to the catalog.
   if (enrolledCourses.length === 0) {
     return (
       <>
@@ -667,7 +622,8 @@ export default function StudentDashboardPage() {
 
       <UpcomingSchedule deadlines={urgentDeadlines} />
 
-      <RecommendationsSection courses={recommendedCourses} onEnroll={handleEnroll} />
+      <RecommendationsSection courses={recommendedCourses} />
     </>
   );
 }
+

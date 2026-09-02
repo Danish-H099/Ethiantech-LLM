@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Clock, Star, Users } from "lucide-react";
+import { Clock, Star, Trash2, Users } from "lucide-react";
 import { m as Motion, useReducedMotion } from "motion/react";
 import { createCardHover } from "src/lib/animationVariants";
 import { hideOnError } from "src/lib/assets";
@@ -8,7 +8,7 @@ import { formatCompactNumber } from "src/lib/format";
 
 const MotionLink = Motion.create(Link);
 
-export default function CourseCard({ course }) {
+export default function CourseCard({ course, onEnroll, onRemove }) {
   const shouldReduceMotion = useReducedMotion();
   const variants = useMemo(
     () => createCardHover(!!shouldReduceMotion),
@@ -21,6 +21,17 @@ export default function CourseCard({ course }) {
   const isBestseller = course.reviews > REVIEWS_THRESHOLD_BESTSELLER;
   const isNew = course.id > NEW_COURSE_ID_CUTOFF;
 
+  const handleEnroll = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onEnroll(course);
+  };
+  const handleRemove = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onRemove(course);
+  };
+
   return (
     <MotionLink
       to={`/course/${course.id}`}
@@ -28,7 +39,9 @@ export default function CourseCard({ course }) {
       initial="rest"
       whileHover="hover"
       whileTap="tap"
-      className="group block card card-hover h-full overflow-hidden"
+      className={`group block card card-hover h-full overflow-hidden ${
+        onEnroll ? "flex flex-col" : ""
+      }`}
     >
         <div className="relative h-44 w-full overflow-hidden bg-surface sm:h-48">
           <img
@@ -48,9 +61,23 @@ export default function CourseCard({ course }) {
               New
             </span>
           )}
+          {onRemove && (
+            <button
+              type="button"
+              onClick={handleRemove}
+              aria-label={`Remove ${course.title} from wishlist`}
+              className="absolute start-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-error shadow transition hover:bg-white"
+            >
+              <Trash2 size={18} aria-hidden="true" />
+            </button>
+          )}
         </div>
 
-        <div className="min-w-0 space-y-2 p-4 text-left">
+        <div
+          className={`min-w-0 space-y-2 p-4 text-left ${
+            onEnroll ? "flex flex-1 flex-col" : ""
+          }`}
+        >
           <h3 className="line-clamp-2 text-sm-fluid font-semibold leading-snug text-ink">
             {course.title}
           </h3>
@@ -78,6 +105,17 @@ export default function CourseCard({ course }) {
           >
             {course.isFree ? "Free" : course.price}
           </p>
+          {onEnroll && (
+            <div className="mt-auto pt-2">
+              <button
+                type="button"
+                onClick={handleEnroll}
+                className="btn-brand w-full py-2.5 text-sm-fluid"
+              >
+                Enroll Now
+              </button>
+            </div>
+          )}
         </div>
       </MotionLink>
   );

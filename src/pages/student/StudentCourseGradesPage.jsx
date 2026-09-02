@@ -16,7 +16,7 @@ import { getGradeDetail } from "src/services/studentRepository";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 import { LESSON_STATUS } from "src/lib/statuses";
 import LessonProgressBar from "src/components/student/LessonProgressBar";
-import StatusBadge from "src/components/StatusBadge";
+import StatusBadge from "src/components/ui/StatusBadge";
 
 const QUIZ_STATUS_META = {
   passed: { label: "Passed", icon: CheckCircle2, className: "bg-success-soft text-success" },
