@@ -359,3 +359,20 @@ input[type="search"]::-webkit-search-results-decoration {
 .swiper-button-prev {
   color: var(--color-brand);
 }
+
+/* Tooltip — Radix UI animation keyframes */
+@keyframes tooltipIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes tooltipOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.96); }
+}
+
+.tooltip-content[data-state="delayed-open"] {
+  animation: tooltipIn 150ms var(--ease-arrive);
+}
+.tooltip-content[data-state="closed"] {
+  animation: tooltipOut 100ms var(--ease-depart);
+}
