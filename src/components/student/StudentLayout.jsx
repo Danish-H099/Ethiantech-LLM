@@ -32,6 +32,7 @@ const navItems = [
 export default function StudentLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [navbarVisible, setNavbarVisible] = useState(true);
   const sidebarRef = useRef(null);
   const hamburgerRef = useRef(null);
   const navigate = useNavigate();
@@ -105,26 +106,23 @@ export default function StudentLayout() {
         />
       )}
 
-      {/* Full-width header — lifted out of the sidebar+main row so it spans the
-          whole viewport on desktop, leaving the row below to match sidebar/main. */}
+      {/* Fixed header — sits outside the flow so content starts behind it. */}
       <StudentNavbar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
         hamburgerRef={hamburgerRef}
+        onVisibilityChange={setNavbarVisible}
       />
 
-      {/* Middle block: workspace row (flex-1) between the sticky navbar above
+      {/* Spacer to offset the fixed navbar height — animates out when navbar hides. */}
+      <div
+        className={`transition-[height] duration-300 ${navbarVisible ? "h-[74px]" : "h-0"}`}
+        aria-hidden="true"
+      />
+
+      {/* Middle block: workspace row (flex-1) between the fixed navbar above
           and the footer below. The whole window scrolls as a single scroll
-          context — neither the sidebar nor main gets its own scrollbar.
-
-          Desktop: the <aside> is a normal flex column (`lg:static`) whose white
-          background stretches to the full row height; the inner <nav> is the
-          sticky part (`sticky top-[74px]`), locking 74px below the viewport so
-          the menu stays visible while main scrolls. `lg:z-0` keeps the sidebar
-          beneath the `z-30` navbar so it can never overlap it.
-
-          Mobile: the aside stays `fixed inset-y-0 z-50` and slides in as a
-          drawer over the viewport. */}
+          context — neither the sidebar nor main gets its own scrollbar. */}
       <div className="flex flex-1">
         <aside
           ref={sidebarRef}
@@ -147,7 +145,7 @@ export default function StudentLayout() {
             </button>
           </div>
 
-          <nav className="relative lg:sticky lg:top-[74px] mt-2 flex flex-col gap-1 px-3 py-5 lg:mt-2">
+          <nav className={`relative lg:sticky transition-[top] duration-300 mt-2 flex flex-col gap-1 px-3 py-5 lg:mt-2 max-lg:flex-1 max-lg:min-h-0 max-lg:overflow-y-auto max-lg:scrollbar-brand ${navbarVisible ? "lg:top-[74px]" : "lg:top-0"}`}>
             {/* Desktop-only collapse control — anchored to the sticky nav (the
                 visible content) so it stays centered and on-screen, and straddles
                 the sidebar/main border via -right-3 (nav's px-3 padding). */}
