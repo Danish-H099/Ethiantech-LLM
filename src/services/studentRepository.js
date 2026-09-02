@@ -368,15 +368,7 @@ export function getRecommendedCourses(limit = 4) {
           (a, b) => b.matchCount - a.matchCount || b.rating - a.rating
         );
 
-  return ranked.slice(0, limit).map((candidate) => ({
-    id: candidate.id,
-    title: candidate.title,
-    image: candidate.image,
-    instructorName: candidate.instructorName,
-    rating: candidate.rating,
-    price: candidate.price,
-    category: candidate.category,
-  }));
+  return ranked.slice(0, limit).map((c) => getCourseById(c.id)).filter(Boolean);
 }
 
 function materializeModel(courseId) {
