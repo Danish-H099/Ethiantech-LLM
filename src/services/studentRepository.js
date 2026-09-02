@@ -1262,6 +1262,10 @@ export function isCourseWishlisted(courseId) {
   return isInWishlist(courseId);
 }
 
+export function addCourseToWishlist(courseId) {
+  addToWishlist(courseId);
+}
+
 export function enrollFromWishlist(courseId) {
   const result = enrollInCourse(courseId);
   if (result.success) removeFromWishlist(result.courseId);
