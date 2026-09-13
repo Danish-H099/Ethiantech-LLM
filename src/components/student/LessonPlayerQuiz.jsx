@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { m as Motion, useReducedMotion } from "motion/react";
-import { Clock, CheckCircle2, TrendingUp, RotateCcw, AlertTriangle, Eye, AlertCircle, HelpCircle, ListCheck } from "lucide-react";
+import { Clock, CheckCircle2, TrendingUp, RotateCcw, AlertTriangle, Eye, AlertCircle, ListCheck } from "lucide-react";
 import {
   getQuizData,
   getQuizAttempts,
@@ -10,11 +10,11 @@ import {
   clearQuizDraftAnswers,
   submitQuizAttempt,
   hasRemainingAttempts,
-} from "src/data/studentRepository";
+} from "src/services/studentRepository";
 import { createReveal } from "src/lib/animationVariants";
-import * as Dialog from "@radix-ui/react-dialog";
 import LessonCompleteButton from "src/components/student/LessonCompleteButton";
 import LessonPlayerPlaceholder from "src/components/student/LessonPlayerPlaceholder";
+import ConfirmDialog from "src/components/ui/ConfirmDialog";
 
 const MODE_INTRO = "intro";
 const MODE_ACTIVE = "active";
@@ -796,71 +796,6 @@ function QuizResultsScreen({
   );
 }
 
-// ----------------------------------------------------------- submit dialog
-
-function QuizSubmitDialog({ open, onConfirm, onCancel, unansweredCount = 0, isSubmitting = false }) {
-  return (
-    <Dialog.Root open={open} onOpenChange={(o) => !o && onCancel()}>
-      <Dialog.Portal forceMount>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40" />
-        <Dialog.Content
-          asChild
-          aria-describedby={undefined}
-          onOpenAutoFocus={(e) => {
-            e.preventDefault();
-            const btn = e.currentTarget.querySelector("[data-confirm]");
-            btn?.focus();
-          }}
-        >
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                  <HelpCircle size={22} aria-hidden="true" />
-                </div>
-                <div className="min-w-0">
-                  <Dialog.Title className="mb-1 text-body-lg font-semibold text-ink">
-                    Submit your quiz?
-                  </Dialog.Title>
-                  <Dialog.Description className="text-sm-fluid text-ink-muted">
-                    {isSubmitting
-                      ? "Submitting…"
-                      : unansweredCount > 0
-                        ? `${unansweredCount} question${unansweredCount === 1 ? " is" : "s are"} unanswered — they'll count as incorrect.`
-                        : "Review your answers. You won't be able to change them after submitting."}
-                  </Dialog.Description>
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-end gap-3">
-                <Dialog.Close asChild>
-                  <button
-                    type="button"
-                    data-cancel
-                    disabled={isSubmitting}
-                    className="btn-outline px-4 py-2 text-sm-fluid disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-                </Dialog.Close>
-                <button
-                  type="button"
-                  data-confirm
-                  onClick={onConfirm}
-                  disabled={isSubmitting}
-                  className="btn-brand px-4 py-2 text-sm-fluid disabled:opacity-50"
-                >
-                  {isSubmitting ? "Submitting…" : "Submit quiz"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
-  );
-}
-
 // --------------------------------------------------------------- engine
 
 export default function LessonPlayerQuiz({ resolved, courseId, isCompleted, onRevision, onComplete }) {
@@ -1055,12 +990,22 @@ export default function LessonPlayerQuiz({ resolved, courseId, isCompleted, onRe
           onBack={handleBackToQuestions}
           onSubmit={handleSubmit}
         />
-        <QuizSubmitDialog
+        <ConfirmDialog
           open={showConfirm}
-          unansweredCount={totalQuestions - answeredCount}
-          isSubmitting={isSubmitting}
           onConfirm={handleConfirmSubmit}
           onCancel={() => setShowConfirm(false)}
+          variant="warning"
+          isLoading={isSubmitting}
+          title="Submit your quiz?"
+          description={
+            isSubmitting
+              ? "Submitting…"
+              : totalQuestions - answeredCount > 0
+                ? `${totalQuestions - answeredCount} question${totalQuestions - answeredCount === 1 ? " is" : "s are"} unanswered — they'll count as incorrect.`
+                : "Review your answers. You won't be able to change them after submitting."
+          }
+          confirmLabel="Submit quiz"
+          loadingLabel="Submitting…"
         />
       </>
     );

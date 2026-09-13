@@ -6,7 +6,8 @@ import CourseDetailsPage from "src/pages/public/CourseDetailsPage";
 import TutorLayout from "src/components/tutor/TutorLayout";
 import AdminLayout from "src/components/admin/AdminLayout";
 import StudentLayout from "src/components/student/StudentLayout";
-import RouteLoader from "src/components/RouteLoader";
+import RouteLoader from "src/components/ui/RouteLoader";
+import { Toaster } from "sonner";
 import "src/App.css";
 
 // Learning player + all authenticated app pages stay lazy (route-level code splitting).
@@ -26,7 +27,7 @@ const StudentCourseOverviewPage = lazy(() => import("src/pages/student/StudentCo
 const StudentLessonPlayerPage = lazy(() => import("src/pages/student/StudentLessonPlayerPage"));
 const StudentTasksPage = lazy(() => import("src/pages/student/StudentTasksPage"));
 const StudentGradesPage = lazy(() => import("src/pages/student/StudentGradesPage"));
-const StudentPerformancePage = lazy(() => import("src/pages/student/StudentPerformancePage"));
+const StudentAnalyticsPage = lazy(() => import("src/pages/student/StudentAnalyticsPage"));
 const StudentWishlistPage = lazy(() => import("src/pages/student/StudentWishlistPage"));
 const StudentNotesPage = lazy(() => import("src/pages/student/StudentNotesPage"));
 const StudentProfilePage = lazy(() => import("src/pages/student/StudentProfilePage"));
@@ -53,6 +54,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/courses" element={<CourseListPage />} />
@@ -81,7 +83,7 @@ function App() {
           <Route path="course/:courseId/play" element={<StudentLessonPlayerPage />} />
            <Route path="tasks" element={<StudentTasksPage />} />
           <Route path="grades" element={<StudentGradesPage />} />
-          <Route path="performance" element={<StudentPerformancePage />} />
+          <Route path="analytics" element={<StudentAnalyticsPage />} />
           <Route path="wishlist" element={<StudentWishlistPage />} />
           <Route path="notes" element={<StudentNotesPage />} />
           <Route path="profile" element={<StudentProfilePage />} />

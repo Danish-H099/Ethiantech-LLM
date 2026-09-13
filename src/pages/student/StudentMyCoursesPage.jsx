@@ -4,9 +4,9 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { m as Motion, useReducedMotion } from "motion/react";
 import { BookOpen, GraduationCap, Play } from "lucide-react";
 
-import { getEnrolledCourses } from "src/data/studentRepository";
+import { getEnrolledCourses } from "src/services/studentRepository";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
-import StatusBadge from "src/components/StatusBadge";
+import StatusBadge from "src/components/ui/StatusBadge";
 import LessonProgressBar from "src/components/student/LessonProgressBar";
 import {
   UnderlineTabList,

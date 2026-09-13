@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { m as Motion } from "motion/react";
-import courses from "src/data/courses";
+import courses from "src/services/courses";
 import { parsePrice } from "src/lib/format";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import { LESSON_TYPE_ICONS, DEFAULT_LESSON_ICON } from "src/lib/lessonTypes";
+import { LESSON_TYPE_ICONS, DEFAULT_LESSON_ICON } from "src/lib/lesson";
 import LessonStatusIcon from "src/components/student/LessonStatusIcon";
-import { LESSON_STATUS_META } from "src/lib/lessonStatus";
+import { LESSON_STATUS_META } from "src/lib/lesson";
+import { LESSON_STATUS } from "src/lib/statuses";
 export default function CourseSyllabus({
   sections,
   courseId,
@@ -100,8 +101,8 @@ export default function CourseSyllabus({
                   <ul className="divide-y divide-border">
                     {section.lessons.map((lesson) => {
                       const TypeIcon = LESSON_TYPE_ICONS[lesson.type] ?? DEFAULT_LESSON_ICON;
-                      const meta = LESSON_STATUS_META[lesson.status] ?? LESSON_STATUS_META["not-started"];
-                      const locked = lesson.status === "locked";
+                      const meta = LESSON_STATUS_META[lesson.status] ?? LESSON_STATUS_META[LESSON_STATUS.NOT_STARTED];
+                      const locked = lesson.status === LESSON_STATUS.LOCKED;
                       const isCurrent = Boolean(currentLessonId) && lesson.lessonId === currentLessonId;
                       const playTo = `/student/course/${courseId}/play?lessonId=${lesson.lessonId}`;
                       const rowClass = locked
@@ -109,9 +110,9 @@ export default function CourseSyllabus({
                         : `flex w-full items-center gap-3 px-5 py-2.5 text-sm-fluid transition hover:bg-surface-soft ${
                             isCurrent
                               ? "bg-tint-student font-semibold text-ink"
-                              : lesson.status === "in-progress"
-                                ? "font-semibold text-ink"
-                                : lesson.status === "completed"
+: lesson.status === LESSON_STATUS.IN_PROGRESS
+                                 ? "font-semibold text-ink"
+                                 : lesson.status === LESSON_STATUS.COMPLETED
                                   ? "text-ink"
                                   : "text-ink-muted"
                           }`;

@@ -17,10 +17,10 @@ import {
   User,
 } from "lucide-react";
 
-import Breadcrumbs from "src/components/Breadcrumbs";
-import ProgressRing from "src/components/ProgressRing";
-import StatusBadge from "src/components/StatusBadge";
-import Stars from "src/components/Stars";
+import Breadcrumbs from "src/components/ui/Breadcrumbs";
+import ProgressRing from "src/components/ui/ProgressRing";
+import StatusBadge from "src/components/ui/StatusBadge";
+import Stars from "src/components/ui/Stars";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
 import CourseSyllabus from "src/components/student/CourseSyllabus";
 import {
@@ -39,7 +39,7 @@ import {
   getEnrolledCourseData,
   getCourseAnnouncementsFor,
   getCourseResourcesFor,
-} from "src/data/studentRepository";
+} from "src/services/studentRepository";
 
 const COURSE_TABS = [
   { value: "syllabus", label: "Syllabus" },

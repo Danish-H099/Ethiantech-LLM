@@ -1,6 +1,6 @@
 import { User, MoreVertical } from "lucide-react";
 import { m as Motion } from "motion/react";
-import { getAllUsers } from "src/data/adminData";
+import { getAllUsers } from "src/services/adminData";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 
 function RoleBadge({ role }) {

@@ -13,11 +13,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { DollarSign, Users } from "lucide-react";
-import { getIcon } from "src/components/IconMap";
-import { getTutorStats, getEarningsOverTime, getStudentsOverTime } from "src/data/tutorDashboard";
-import { studentRoster } from "src/data/fixtures/studentRoster";
-import { CHART_ACCENTS, CHART_PINK } from "src/data/chartColors";
-import { GRID_STROKE, TICK_FILL, TOOLTIP_STYLE, GRID_DEFAULTS } from "src/data/ChartDefaults";
+import { getIcon } from "src/components/ui/IconMap";
+import { getTutorStats, getEarningsOverTime, getStudentsOverTime } from "src/services/tutorDashboard";
+import { studentRoster } from "src/data/roster";
+import { CHART_ACCENTS, CHART_PINK } from "src/data/chart";
+import { GRID_STROKE, TICK_FILL, TOOLTIP_STYLE, GRID_DEFAULTS } from "src/data/chart";
 import { fadeIn, fadeUp, viewportOnce, createStaggerItem } from "src/lib/animationVariants";
 
 export default function TutorDashboardPage() {

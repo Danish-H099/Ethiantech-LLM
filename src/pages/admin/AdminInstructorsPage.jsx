@@ -1,8 +1,8 @@
 import { User } from "lucide-react";
 import { m as Motion } from "motion/react";
-import { getInstructors } from "src/data/adminData";
+import { getInstructors } from "src/services/adminData";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
-import Stars from "src/components/Stars";
+import Stars from "src/components/ui/Stars";
 
 export default function AdminInstructorsPage() {
   const instructors = getInstructors();

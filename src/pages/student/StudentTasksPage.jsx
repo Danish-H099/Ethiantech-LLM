@@ -4,13 +4,10 @@ import { m as Motion, useReducedMotion } from "motion/react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { ArrowRight, ClipboardList, Clock } from "lucide-react";
 
-import {
-  getTasks,
-  TASK_STATUS_LABEL,
-  TASK_ACTION_LABEL,
-} from "src/data/studentRepository";
+import { getTasks } from "src/services/studentRepository";
+import { TASK_STATUS, TASK_STATUS_LABEL, TASK_ACTION_LABEL } from "src/lib/statuses";
 import { formatDueLabel } from "src/lib/format";
-import { LESSON_TYPE_LABELS, LESSON_TYPE_ICONS } from "src/lib/lessonTypes";
+import { LESSON_TYPE_LABELS, LESSON_TYPE_ICONS } from "src/lib/lesson";
 import { hideOnError } from "src/lib/assets";
 import { fadeIn, createStaggerItem } from "src/lib/animationVariants";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
@@ -23,7 +20,7 @@ const TASK_FILTERS = [
   { label: "All", value: "all" },
   { label: "Upcoming", value: "upcoming" },
   { label: "Overdue", value: "overdue" },
-  { label: "Completed", value: "completed" },
+  { label: "Completed", value: TASK_STATUS.COMPLETED },
 ];
 
 const EMPTY_COPY = {
@@ -42,7 +39,7 @@ const EMPTY_COPY = {
     title: "No overdue tasks",
     description: "Nice work — everything that's due has been submitted or completed.",
   },
-  completed: {
+  [TASK_STATUS.COMPLETED]: {
     icon: ClipboardList,
     title: "No completed tasks yet",
     description: "Start a task to see it here once you submit or complete it.",
@@ -53,7 +50,7 @@ function badgeClassFor(value, count) {
   if (value === "overdue" && count > 0) {
     return "group-data-[state=active]:bg-red-100 group-data-[state=active]:text-red-700";
   }
-  if (value === "completed") {
+  if (value === TASK_STATUS.COMPLETED) {
     return "group-data-[state=active]:bg-success-soft group-data-[state=active]:text-success";
   }
   return "";
@@ -80,15 +77,15 @@ function FilterTabBar({ tasks }) {
     if (value === "upcoming")
       return tasks.filter((t) => {
         const d = dueState(t);
-        return t.status !== "completed" && d && !d.overdue;
+        return t.status !== TASK_STATUS.COMPLETED && d && !d.overdue;
       }).length;
     if (value === "overdue")
       return tasks.filter((t) => {
         const d = dueState(t);
-        return t.status !== "completed" && d && d.overdue;
+        return t.status !== TASK_STATUS.COMPLETED && d && d.overdue;
       }).length;
-    if (value === "completed")
-      return tasks.filter((t) => t.status === "completed" || t.status === "submitted")
+    if (value === TASK_STATUS.COMPLETED)
+      return tasks.filter((t) => t.status === TASK_STATUS.COMPLETED || t.status === TASK_STATUS.SUBMITTED)
         .length;
     return 0;
   };
@@ -158,7 +155,7 @@ function TaskTabContent({ value, tasks, now, staggerItem }) {
 function CardBadges({ task }) {
   const TypeIcon = LESSON_TYPE_ICONS[task.type] ?? LESSON_TYPE_ICONS.exercise;
   const statusLabel =
-    TASK_STATUS_LABEL[task.status] ?? TASK_STATUS_LABEL["not-started"];
+    TASK_STATUS_LABEL[task.status] ?? TASK_STATUS_LABEL[TASK_STATUS.NOT_STARTED];
 
   return (
     <div className="flex flex-wrap items-center gap-2">

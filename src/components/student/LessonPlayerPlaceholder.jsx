@@ -1,5 +1,5 @@
 import { Clock, CheckCircle2 } from "lucide-react";
-import { LESSON_TYPE_ICONS, DEFAULT_LESSON_ICON, LESSON_TYPE_LABELS } from "src/lib/lessonTypes";
+import { LESSON_TYPE_ICONS, DEFAULT_LESSON_ICON, LESSON_TYPE_LABELS } from "src/lib/lesson";
 import LessonCompleteButton from "src/components/student/LessonCompleteButton";
 export default function LessonPlayerPlaceholder({
   lesson,

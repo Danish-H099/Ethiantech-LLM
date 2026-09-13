@@ -5,7 +5,7 @@ import { BookOpen, Filter } from "lucide-react";
 
 import Header from "src/components/Header";
 import Footer from "src/components/Footer";
-import Breadcrumbs from "src/components/Breadcrumbs";
+import Breadcrumbs from "src/components/ui/Breadcrumbs";
 import CourseCard from "src/components/CourseCard";
 import {
   RATING_OPTIONS,
@@ -15,12 +15,12 @@ import {
   durationIdFor,
   CourseFilterPanels,
 } from "src/components/CourseFilters";
-import SearchBar from "src/components/SearchBar";
-import SortSelect, { sortCourses } from "src/components/SortSelect";
+import SearchBar from "src/components/ui/SearchBar";
+import SortSelect, { sortCourses } from "src/components/ui/SortSelect";
 import SubcategoryBar from "src/components/SubcategoryBar";
 import { AuthPopupGate } from "src/components/AuthPopups";
 
-import courses from "src/data/courses";
+import courses from "src/services/courses";
 
 import {
   createStaggerItem,

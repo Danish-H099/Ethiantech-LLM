@@ -1,12 +1,26 @@
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { m as Motion } from "motion/react";
-import { Clock, BookOpen, Check, PlayCircle } from "lucide-react";
+import { Clock, BookOpen, Check, PlayCircle, ChevronDown } from "lucide-react";
 import { buttonPress } from "src/lib/animationVariants";
 import { hideOnError } from "src/lib/assets";
 
 const MotionLink = Motion.create(Link);
 
 export default function EnrollCard({ course, totalDuration, totalLectures, discountPercent }) {
+  const [highlightsOpen, setHighlightsOpen] = useState(false);
+  const highlightsRef = useRef(null);
+
+  function toggleHighlights() {
+    const next = !highlightsOpen;
+    setHighlightsOpen(next);
+    if (next) {
+      requestAnimationFrame(() => {
+        highlightsRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+      });
+    }
+  }
+
   return (
     <>
       <div className="relative h-48 w-full overflow-hidden bg-surface sm:h-52">
@@ -72,24 +86,35 @@ export default function EnrollCard({ course, totalDuration, totalLectures, disco
         </div>
 
         <div className="mt-6">
-          <h4 className="mb-3 text-sm-fluid font-semibold text-ink text-left">
-            What's in the course?
-          </h4>
-          <ul className="space-y-2.5">
-            {course.highlights.map((item) => (
-              <li
-                key={item}
-                className="flex items-center gap-3 text-sm-fluid text-ink-muted"
-              >
-                <Check
-                  size={16}
-                  className="shrink-0 text-brand"
-                  aria-hidden="true"
-                />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+          <button
+            type="button"
+            onClick={toggleHighlights}
+            className="flex w-full items-center justify-between text-left text-sm-fluid font-semibold text-ink"
+          >
+            <span>What's in the course?</span>
+            <ChevronDown
+              size={16}
+              className={`shrink-0 text-ink-muted transition ${highlightsOpen ? "rotate-180" : ""}`}
+              aria-hidden="true"
+            />
+          </button>
+          {highlightsOpen && (
+            <ul ref={highlightsRef} className="mt-3 space-y-2.5">
+              {course.highlights.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-3 text-sm-fluid text-ink-muted"
+                >
+                  <Check
+                    size={16}
+                    className="shrink-0 text-brand"
+                    aria-hidden="true"
+                  />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </>

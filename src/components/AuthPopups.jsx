@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
 import { AnimatePresence, m as Motion } from 'motion/react';
 import { X, Eye, EyeOff } from 'lucide-react';
 import { backdrop, modal } from 'src/lib/animationVariants';
+import { setStudentAuthed } from 'src/utils/authMock';
 
 // Focus handling for the modal dialogs: land on the first field on open (not
 // the close button) and restore focus to the opener on close. The popups are
@@ -29,8 +31,8 @@ function useDialogFocusRestore() {
 }
 
 // A mock visual button for Google Sign In to remove the OAuth dependency
-const MockGoogleButton = ({ text }) => (
-    <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-ink/20 bg-white px-4 py-2 text-sm-fluid font-medium text-ink transition hover:bg-surface-soft">
+const MockGoogleButton = ({ text, onClick }) => (
+    <button type="button" onClick={onClick} className="flex w-full items-center justify-center gap-2 rounded-lg border border-ink/20 bg-white px-4 py-2 text-sm-fluid font-medium text-ink transition hover:bg-surface-soft">
         <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -53,6 +55,7 @@ function AuthDialog({
     footerActionText,
     onFooterAction,
     onClose,
+    onGoogleClick,
     children,
 }) {
     const { onOpenAutoFocus, onCloseAutoFocus } = useDialogFocusRestore();
@@ -98,7 +101,7 @@ function AuthDialog({
                                 <Dialog.Title className="mb-6 text-center text-heading font-bold text-ink">{title}</Dialog.Title>
 
                                 <div className="space-y-4">
-                                    <MockGoogleButton text={googleText} />
+                                    <MockGoogleButton text={googleText} onClick={onGoogleClick} />
 
                                     <div className="relative">
                                         <div className="absolute inset-0 flex items-center">
@@ -129,6 +132,23 @@ function AuthDialog({
 
 export const LoginPopup = ({ onClose, onSwitchToSignup }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
+
+    function handleAuth() {
+        setStudentAuthed();
+        onClose();
+        let returnTo = "/student";
+        try {
+          const stored = sessionStorage.getItem("ethiantech_login_return_to");
+          if (stored) {
+            sessionStorage.removeItem("ethiantech_login_return_to");
+            returnTo = stored;
+          }
+        } catch {
+          // ignore storage failures (private mode, quota, etc.)
+        }
+        navigate(returnTo, { replace: true });
+    }
 
     return (
         <AuthDialog
@@ -140,8 +160,9 @@ export const LoginPopup = ({ onClose, onSwitchToSignup }) => {
             footerActionText="Sign up"
             onFooterAction={onSwitchToSignup}
             onClose={onClose}
+            onGoogleClick={handleAuth}
         >
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleAuth(); }}>
                 <div>
                     <label className="label" htmlFor="login-email">Email</label>
                     <input
@@ -190,6 +211,23 @@ export const LoginPopup = ({ onClose, onSwitchToSignup }) => {
 export const SignupPopup = ({ onClose, onSwitchToLogin }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const navigate = useNavigate();
+
+    function handleAuth() {
+        setStudentAuthed();
+        onClose();
+        let returnTo = "/student";
+        try {
+          const stored = sessionStorage.getItem("ethiantech_login_return_to");
+          if (stored) {
+            sessionStorage.removeItem("ethiantech_login_return_to");
+            returnTo = stored;
+          }
+        } catch {
+          // ignore storage failures (private mode, quota, etc.)
+        }
+        navigate(returnTo, { replace: true });
+    }
 
     return (
         <AuthDialog
@@ -201,8 +239,9 @@ export const SignupPopup = ({ onClose, onSwitchToLogin }) => {
             footerActionText="Sign in"
             onFooterAction={onSwitchToLogin}
             onClose={onClose}
+            onGoogleClick={handleAuth}
         >
-            <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); handleAuth(); }}>
                 <div>
                     <label className="label" htmlFor="signup-name">Full Name</label>
                     <input id="signup-name" type="text" className="input-sm" placeholder="Enter your full name" />

@@ -2,8 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { m as Motion, useReducedMotion } from "motion/react";
 import Header from "src/components/Header";
-import courses from "src/data/courses";
-import testimonialsData from "src/data/testimonialsData.json";
+import courses from "src/services/courses";
 import Footer from "src/components/Footer";
 import { Building2, GraduationCap, Users, BookOpen } from "lucide-react";
 import { AuthPopupGate } from "src/components/AuthPopups";
@@ -17,7 +16,48 @@ import {
   createStaggerItem,
 } from "src/lib/animationVariants";
 
-const { companies, testimonials } = testimonialsData;
+const companies = [
+  { name: "Microsoft", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/1280px-Microsoft_logo_%282012%29.svg.png" },
+  { name: "Walmart", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Walmart_logo_%282008%29.svg" },
+  { name: "Accenture", logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Accenture_logo.svg?width=512" },
+  { name: "Adobe", logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Adobe_Corporate_logo.svg?width=512" },
+  { name: "Paypal", logo: "https://cdn.simpleicons.org/paypal" }
+];
+
+const testimonials = [
+  {
+    id: 1,
+    name: "Donald Jackman",
+    role: "SWE 1 @ Amazon",
+    image: "https://randomuser.me/api/portraits/men/11.jpg",
+    rating: 5,
+    quote: "The structured curriculum and hands-on projects were exactly what I needed to land my first SWE role. Mentors gave focused feedback on my interview prep, and every module left me with a portfolio piece I was proud of. Within four months of starting I had an offer from Amazon, and I still reference the system-design notes during my day-to-day work. I recommend EthianTech to every junior engineer I mentor."
+  },
+  {
+    id: 2,
+    name: "Richard Nelson",
+    role: "SWE 2 @ Summa",
+    image: "https://randomuser.me/api/portraits/men/45.jpg",
+    rating: 4,
+    quote: "Flexible pacing let me level up without leaving my job. I studied in the evenings and applied each lesson the next morning, and the capstone became the centerpiece of my portfolio. That project is what finally got me promoted to SWE 2. I also loved the community review threads — feedback from engineers outside my company pushed me to write cleaner, more idiomatic code."
+  },
+  {
+    id: 3,
+    name: "James Washington",
+    role: "SWE 2 @ Google",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    rating: 5,
+    quote: "The interview-prep track alone is worth the price. I'd failed Google twice before; the rubric-aligned mocks and the system-design templates gave me a repeatable framework. Third attempt was the charm. Now I'm the one giving referrals to teammates from the program."
+  },
+  {
+    id: 4,
+    name: "Nancy Sanders",
+    role: "Full-Stack Dev @ Shopify",
+    image: "https://randomuser.me/api/portraits/women/19.jpg",
+    rating: 5,
+    quote: "Coming from a non-CS background, the curriculum didn't assume I knew compiler theory — it met me where I was. The Discord study-groups kept me accountable, and the career-services resume review caught three real gaps my CV had. I got an offer six weeks after graduating."
+  }
+];
 
 function HeroSection({ onGetStarted, staggerItem }) {
   return (

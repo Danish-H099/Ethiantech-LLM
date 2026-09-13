@@ -1,5 +1,5 @@
 import { Lock, PlayCircle } from "lucide-react";
-import { LESSON_TYPE_ICONS, DEFAULT_LESSON_ICON } from "src/lib/lessonTypes";
+import { LESSON_TYPE_ICONS, DEFAULT_LESSON_ICON } from "src/lib/lesson";
 import { CurriculumAccordion } from "src/components/CurriculumAccordion";
 
 /**

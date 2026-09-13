@@ -23,8 +23,8 @@ import {
   User,
 } from "lucide-react";
 
-import Breadcrumbs from "src/components/Breadcrumbs";
-import ProgressRing from "src/components/ProgressRing";
+import Breadcrumbs from "src/components/ui/Breadcrumbs";
+import ProgressRing from "src/components/ui/ProgressRing";
 import CourseSyllabus from "src/components/student/CourseSyllabus";
 import LessonStatusIcon from "src/components/student/LessonStatusIcon";
 import LessonPlayerPlaceholder from "src/components/student/LessonPlayerPlaceholder";
@@ -42,11 +42,12 @@ import {
   LESSON_TYPE_ICONS,
   DEFAULT_LESSON_ICON,
   LESSON_TYPE_LABELS,
-} from "src/lib/lessonTypes";
-import { LESSON_STATUS_META } from "src/lib/lessonStatus";
+} from "src/lib/lesson";
+import { LESSON_STATUS_META } from "src/lib/lesson";
+import { LESSON_STATUS } from "src/lib/statuses";
 import {
   getCourseById,
-} from "src/data/courses";
+} from "src/services/courses";
 import {
   getEnrolledCourseData,
   getLessonMediaFor,
@@ -61,7 +62,7 @@ import {
   getNotesForLesson,
   addLessonNote,
   deleteNote,
-} from "src/data/studentRepository";
+} from "src/services/studentRepository";
 
 const COURSE_BREADCRUMBS = { label: "My Courses", link: "/student/my-courses" };
 
@@ -108,7 +109,7 @@ function LessonPlayerMeta({ resolved, status }) {
   const headingRef = useRef(null);
   const TypeIcon = LESSON_TYPE_ICONS[resolved.type] ?? DEFAULT_LESSON_ICON;
   const typeLabel = LESSON_TYPE_LABELS[resolved.type] ?? "Lesson";
-  const statusMeta = LESSON_STATUS_META[status] ?? LESSON_STATUS_META["not-started"];
+  const statusMeta = LESSON_STATUS_META[status] ?? LESSON_STATUS_META[LESSON_STATUS.NOT_STARTED];
 
   useEffect(() => {
     headingRef.current?.focus();
@@ -439,17 +440,17 @@ function LessonNavPrevNext({
 
   let previous = null;
   for (let i = currentPos - 1; i >= 0; i -= 1) {
-    if (flat[i].status !== "locked") {
+    if (flat[i].status !== LESSON_STATUS.LOCKED) {
       previous = flat[i];
-      break;
+      break
     }
   }
 
   let next = null;
   for (let i = currentPos + 1; i < flat.length; i += 1) {
-    if (flat[i].status !== "locked") {
+    if (flat[i].status !== LESSON_STATUS.LOCKED) {
       next = flat[i];
-      break;
+      break
     }
   }
 
@@ -876,7 +877,7 @@ export default function StudentLessonPlayerPage() {
     if (view.status !== "ready") return;
     const status =
       view.sections[rSectionIndex]?.lessons?.[rLessonIndex]?.status;
-    if (status && status !== "locked") {
+    if (status && status !== LESSON_STATUS.LOCKED) {
       recordLessonAccess(courseId, rLessonId);
     }
   }, [courseId, rLessonId, rSectionIndex, rLessonIndex]);
@@ -957,13 +958,13 @@ export default function StudentLessonPlayerPage() {
   }
 
   const currentStatus =
-    sections[resolved.sectionIndex]?.lessons?.[resolved.lessonIndex]?.status ?? "locked";
+    sections[resolved.sectionIndex]?.lessons?.[resolved.lessonIndex]?.status ?? LESSON_STATUS.LOCKED;
   const media = getLessonMediaFor(resolved.lessonId);
   const preceding = findPrecedingLesson(sections, resolved.sectionIndex, resolved.lessonIndex);
   const drawerId = "player-syllabus-drawer";
 
   const lessonState = getLessonProgress(course.id, resolved.lessonId);
-  const isCompleted = lessonState?.status === "completed";
+  const isCompleted = lessonState?.status === LESSON_STATUS.COMPLETED;
   const videoProgress = lessonState?.videoProgress;
 
   const handleRevision = () => setRevision((r) => r + 1);
@@ -985,7 +986,7 @@ export default function StudentLessonPlayerPage() {
   );
   let nextLesson = null;
   for (let i = currentPos + 1; i < flatForNav.length; i += 1) {
-    if (flatForNav[i].status !== "locked") {
+    if (flatForNav[i].status !== LESSON_STATUS.LOCKED) {
       nextLesson = flatForNav[i];
       break;
     }
@@ -1054,14 +1055,14 @@ export default function StudentLessonPlayerPage() {
 
       <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className="min-w-0 space-y-6 lg:flex-1">
-          {currentStatus === "locked" ? (
+          {currentStatus === LESSON_STATUS.LOCKED ? (
             <section className="card px-4 py-16" aria-describedby="player-locked-hint">
               <div className="flex flex-col items-center text-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                   <Lock size={28} className="text-ink-muted" aria-hidden="true" />
                 </div>
                 <div className="mt-4 flex items-center gap-2">
-                  <LessonStatusIcon status="locked" size={20} />
+                  <LessonStatusIcon status={LESSON_STATUS.LOCKED} size={20} />
                   <span
                     className="badge bg-gray-100 text-sm font-medium text-ink-muted"
                     aria-label={`Locked — Complete ${preceding ? `"${preceding.title}"` : "the earlier lessons"} to unlock`}
