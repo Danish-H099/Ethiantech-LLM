@@ -6,6 +6,7 @@ import courses from "src/services/courses";
 import Footer from "src/components/Footer";
 import { Building2, GraduationCap, Users, BookOpen } from "lucide-react";
 import { AuthPopupGate } from "src/components/AuthPopups";
+import demoVideoUrl from "src/assets/demo.mp4?url";
 import CourseCard from "src/components/CourseCard";
 import TestimonialCard from "src/components/TestimonialCard";
 import {
@@ -59,48 +60,67 @@ const testimonials = [
   }
 ];
 
-function HeroSection({ onGetStarted, staggerItem }) {
+function HeroSection({ onGetStarted, staggerItem, shouldReduceMotion }) {
   return (
-    <section className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 sm:pt-14 md:pt-16 lg:px-8 lg:pt-20">
-      <Motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-        className="mx-auto max-w-5xl text-center"
-      >
-        <Motion.h1
-          variants={staggerItem}
-          custom={0}
-          className="mx-auto max-w-4xl text-hero font-extrabold text-ink tracking-tight"
+    <section className="relative isolate min-h-[75vh] overflow-hidden bg-ink">
+      {!shouldReduceMotion && (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          disablePictureInPicture
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 h-full w-full object-cover"
         >
-          Master in-demand skills with expert-led courses
-        </Motion.h1>
-
-        <Motion.p
-          variants={staggerItem}
-          custom={1}
-          className="mx-auto mt-6 max-w-3xl text-subhero font-medium text-ink-muted"
-        >
-          Join thousands of learners building real skills. Start for free and learn at your own pace.
-        </Motion.p>
-
+          <source src={demoVideoUrl} type="video/mp4" />
+        </video>
+      )}
+      <div
+        className="absolute inset-0 -z-10 bg-ink/65 md:bg-gradient-to-t md:from-black/75 md:via-black/60 md:to-black/75"
+        aria-hidden="true"
+      />
+      <div className="mx-auto flex min-h-[75vh] w-full max-w-7xl flex-col items-center justify-center px-4 sm:px-6 lg:px-8 lg:pt-24">
         <Motion.div
-          variants={staggerItem}
-          custom={2}
-          className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className="mx-auto max-w-5xl text-center"
         >
-          <Motion.button
-            type="button"
-            variants={buttonPress}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={onGetStarted}
-            className="btn-brand px-8 py-3 text-sm-fluid"
+          <Motion.h1
+            variants={staggerItem}
+            custom={0}
+            className="mx-auto max-w-4xl text-hero font-extrabold text-white tracking-tight"
           >
-            Create free account
-          </Motion.button>
+            Master in-demand skills with expert-led courses
+          </Motion.h1>
+
+          <Motion.p
+            variants={staggerItem}
+            custom={1}
+            className="mx-auto mt-6 max-w-3xl text-subhero font-medium text-white/90"
+          >
+            Join thousands of learners building real skills. Start for free and learn at your own pace.
+          </Motion.p>
+
+          <Motion.div
+            variants={staggerItem}
+            custom={2}
+            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+          >
+            <Motion.button
+              type="button"
+              variants={buttonPress}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={onGetStarted}
+              className="btn-brand px-8 py-3 text-sm-fluid"
+            >
+              Create free account
+            </Motion.button>
+          </Motion.div>
         </Motion.div>
-      </Motion.div>
+      </div>
     </section>
   );
 }
@@ -384,13 +404,17 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-surface text-ink">
+    <div className="relative flex min-h-screen flex-col bg-surface font-outfit text-ink">
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
       />
       <main id="main" className="flex-1">
-        <HeroSection onGetStarted={() => setPopupState("signup")} staggerItem={staggerItem} />
+        <HeroSection
+          onGetStarted={() => setPopupState("signup")}
+          staggerItem={staggerItem}
+          shouldReduceMotion={!!shouldReduceMotion}
+        />
         <StatsBar stats={stats} staggerItem={staggerItem} />
         <FeaturedCoursesSection staggerItem={staggerItem} />
         <TestimonialsSection staggerItem={staggerItem} />

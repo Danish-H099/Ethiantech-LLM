@@ -25,7 +25,7 @@ export default function TestimonialCard({ item, isExpanded, onToggle, quoteId })
           onError={avatarFallback}
         />
         <div>
-          <h3 className="text-body-lg font-semibold text-ink">{item.name}</h3>
+          <h3 className="text-body font-semibold text-ink">{item.name}</h3>
           <p className="text-sm-fluid text-ink-muted">{item.role}</p>
         </div>
       </div>
@@ -37,7 +37,7 @@ export default function TestimonialCard({ item, isExpanded, onToggle, quoteId })
 
         <p
           id={quoteId}
-          className={`text-body text-ink-muted ${
+          className={`text-sm-fluid text-ink-muted ${
             isExpanded ? "" : "line-clamp-4"
           }`}
         >

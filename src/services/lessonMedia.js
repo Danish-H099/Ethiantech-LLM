@@ -9,5 +9,8 @@ const lessonMedia = {
 };
 
 export function getLessonMedia(lessonId) {
-  return lessonMedia[lessonId] ?? null;
+  return lessonMedia[lessonId] ?? {
+    videoSrc: demoVideoUrl,
+    captionSrc: captionsUrl,
+  };
 }
