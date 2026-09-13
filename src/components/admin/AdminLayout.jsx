@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import AdminNavbar from "src/components/admin/AdminNavbar";
 import Footer from "src/components/Footer";
-import RouteLoader from "src/components/RouteLoader";
+import RouteLoader from "src/components/ui/RouteLoader";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
@@ -28,7 +28,7 @@ export default function AdminLayout() {
     <div data-role="admin" className="flex min-h-screen flex-col bg-surface font-outfit">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm-fluid focus:font-medium focus:text-white"
       >
         Skip to main content
       </a>
@@ -49,10 +49,10 @@ export default function AdminLayout() {
           }`}
         >
           <div className="flex items-center gap-3 px-6 py-5">
-            <span className="text-2xl font-semibold text-ink">
+            <span className="text-heading font-semibold text-ink">
               EthianTech
             </span>
-            <span className="rounded bg-accent-admin px-2 py-0.5 text-11 font-bold uppercase text-white">
+            <span className="rounded bg-accent-admin px-2 py-0.5 text-sm-fluid font-bold uppercase text-white">
               Admin
             </span>
           </div>
@@ -66,7 +66,7 @@ export default function AdminLayout() {
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 rounded px-3 py-2.5 text-base transition-colors ${
+                    `flex items-center gap-3 rounded px-3 py-2.5 text-sm-fluid transition-colors ${
                       isActive
                         ? "border-l-[3px] border-accent-admin bg-tint-admin pl-[9px] font-medium text-accent-admin"
                         : "border-l-[3px] border-transparent text-ink hover:bg-gray-50"
@@ -89,10 +89,9 @@ export default function AdminLayout() {
               <Outlet />
             </Suspense>
           </main>
+          <Footer />
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

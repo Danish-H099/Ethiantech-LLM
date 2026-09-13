@@ -5,7 +5,7 @@ import { BookOpen, Filter } from "lucide-react";
 
 import Header from "src/components/Header";
 import Footer from "src/components/Footer";
-import Breadcrumbs from "src/components/Breadcrumbs";
+import Breadcrumbs from "src/components/ui/Breadcrumbs";
 import CourseCard from "src/components/CourseCard";
 import {
   RATING_OPTIONS,
@@ -15,12 +15,12 @@ import {
   durationIdFor,
   CourseFilterPanels,
 } from "src/components/CourseFilters";
-import SearchBar from "src/components/SearchBar";
-import SortSelect, { sortCourses } from "src/components/SortSelect";
+import SearchBar from "src/components/ui/SearchBar";
+import SortSelect, { sortCourses } from "src/components/ui/SortSelect";
 import SubcategoryBar from "src/components/SubcategoryBar";
-import { LoginPopup, SignupPopup } from "src/components/AuthPopups";
+import { AuthPopupGate } from "src/components/AuthPopups";
 
-import courses from "src/data/courses";
+import courses from "src/services/courses";
 
 import {
   createStaggerItem,
@@ -95,7 +95,7 @@ function CoursesHero() {
           className="max-w-3xl"
         >
           <h1 className="page-title mb-2">Courses</h1>
-          <p className="text-body-fluid leading-7 text-ink-muted">
+          <p className="text-subtitle text-ink-muted">
             Browse expert-led courses, pick a course and start learning today.
           </p>
         </Motion.div>
@@ -139,7 +139,7 @@ function ResultsToolbar({
             <Filter size={16} aria-hidden="true" />
             <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-11 font-bold text-white">
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-sm-fluid font-bold text-white">
                 {activeFilterCount}
               </span>
             )}
@@ -401,23 +401,7 @@ export default function CourseListPage() {
 
       <Footer />
 
-      <AnimatePresence>
-        {popupState === "login" && (
-          <LoginPopup
-            key="login"
-            onClose={() => setPopupState("none")}
-            onSwitchToSignup={() => setPopupState("signup")}
-          />
-        )}
-
-        {popupState === "signup" && (
-          <SignupPopup
-            key="signup"
-            onClose={() => setPopupState("none")}
-            onSwitchToLogin={() => setPopupState("login")}
-          />
-        )}
-      </AnimatePresence>
+      <AuthPopupGate state={popupState} onStateChange={setPopupState} />
     </div>
   );
 }

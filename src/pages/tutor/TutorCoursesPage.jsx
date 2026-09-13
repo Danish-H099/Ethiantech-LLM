@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { m as Motion } from "motion/react";
-import courses from "src/data/courses";
+import courses from "src/services/courses";
 import { parsePrice } from "src/lib/format";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 
@@ -38,7 +38,7 @@ export default function TutorCoursesPage() {
     <div>
       <div className="mb-8">
         <h1 className="page-title">My Courses</h1>
-        <p className="mt-1 text-md text-ink-muted">
+        <p className="mt-1 text-sm-fluid text-ink-muted">
           Manage and view all your published courses
         </p>
       </div>
@@ -60,14 +60,8 @@ export default function TutorCoursesPage() {
             </tr>
           </thead>
           <tbody>
-            {tutorCourses.map((course, index) => (
-              <tr
-                key={course.id}
-                style={{
-                  backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
-                }}
-                className="table-row"
-              >
+            {tutorCourses.map((course) => (
+              <tr key={course.id} className="table-row odd:bg-surface-soft">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-4">
                     <img
@@ -86,7 +80,7 @@ export default function TutorCoursesPage() {
                   <div className="flex items-center gap-3">
                     <StatusToggle initialStatus={course.status} />
                     <span
-                      className={`text-sm ${course.status === "Live"
+                      className={`text-sm-fluid ${course.status === "Live"
                           ? "text-brand"
                           : "text-ink/60"
                         }`}

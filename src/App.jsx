@@ -6,11 +6,11 @@ import CourseDetailsPage from "src/pages/public/CourseDetailsPage";
 import TutorLayout from "src/components/tutor/TutorLayout";
 import AdminLayout from "src/components/admin/AdminLayout";
 import StudentLayout from "src/components/student/StudentLayout";
-import RouteLoader from "src/components/RouteLoader";
+import RouteLoader from "src/components/ui/RouteLoader";
+import { Toaster } from "sonner";
 import "src/App.css";
 
 // Learning player + all authenticated app pages stay lazy (route-level code splitting).
-const CourseVideo = lazy(() => import("src/pages/public/CourseVideo"));
 const AddCoursePage = lazy(() => import("src/pages/tutor/AddCoursePage"));
 const TutorDashboardPage = lazy(() => import("src/pages/tutor/TutorDashboardPage"));
 const TutorCoursesPage = lazy(() => import("src/pages/tutor/TutorCoursesPage"));
@@ -23,9 +23,15 @@ const AdminCoursesPage = lazy(() => import("src/pages/admin/AdminCoursesPage"));
 const AdminUsersPage = lazy(() => import("src/pages/admin/AdminUsersPage"));
 const StudentDashboardPage = lazy(() => import("src/pages/student/StudentDashboardPage"));
 const StudentMyCoursesPage = lazy(() => import("src/pages/student/StudentMyCoursesPage"));
-const StudentNotesPage = lazy(() => import("src/pages/student/StudentNotesPage"));
+const StudentCourseOverviewPage = lazy(() => import("src/pages/student/StudentCourseOverviewPage"));
+const StudentLessonPlayerPage = lazy(() => import("src/pages/student/StudentLessonPlayerPage"));
+const StudentTasksPage = lazy(() => import("src/pages/student/StudentTasksPage"));
+const StudentGradesPage = lazy(() => import("src/pages/student/StudentGradesPage"));
+const StudentAnalyticsPage = lazy(() => import("src/pages/student/StudentAnalyticsPage"));
 const StudentWishlistPage = lazy(() => import("src/pages/student/StudentWishlistPage"));
-const StudentPerformancePage = lazy(() => import("src/pages/student/StudentPerformancePage"));
+const StudentNotesPage = lazy(() => import("src/pages/student/StudentNotesPage"));
+const StudentProfilePage = lazy(() => import("src/pages/student/StudentProfilePage"));
+const StudentNotificationsPage = lazy(() => import("src/pages/student/StudentNotificationsPage"));
 
 function ScrollManager() {
   const { pathname, hash } = useLocation();
@@ -48,18 +54,11 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/courses" element={<CourseListPage />} />
         <Route path="/course/:id" element={<CourseDetailsPage />} />
-        <Route
-          path="/courses/video"
-          element={
-            <Suspense fallback={<RouteLoader />}>
-              <CourseVideo />
-            </Suspense>
-          }
-        />
         <Route path="/tutor" element={<TutorLayout />}>
           <Route index element={<Navigate to="add-course" replace />} />
           <Route path="dashboard" element={<TutorDashboardPage />} />
@@ -80,9 +79,15 @@ function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<StudentDashboardPage />} />
           <Route path="my-courses" element={<StudentMyCoursesPage />} />
-          <Route path="notes" element={<StudentNotesPage />} />
+          <Route path="course/:courseId" element={<StudentCourseOverviewPage />} />
+          <Route path="course/:courseId/play" element={<StudentLessonPlayerPage />} />
+           <Route path="tasks" element={<StudentTasksPage />} />
+          <Route path="grades" element={<StudentGradesPage />} />
+          <Route path="analytics" element={<StudentAnalyticsPage />} />
           <Route path="wishlist" element={<StudentWishlistPage />} />
-          <Route path="performance" element={<StudentPerformancePage />} />
+          <Route path="notes" element={<StudentNotesPage />} />
+          <Route path="profile" element={<StudentProfilePage />} />
+          <Route path="notifications" element={<StudentNotificationsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

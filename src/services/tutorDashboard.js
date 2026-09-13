@@ -1,8 +1,3 @@
-/**
- * Dashboard metrics for the logged-in tutor.
- * Exported as named values so tutor pages can import only what they need.
- */
-
 export const tutorStats = [
   { label: "Total Earnings", value: "$62,025", change: "+12.5%", up: true, iconName: "DollarSign" },
   { label: "Total Students", value: "2,820", change: "+8.2%", up: true, iconName: "Users" },
@@ -27,3 +22,13 @@ export const studentsOverTime = [
   { month: "Nov", students: 720 },
   { month: "Dec", students: 565 },
 ];
+
+export function getTutorStats() {
+  return tutorStats;
+}
+export function getEarningsOverTime() {
+  return earningsOverTime;
+}
+export function getStudentsOverTime() {
+  return studentsOverTime;
+}

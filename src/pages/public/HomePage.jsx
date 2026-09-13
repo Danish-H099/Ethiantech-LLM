@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, m as Motion, useReducedMotion } from "motion/react";
+import { m as Motion, useReducedMotion } from "motion/react";
 import Header from "src/components/Header";
-import courses from "src/data/courses";
-import testimonialsData from "src/data/testimonialsData.json";
+import courses from "src/services/courses";
 import Footer from "src/components/Footer";
-import { Building2, Presentation } from "lucide-react";
-import { LoginPopup, SignupPopup } from "src/components/AuthPopups";
+import { Building2, GraduationCap, Users, BookOpen } from "lucide-react";
+import { AuthPopupGate } from "src/components/AuthPopups";
 import CourseCard from "src/components/CourseCard";
 import TestimonialCard from "src/components/TestimonialCard";
 import {
@@ -17,7 +16,48 @@ import {
   createStaggerItem,
 } from "src/lib/animationVariants";
 
-const { companies, testimonials } = testimonialsData;
+const companies = [
+  { name: "Microsoft", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/1280px-Microsoft_logo_%282012%29.svg.png" },
+  { name: "Walmart", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Walmart_logo_%282008%29.svg" },
+  { name: "Accenture", logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Accenture_logo.svg?width=512" },
+  { name: "Adobe", logo: "https://commons.wikimedia.org/wiki/Special:FilePath/Adobe_Corporate_logo.svg?width=512" },
+  { name: "Paypal", logo: "https://cdn.simpleicons.org/paypal" }
+];
+
+const testimonials = [
+  {
+    id: 1,
+    name: "Donald Jackman",
+    role: "SWE 1 @ Amazon",
+    image: "https://randomuser.me/api/portraits/men/11.jpg",
+    rating: 5,
+    quote: "The structured curriculum and hands-on projects were exactly what I needed to land my first SWE role. Mentors gave focused feedback on my interview prep, and every module left me with a portfolio piece I was proud of. Within four months of starting I had an offer from Amazon, and I still reference the system-design notes during my day-to-day work. I recommend EthianTech to every junior engineer I mentor."
+  },
+  {
+    id: 2,
+    name: "Richard Nelson",
+    role: "SWE 2 @ Summa",
+    image: "https://randomuser.me/api/portraits/men/45.jpg",
+    rating: 4,
+    quote: "Flexible pacing let me level up without leaving my job. I studied in the evenings and applied each lesson the next morning, and the capstone became the centerpiece of my portfolio. That project is what finally got me promoted to SWE 2. I also loved the community review threads — feedback from engineers outside my company pushed me to write cleaner, more idiomatic code."
+  },
+  {
+    id: 3,
+    name: "James Washington",
+    role: "SWE 2 @ Google",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    rating: 5,
+    quote: "The interview-prep track alone is worth the price. I'd failed Google twice before; the rubric-aligned mocks and the system-design templates gave me a repeatable framework. Third attempt was the charm. Now I'm the one giving referrals to teammates from the program."
+  },
+  {
+    id: 4,
+    name: "Nancy Sanders",
+    role: "Full-Stack Dev @ Shopify",
+    image: "https://randomuser.me/api/portraits/women/19.jpg",
+    rating: 5,
+    quote: "Coming from a non-CS background, the curriculum didn't assume I knew compiler theory — it met me where I was. The Discord study-groups kept me accountable, and the career-services resume review caught three real gaps my CV had. I got an offer six weeks after graduating."
+  }
+];
 
 function HeroSection({ onGetStarted, staggerItem }) {
   return (
@@ -31,7 +71,7 @@ function HeroSection({ onGetStarted, staggerItem }) {
         <Motion.h1
           variants={staggerItem}
           custom={0}
-          className="mx-auto max-w-4xl text-hero font-extrabold text-ink"
+          className="mx-auto max-w-4xl text-hero font-extrabold text-ink tracking-tight"
         >
           Master in-demand skills with expert-led courses
         </Motion.h1>
@@ -39,10 +79,9 @@ function HeroSection({ onGetStarted, staggerItem }) {
         <Motion.p
           variants={staggerItem}
           custom={1}
-          className="mx-auto mt-6 max-w-2xl text-body-fluid leading-7 text-ink-muted"
+          className="mx-auto mt-6 max-w-3xl text-subhero font-medium text-ink-muted"
         >
-          Join thousands of learners building real skills in coding, AI, design, and
-          business — start free and learn at your own pace.
+          Join thousands of learners building real skills. Start for free and learn at your own pace.
         </Motion.p>
 
         <Motion.div
@@ -78,7 +117,7 @@ function StatsBar({ stats, staggerItem }) {
       >
         {stats.map((stat, i) => (
           <Motion.div key={stat.label} variants={staggerItem} custom={i} className="text-center">
-            <p className="text-stat font-bold tabular-nums text-brand">{stat.value}</p>
+            <p className="text-metric font-bold tabular-nums text-brand">{stat.value}</p>
             <p className="mt-1 text-sm-fluid text-ink-muted">{stat.label}</p>
           </Motion.div>
         ))}
@@ -99,9 +138,9 @@ function FeaturedCoursesSection({ staggerItem }) {
           className="mx-auto max-w-3xl text-center"
         >
           <h2 className="page-title">Explore Our Top Courses</h2>
-          <p className="mt-3 text-body-fluid leading-7 text-ink-muted">
-            Top-rated courses across programming, AI, design, and business — crafted to
-            deliver real skills, not just theory.
+          <p className="mt-3 text-subtitle text-ink-muted">
+            Top-rated courses across programming, AI, design, and business crafted to
+            deliver real skills.
           </p>
         </Motion.div>
 
@@ -150,7 +189,7 @@ function TestimonialsSection({ staggerItem }) {
         viewport={viewportOnce}
         className="text-center"
       >
-        <p className="text-body-fluid font-medium tracking-wide text-ink-muted">Trusted by learners from</p>
+        <p className="text-eyebrow font-medium text-ink-muted">Trusted by learners from</p>
       </Motion.div>
 
       <Motion.div
@@ -158,18 +197,22 @@ function TestimonialsSection({ staggerItem }) {
         initial="hidden"
         whileInView="visible"
         viewport={viewportOnce}
-        className="mt-8 flex flex-wrap justify-center gap-14"
+        className="mt-8 flex flex-wrap justify-center gap-10 items-center"
       >
         {companies.map((company, i) => (
-          <Motion.img
+          <Motion.div
             key={company.name}
-            src={company.logo}
-            alt={company.name}
-            loading="lazy"
             custom={i}
             variants={staggerItem}
-            className="h-[clamp(1.75rem,1.568rem+0.777vw,2.5rem)] object-contain"
-          />
+            className="flex h-[clamp(2.5rem,2rem+1vw,3rem)] max-w-[160px] items-center"
+          >
+            <img
+              src={company.logo}
+              alt={company.name}
+              loading="lazy"
+              className="h-full w-auto max-w-full object-contain transition duration-300"
+            />
+          </Motion.div>
         ))}
       </Motion.div>
 
@@ -182,7 +225,7 @@ function TestimonialsSection({ staggerItem }) {
       >
         <h2 className="page-title">Hear From Our Learners</h2>
 
-        <p className="mx-auto mt-4 max-w-3xl text-body-fluid text-ink-muted">
+        <p className="mx-auto mt-4 max-w-3xl text-subtitle text-ink-muted">
           Real stories from learners who built new skills and transformed their careers.
         </p>
       </Motion.div>
@@ -230,7 +273,7 @@ function CTASection({ onGetStarted, staggerItem }) {
         <Motion.p
           variants={staggerItem}
           custom={1}
-          className="mx-auto mt-6 max-w-2xl text-body-fluid leading-7 text-ink-muted"
+          className="mx-auto mt-6 max-w-2xl text-subtitle text-ink-muted"
         >
           Join thousands of learners mastering in-demand skills with expert-led courses —
           start free today.
@@ -252,7 +295,7 @@ function CTASection({ onGetStarted, staggerItem }) {
   );
 }
 
-function EducatorsSection({ staggerItem }) {
+function PartnerSection({ staggerItem }) {
   return (
     <section className="bg-surface py-20">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
@@ -262,11 +305,11 @@ function EducatorsSection({ staggerItem }) {
           whileInView="visible"
           viewport={viewportOnce}
         >
-          <h2 className="page-title">For Educators &amp; Organizations</h2>
+          <h2 className="page-title">Teach & Train with EthianTech</h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-body-fluid leading-7 text-ink-muted">
-            Share your expertise with thousands of learners, or build curated learning paths
-            for your team.
+          <p className="mx-auto mt-4 max-w-2xl text-subtitle text-ink-muted">
+            Whether you're an expert sharing knowledge or an organization upskilling your team,
+            our platform gives you the tools to create, deliver, and track learning at scale.
           </p>
         </Motion.div>
 
@@ -275,27 +318,46 @@ function EducatorsSection({ staggerItem }) {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row"
+          className="mt-12 grid gap-8 sm:grid-cols-2"
         >
           <Motion.div variants={staggerItem} custom={0}>
-            <Motion.div variants={buttonPress} whileHover="hover" whileTap="tap">
-              <Link to="/tutor/dashboard" className="btn-outline px-6 py-3 text-sm-fluid hover:bg-brand hover:text-white">
-                <Presentation size={18} aria-hidden="true" />
-                Teach on EthianTech
+            <div className="card p-8 text-center hover:shadow-card-hover transition-shadow">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-tint-pink">
+                <GraduationCap size={28} className="text-brand" aria-hidden="true" />
+              </div>
+              <h3 className="text-body-lg font-semibold text-ink">Teach on EthianTech</h3>
+              <p className="mt-2 text-sm-fluid text-ink-muted">
+                Share your expertise with thousands of learners. Create courses, build your
+                brand, and earn revenue doing what you love.
+              </p>
+              <Link
+                to="/tutor/dashboard"
+                className="mt-6 inline-flex items-center gap-2 text-sm-fluid font-medium text-brand-strong hover:underline"
+              >
+                Become an instructor
+                <span aria-hidden="true">→</span>
               </Link>
-            </Motion.div>
+            </div>
           </Motion.div>
 
           <Motion.div variants={staggerItem} custom={1}>
-            <Motion.div variants={buttonPress} whileHover="hover" whileTap="tap">
+            <div className="card p-8 text-center hover:shadow-card-hover transition-shadow">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-tint-pink">
+                <Users size={28} className="text-brand" aria-hidden="true" />
+              </div>
+              <h3 className="text-body-lg font-semibold text-ink">Train Your Team</h3>
+              <p className="mt-2 text-sm-fluid text-ink-muted">
+                Upskill your workforce with expert-led courses. Track progress, measure
+                outcomes, and build a culture of continuous learning.
+              </p>
               <a
                 href="mailto:info@ethiantech.com?subject=Team%20training%20inquiry"
-                className="btn-outline px-6 py-3 text-sm-fluid hover:bg-brand hover:text-white"
+                className="mt-6 inline-flex items-center gap-2 text-sm-fluid font-medium text-brand-strong hover:underline"
               >
-                <Building2 size={18} aria-hidden="true" />
-                Train your team
+                Contact sales
+                <span aria-hidden="true">→</span>
               </a>
-            </Motion.div>
+            </div>
           </Motion.div>
         </Motion.div>
       </div>
@@ -333,26 +395,11 @@ export default function HomePage() {
         <FeaturedCoursesSection staggerItem={staggerItem} />
         <TestimonialsSection staggerItem={staggerItem} />
         <CTASection onGetStarted={() => setPopupState("signup")} staggerItem={staggerItem} />
-        <EducatorsSection staggerItem={staggerItem} />
+        <PartnerSection staggerItem={staggerItem} />
       </main>
       <Footer />
 
-      <AnimatePresence mode="wait">
-        {popupState === "login" && (
-          <LoginPopup
-            key="login"
-            onClose={() => setPopupState("none")}
-            onSwitchToSignup={() => setPopupState("signup")}
-          />
-        )}
-        {popupState === "signup" && (
-          <SignupPopup
-            key="signup"
-            onClose={() => setPopupState("none")}
-            onSwitchToLogin={() => setPopupState("login")}
-          />
-        )}
-      </AnimatePresence>
+      <AuthPopupGate state={popupState} onStateChange={setPopupState} />
     </div>
   );
 }

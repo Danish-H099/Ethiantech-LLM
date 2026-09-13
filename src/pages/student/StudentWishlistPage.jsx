@@ -1,31 +1,81 @@
-import { useMemo } from "react";
-import { m as Motion, useReducedMotion } from "motion/react";
-import { Heart, Star, ShoppingCart } from "lucide-react";
-import { wishlistedCourses } from "src/data/studentData";
-import { fadeIn, viewportOnce, createStaggerItem, createCardHover } from "src/lib/animationVariants";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AnimatePresence, m as Motion, useReducedMotion } from "motion/react";
+import { Heart, Trash2 } from "lucide-react";
 
-export default function StudentWishlistPage() {
-  const shouldReduceMotion = useReducedMotion();
-  const staggerItem = useMemo(
-    () => createStaggerItem(!!shouldReduceMotion),
-    [shouldReduceMotion]
+import {
+  getWishlistedCourses,
+  getEnrolledCourses,
+  toggleWishlist,
+  enrollFromWishlist,
+} from "src/services/studentRepository";
+import { getWishlistRecommendations } from "src/services/courses";
+import {
+  fadeIn,
+  viewportOnce,
+  createStaggerItem,
+  durations,
+  easeDepart,
+} from "src/lib/animationVariants";
+import StudentEmptyState from "src/components/student/StudentEmptyState";
+import CourseCard from "src/components/CourseCard";
+import ConfirmDialog from "src/components/ui/ConfirmDialog";
+import { toast } from "sonner";
+
+// ---------------------------------------------------------------- sections
+
+function PageHeading({ count }) {
+  const copy =
+    count === 0
+      ? "Courses you save will appear here"
+      : `${count} course${count === 1 ? "" : "s"} saved for later`;
+  return (
+    <div className="mb-8">
+      <h1 className="page-title">Wishlist</h1>
+      <p className="mt-1 text-sm-fluid text-ink-muted">{copy}</p>
+    </div>
   );
-  const cardHover = useMemo(
-    () => createCardHover(!!shouldReduceMotion),
-    [shouldReduceMotion]
+}
+
+function EmptyWishlistPanel() {
+  return (
+    <div className="card px-4 py-16">
+      <StudentEmptyState
+        icon={Heart}
+        title="Your wishlist is empty"
+        description="Browse the catalog and save courses you're interested in — they'll show up here."
+        action={{ label: "Browse Catalog", to: "/courses" }}
+      />
+    </div>
   );
+}
+
+function RecommendedCourses({ wishlistedCourses, enrolledIds, staggerItem }) {
+  const excludedIds = useMemo(() => {
+    const ids = new Set([...enrolledIds].map(Number));
+    wishlistedCourses.forEach((course) => ids.add(course.id));
+    return [...ids];
+  }, [enrolledIds, wishlistedCourses]);
+
+  const recommendations = useMemo(
+    () => getWishlistRecommendations(wishlistedCourses, excludedIds, 4),
+    [wishlistedCourses, excludedIds]
+  );
+
+  const personalized = wishlistedCourses.length > 0;
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="page-title">
-          Wishlist
-        </h1>
-        <p className="mt-1 text-md text-ink-muted">
-          Courses you want to enroll in later
+    <section className="mt-12" aria-label="Recommended courses">
+      <div className="mb-6">
+        <h2 className="section-title">
+          {personalized ? "More courses like your wishlist" : "Popular courses"}
+        </h2>
+        <p className="mt-1 text-sm-fluid text-ink-muted">
+          {personalized
+            ? "Based on the topics and skills in courses you've saved"
+            : "Courses students are loving right now"}
         </p>
       </div>
-
       <Motion.div
         variants={fadeIn}
         initial="hidden"
@@ -33,60 +83,114 @@ export default function StudentWishlistPage() {
         viewport={viewportOnce}
         className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
       >
-        {wishlistedCourses.map((course, i) => (
-          <Motion.div key={course.id} variants={staggerItem} custom={i}>
-            <Motion.div
-              variants={cardHover}
-              initial="rest"
-              whileHover="hover"
-              whileTap="tap"
-              className="h-full"
-            >
-              <div className="card h-full overflow-hidden">
-                <div className="relative h-[160px] overflow-hidden">
-                  <img
-                    src={course.image}
-                    alt={course.title}
-                    loading="lazy"
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute right-3 top-3">
-                    <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-brand shadow transition hover:bg-white">
-                      <Heart size={18} className="fill-brand" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-5">
-                  <h3 className="mb-1 line-clamp-2 text-base font-semibold text-ink">
-                    {course.title}
-                  </h3>
-                  <p className="mb-3 text-13 text-ink-muted">
-                    {course.instructor}
-                  </p>
-
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="flex items-center gap-1">
-                      <Star size={14} className="fill-amber-500 text-amber-500" />
-                      <span className="text-sm font-medium text-ink">
-                        {course.rating}
-                      </span>
-                    </div>
-                    <span className="text-lg font-bold text-brand">
-                      {course.price}
-                    </span>
-                  </div>
-
-                  <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-2.5 text-sm font-medium text-white transition hover:bg-brand/90">
-                    <ShoppingCart size={16} />
-                    Enroll Now
-                  </button>
-                </div>
-              </div>
-            </Motion.div>
+        {recommendations.map((course, i) => (
+          <Motion.div key={course.id} variants={staggerItem} custom={i} className="h-full">
+            <CourseCard course={course} />
           </Motion.div>
         ))}
       </Motion.div>
+    </section>
+  );
+}
+
+function WishlistGrid({ courses, staggerItem, onEnroll, onRemoveRequest }) {
+  return (
+    <Motion.div
+      variants={fadeIn}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewportOnce}
+      className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+    >
+      <AnimatePresence mode="popLayout">
+        {courses.map((course, i) => (
+          <Motion.div
+            key={course.id}
+            layout
+            variants={staggerItem}
+            initial="hidden"
+            animate="visible"
+            exit={{
+              opacity: 0,
+              scale: 0.96,
+              transition: { duration: durations.slow, ease: easeDepart },
+            }}
+            custom={i}
+            className="h-full"
+          >
+            <CourseCard
+              course={course}
+              onEnroll={(c) => onEnroll(c.id)}
+              onRemove={(c) => onRemoveRequest(c.id)}
+            />
+          </Motion.div>
+        ))}
+      </AnimatePresence>
+    </Motion.div>
+  );
+}
+
+// ------------------------------------------------------------------- page
+
+export default function StudentWishlistPage() {
+  const [, setRevision] = useState(0);
+  const refresh = () => setRevision((v) => v + 1);
+  const [confirmId, setConfirmId] = useState(null);
+  const navigate = useNavigate();
+
+  const shouldReduceMotion = useReducedMotion();
+  const staggerItem = useMemo(
+    () => createStaggerItem(!!shouldReduceMotion),
+    [shouldReduceMotion]
+  );
+
+  const courses = getWishlistedCourses();
+  const enrolledIds = new Set(getEnrolledCourses().map((c) => c.id));
+
+  function handleConfirmRemove() {
+    if (confirmId != null) toggleWishlist(confirmId);
+    toast("Removed from wishlist");
+    setConfirmId(null);
+    refresh();
+  }
+
+  function handleEnroll(courseId) {
+    const result = enrollFromWishlist(courseId);
+    if (result.success) refresh();
+    navigate(`/student/course/${courseId}`);
+  }
+
+  return (
+    <div>
+      <PageHeading count={courses.length} />
+
+      {courses.length === 0 ? (
+        <EmptyWishlistPanel />
+      ) : (
+        <WishlistGrid
+          courses={courses}
+          staggerItem={staggerItem}
+          onEnroll={handleEnroll}
+          onRemoveRequest={(id) => setConfirmId(id)}
+        />
+      )}
+      <RecommendedCourses
+        wishlistedCourses={courses}
+        enrolledIds={enrolledIds}
+        staggerItem={staggerItem}
+      />
+
+      <ConfirmDialog
+        open={confirmId !== null}
+        onCancel={() => setConfirmId(null)}
+        onConfirm={handleConfirmRemove}
+        variant="danger"
+        icon={Trash2}
+        title="Remove from wishlist?"
+        description="This course will be removed from your wishlist."
+        confirmLabel="Remove"
+        cancelLabel="Keep"
+      />
     </div>
   );
 }

@@ -82,3 +82,25 @@ export const allUsers = [
   { id: 14, name: "Lucas Silva", email: "lucas@student.com", role: "Student", joined: "May 6, 2024", status: "Inactive" },
   { id: 15, name: "Emma Brown", email: "emma@student.com", role: "Student", joined: "Jun 19, 2024", status: "Active" },
 ];
+
+export function getAdminStats() {
+  return statCards;
+}
+export function getMonthlyRevenue() {
+  return monthlyRevenue;
+}
+export function getRevenueByCategory() {
+  return revenueByCategory;
+}
+export function getRegionStudents() {
+  return regionStudents;
+}
+export function getInstructors() {
+  return instructors;
+}
+export function getAllCourses() {
+  return allCourses;
+}
+export function getAllUsers() {
+  return allUsers;
+}

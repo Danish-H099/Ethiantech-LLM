@@ -1,9 +1,28 @@
-{
+/**
+ * Per-course curriculum, keyed by course id (the catalog course id space).
+ *
+ * @typedef {Object} CurriculumLesson
+ * @property {string} title
+ * @property {string} duration Display duration label ("10 mins").
+ * @property {"video"|"article"|"quiz"|"exercise"|"project"|"resource"} [type]
+ * @property {boolean} [preview] Free-preview lesson (watchable before enrollment).
+ *
+ * @typedef {Object} CurriculumSection
+ * @property {string} title
+ * @property {number} lectures
+ * @property {string} duration
+ * @property {CurriculumLesson[]} lessons
+ *
+ * @typedef {Object<string, CurriculumSection[]>} Curriculum
+ */
+
+/** @type {Curriculum} */
+const curriculum = {
   "1": [
     {
       "title": "Project Introduction",
       "lectures": 3,
-      "duration": "45m",
+      "duration": "30m",
       "lessons": [
         {
           "title": "App Overview — Build Text-to-Image SaaS",
@@ -156,8 +175,8 @@
     },
     {
       "title": "Project Deployment",
-      "lectures": 4,
-      "duration": "1h 40m",
+      "lectures": 3,
+      "duration": "1h 15m",
       "lessons": [
         {
           "title": "Preparing for Production",
@@ -173,11 +192,6 @@
           "title": "Monitoring & Analytics",
           "duration": "25 mins",
           "type": "video"
-        },
-        {
-          "title": "Course Wrap-Up & Next Steps",
-          "duration": "10 mins",
-          "type": "quiz"
         }
       ]
     }
@@ -321,8 +335,8 @@
     },
     {
       "title": "Subscription Billing",
-      "lectures": 4,
-      "duration": "2h 30m",
+      "lectures": 2,
+      "duration": "1h 10m",
       "lessons": [
         {
           "title": "Pricing Tiers & Free Usage Limits",
@@ -333,43 +347,6 @@
           "title": "Stripe Subscriptions & Checkout",
           "duration": "40 mins",
           "type": "video"
-        },
-        {
-          "title": "Per-User Usage Tracking",
-          "duration": "40 mins",
-          "type": "video"
-        },
-        {
-          "title": "Billing Edge Cases & Refunds",
-          "duration": "40 mins",
-          "type": "article"
-        }
-      ]
-    },
-    {
-      "title": "Production, Scaling & Launch",
-      "lectures": 4,
-      "duration": "2h 15m",
-      "lessons": [
-        {
-          "title": "Deploying the Full Stack",
-          "duration": "40 mins",
-          "type": "video"
-        },
-        {
-          "title": "Scaling Workers & Storage",
-          "duration": "40 mins",
-          "type": "video"
-        },
-        {
-          "title": "Monitoring, Logs & Error Tracking",
-          "duration": "30 mins",
-          "type": "video"
-        },
-        {
-          "title": "Launch Checklist & Wrap-Up",
-          "duration": "25 mins",
-          "type": "quiz"
         }
       ]
     }
@@ -377,21 +354,46 @@
   "3": [
     {
       "title": "Core Lesson",
-      "lectures": 1,
-      "duration": "45m",
+      "lectures": 6,
+      "duration": "3h 15m",
       "lessons": [
         {
           "title": "React Router Complete Course — One Video",
           "duration": "45 mins",
           "type": "video",
           "preview": true
+        },
+        {
+          "title": "Project Setup & Tooling",
+          "duration": "30 mins",
+          "type": "video"
+        },
+        {
+          "title": "Router Basics: Browser vs Memory",
+          "duration": "30 mins",
+          "type": "video"
+        },
+        {
+          "title": "Routes & Route Matching",
+          "duration": "30 mins",
+          "type": "video"
+        },
+        {
+          "title": "Link & NavLink Components",
+          "duration": "30 mins",
+          "type": "video"
+        },
+        {
+          "title": "Route Parameters Deep Dive",
+          "duration": "30 mins",
+          "type": "video"
         }
       ]
     },
     {
       "title": "Written Notes & Cheatsheet",
-      "lectures": 2,
-      "duration": "20m",
+      "lectures": 6,
+      "duration": "2h 20m",
       "lessons": [
         {
           "title": "Routing Concepts Explained in Text",
@@ -402,13 +404,33 @@
           "title": "Common Patterns Cheatsheet",
           "duration": "10 mins",
           "type": "resource"
+        },
+        {
+          "title": "Layout Routes Explained",
+          "duration": "30 mins",
+          "type": "article"
+        },
+        {
+          "title": "Outlet & Nested UI",
+          "duration": "30 mins",
+          "type": "article"
+        },
+        {
+          "title": "Navigation & Redirects",
+          "duration": "30 mins",
+          "type": "resource"
+        },
+        {
+          "title": "Route Guards & Auth",
+          "duration": "30 mins",
+          "type": "article"
         }
       ]
     },
     {
       "title": "Quiz & Practice",
-      "lectures": 2,
-      "duration": "20m",
+      "lectures": 6,
+      "duration": "2h 20m",
       "lessons": [
         {
           "title": "Routing Fundamentals Quiz",
@@ -419,6 +441,26 @@
           "title": "Build a Nested Layout Challenge",
           "duration": "10 mins",
           "type": "exercise"
+        },
+        {
+          "title": "Dynamic Routes Lab",
+          "duration": "30 mins",
+          "type": "exercise"
+        },
+        {
+          "title": "Protected Routes Challenge",
+          "duration": "30 mins",
+          "type": "exercise"
+        },
+        {
+          "title": "Final Routing Quiz",
+          "duration": "30 mins",
+          "type": "quiz"
+        },
+        {
+          "title": "Course Project: Mini Router App",
+          "duration": "30 mins",
+          "type": "project"
         }
       ]
     }
@@ -633,8 +675,8 @@
   "5": [
     {
       "title": "Python Fundamentals",
-      "lectures": 5,
-      "duration": "3h 10m",
+      "lectures": 7,
+      "duration": "4h 10m",
       "lessons": [
         {
           "title": "Setting Up Python & Jupyter",
@@ -661,13 +703,23 @@
           "title": "Python Fundamentals Exercises",
           "duration": "50 mins",
           "type": "exercise"
+        },
+        {
+          "title": "Feature Engineering Essentials",
+          "duration": "30 mins",
+          "type": "video"
+        },
+        {
+          "title": "Experiment Tracking & MLflow",
+          "duration": "30 mins",
+          "type": "video"
         }
       ]
     },
     {
       "title": "Data Wrangling with Pandas",
-      "lectures": 5,
-      "duration": "3h 40m",
+      "lectures": 7,
+      "duration": "4h 40m",
       "lessons": [
         {
           "title": "Intro to NumPy & Arrays",
@@ -693,13 +745,23 @@
           "title": "Wrangling Practice Dataset",
           "duration": "40 mins",
           "type": "exercise"
+        },
+        {
+          "title": "Handling Imbalanced Data",
+          "duration": "30 mins",
+          "type": "video"
+        },
+        {
+          "title": "Capstone Project Kickoff",
+          "duration": "30 mins",
+          "type": "video"
         }
       ]
     },
     {
       "title": "Data Visualization",
-      "lectures": 4,
-      "duration": "2h 30m",
+      "lectures": 5,
+      "duration": "3h",
       "lessons": [
         {
           "title": "Plotting with Matplotlib",
@@ -720,13 +782,18 @@
           "title": "Visualization Best Practices",
           "duration": "35 mins",
           "type": "article"
+        },
+        {
+          "title": "Model Deployment with FastAPI",
+          "duration": "30 mins",
+          "type": "video"
         }
       ]
     },
     {
       "title": "Machine Learning with scikit-learn",
-      "lectures": 5,
-      "duration": "3h 45m",
+      "lectures": 6,
+      "duration": "3h 55m",
       "lessons": [
         {
           "title": "ML Concepts & Train/Test Splits",
@@ -752,13 +819,18 @@
           "title": "Pipeline Quiz",
           "duration": "25 mins",
           "type": "quiz"
+        },
+        {
+          "title": "Cross-Validation Strategies",
+          "duration": "30 mins",
+          "type": "video"
         }
       ]
     },
     {
       "title": "Project & Best Practices",
-      "lectures": 4,
-      "duration": "2h 35m",
+      "lectures": 5,
+      "duration": "3h 5m",
       "lessons": [
         {
           "title": "Reproducible Data Projects",
@@ -779,6 +851,11 @@
           "title": "Course Wrap-Up & Next Steps",
           "duration": "30 mins",
           "type": "quiz"
+        },
+        {
+          "title": "Hyperparameter Tuning with Optuna",
+          "duration": "30 mins",
+          "type": "video"
         }
       ]
     }
@@ -900,8 +977,8 @@
     },
     {
       "title": "Case Study & Portfolio",
-      "lectures": 4,
-      "duration": "2h 15m",
+      "lectures": 3,
+      "duration": "1h 55m",
       "lessons": [
         {
           "title": "Structuring a Case Study",
@@ -917,11 +994,6 @@
           "title": "Final Case Study Project",
           "duration": "50 mins",
           "type": "project"
-        },
-        {
-          "title": "Portfolio Review & Wrap-Up",
-          "duration": "20 mins",
-          "type": "quiz"
         }
       ]
     }
@@ -3050,4 +3122,6 @@
       ]
     }
   ]
-}
+};
+
+export default curriculum;

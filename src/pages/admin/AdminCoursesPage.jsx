@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { m as Motion } from "motion/react";
-import { allCourses } from "src/data/adminData";
+import { getAllCourses } from "src/services/adminData";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 
 function StatusBadge({ status }) {
   const isLive = status === "Live";
   return (
     <span
-      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+      className={`inline-block rounded-full px-3 py-1 text-sm-fluid font-medium ${
         isLive
           ? "bg-green-100 text-green-600"
           : "bg-amber-100 text-amber-600"
@@ -19,7 +19,7 @@ function StatusBadge({ status }) {
 }
 
 export default function AdminCoursesPage() {
-  const [courses] = useState(allCourses);
+  const [courses] = useState(() => getAllCourses());
 
   return (
     <div>
@@ -28,7 +28,7 @@ export default function AdminCoursesPage() {
           <h1 className="page-title">
             Course Management
           </h1>
-          <p className="mt-1 text-md text-ink-muted">
+          <p className="mt-1 text-sm-fluid text-ink-muted">
             {courses.length} courses on the platform
           </p>
         </div>
@@ -53,14 +53,8 @@ export default function AdminCoursesPage() {
             </tr>
           </thead>
           <tbody>
-            {courses.map((course, index) => (
-              <tr
-                key={course.id}
-                style={{
-                  backgroundColor: index % 2 === 0 ? "#F7F9FD" : "#ffffff",
-                }}
-                className="table-row"
-              >
+            {courses.map((course) => (
+              <tr key={course.id} className="table-row odd:bg-surface-soft">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-4">
                     <img
@@ -85,7 +79,7 @@ export default function AdminCoursesPage() {
                   ${course.earnings.toLocaleString()}
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <button className="rounded border border-ink/20 px-3 py-1.5 text-13 text-ink/70 transition hover:border-brand hover:text-brand">
+                  <button className="rounded border border-ink/20 px-3 py-1.5 text-sm-fluid text-ink/70 transition hover:border-brand hover:text-brand">
                     View
                   </button>
                 </td>

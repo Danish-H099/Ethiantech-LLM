@@ -1,6 +1,6 @@
-// Raw course resources as persisted by the LMS backend.
-// Related entities (institution, instructors, curriculum) are referenced by id
-// and resolved server-side in ./index.js.
+﻿// Raw course records as persisted by the LMS backend.
+// Related entities (institution, tutors, curriculum) are referenced by id and
+// resolved server-side in src/services/courses.js.
 
 /**
  * Canonical course catalog.
@@ -24,7 +24,7 @@
  * @property {string} photo Avatar image URL.
  * @property {string} title Professional role/title.
  * @property {string} bio Short biography.
- * @property {number} rating Overall instructor rating (1–5).
+ * @property {number} rating Overall instructor rating (1â€“5).
  * @property {number} students Total learners taught.
  * @property {number} courses Number of published courses.
  *
@@ -98,7 +98,7 @@ const DEFAULT_HIGHLIGHTS = [
 ];
 
 /** @type {Course[]} */
-export const courseResources = [
+export const courses = [
   {
     id: 1,
     title: "Build Text to Image SaaS App in React JS",
@@ -108,10 +108,10 @@ export const courseResources = [
     price: "$10.99",
     originalPrice: "$44.99",
     promise:
-      "Build and launch a working AI image-generation SaaS — from React frontend to billing to production deployment.",
+      "Build and launch a working AI image-generation SaaS â€” from React frontend to billing to production deployment.",
     description: [
       "This project-based course takes you from a blank React app to a fully deployed text-to-image SaaS. You'll wire up an AI image-generation API, build an async job flow so users can generate images without blocking, and design a monetization loop with authentication and usage limits.",
-      "Along the way you'll make the same decisions a production team makes: structuring components, handling errors, choosing where state lives, and monitoring what happens after you ship. By the end you'll have a real product on the internet — not just code in a repo.",
+      "Along the way you'll make the same decisions a production team makes: structuring components, handling errors, choosing where state lives, and monitoring what happens after you ship. By the end you'll have a real product on the internet â€” not just code in a repo.",
     ],
     projects: [
       "Text-to-image SaaS app with auth and usage limits",
@@ -184,10 +184,10 @@ export const courseResources = [
     price: "$10.99",
     originalPrice: "$44.99",
     promise:
-      "Ship an AI background-removal SaaS powered by a vision API — with queues, webhooks, subscriptions, and per-user limits.",
+      "Ship an AI background-removal SaaS powered by a vision API â€” with queues, webhooks, subscriptions, and per-user limits.",
     description: [
       "You'll build a complete AI background-removal product: an upload experience that validates and optimizes images, a worker that processes them through a vision API, and webhook callbacks that keep the client in sync.",
-      "Then you'll make it a business — subscription billing with Stripe, usage limits per user, and the failure recovery that keeps a paid product reliable. The course ends with a production deployment and a launch checklist.",
+      "Then you'll make it a business â€” subscription billing with Stripe, usage limits per user, and the failure recovery that keeps a paid product reliable. The course ends with a production deployment and a launch checklist.",
     ],
     projects: [
       "AI background-removal web app with image upload",
@@ -261,7 +261,7 @@ export const courseResources = [
     price: "$10.99",
     originalPrice: "$34.99",
     promise:
-      "Master React Router v7 in one fast-paced video — with a cheatsheet, quiz, and hands-on challenge to lock it in.",
+      "Master React Router v7 in one fast-paced video â€” with a cheatsheet, quiz, and hands-on challenge to lock it in.",
     description: [
       "The entire core course is a single, focused video covering everything React Router v7 has to offer: setup, nested routes, layouts, dynamic segments, loaders, redirects, and lazy loading.",
       "Because it's one video, it's built to be rewatched. Pair it with the written cheatsheet, test yourself with the quiz, and cement the concepts by building a nested layout challenge.",
@@ -313,7 +313,7 @@ export const courseResources = [
       {
         question: "Is this course really taught in one video?",
         answer:
-          "Yes — the core content is a single, fast-paced video. Supplemental quizzes and notes are included to reinforce each section.",
+          "Yes â€” the core content is a single, fast-paced video. Supplemental quizzes and notes are included to reinforce each section.",
       },
       {
         question: "Does it cover React Router v7?",
@@ -336,7 +336,7 @@ export const courseResources = [
     price: "$10.99",
     originalPrice: "$44.99",
     promise:
-      "Architect, build, and deploy a complete e-commerce platform — catalog, cart, checkout, payments, and admin.",
+      "Architect, build, and deploy a complete e-commerce platform â€” catalog, cart, checkout, payments, and admin.",
     description: [
       "This is a full stack build, end to end. You'll model the data, expose a REST API, and build a storefront with search, filtering, and pagination. From there you'll add a cart, checkout, payments, and order management.",
       "Security isn't an afterthought: authentication, role-based access, and input validation are covered before you ship. You'll finish with an admin dashboard and a production deployment of the whole stack.",
@@ -390,7 +390,7 @@ export const courseResources = [
       {
         question: "Do I build the backend too?",
         answer:
-          "Yes — you build the entire stack: React frontend, Express API, database schema, and payment integration.",
+          "Yes â€” you build the entire stack: React frontend, Express API, database schema, and payment integration.",
       },
       {
         question: "Can I deploy the final app?",
@@ -413,7 +413,7 @@ export const courseResources = [
     price: "$14.99",
     originalPrice: "$74.99",
     promise:
-      "Go from zero programming to a portfolio-ready machine learning project — Python, pandas, visualization, and scikit-learn.",
+      "Go from zero programming to a portfolio-ready machine learning project â€” Python, pandas, visualization, and scikit-learn.",
     description: [
       "Designed for absolute beginners, this course starts with Python fundamentals and moves through real data work: cleaning and wrangling with pandas, exploring with Matplotlib, Seaborn, and Plotly, and finally building and evaluating models with scikit-learn.",
       "Every skill is practiced on realistic datasets, and you finish with an end-to-end analysis project you can share with recruiters. Best practices for reproducible, versioned notebooks are woven through the whole course.",
@@ -490,7 +490,7 @@ export const courseResources = [
     price: "$12.99",
     originalPrice: "$64.99",
     promise:
-      "Run real user research and design a polished, accessible product — finishing with a portfolio-ready case study.",
+      "Run real user research and design a polished, accessible product â€” finishing with a portfolio-ready case study.",
     description: [
       "This course teaches the full design process, not just pixels. You'll plan and synthesize user research, turn findings into personas and journeys, and move from low-fidelity wireframes to interactive prototypes in Figma.",
       "You'll also build a real design system with tokens, accessible components, and handoff documentation. The course ends with a complete case study and a portfolio review so you leave with work recruiters can actually look at.",
@@ -523,7 +523,7 @@ export const courseResources = [
     skills: ["UX Research", "UI Design", "Wireframing", "Design Systems", "Prototyping", "Accessibility"],
     tools: ["Figma", "Framer", "Maze"],
     requirements: [
-      "Interest in design — no prior experience required",
+      "Interest in design â€” no prior experience required",
       "A free Figma account",
     ],
     targetAudience: [
@@ -548,7 +548,7 @@ export const courseResources = [
       {
         question: "Will this help me get a design job?",
         answer:
-          "You'll leave with a complete case study and a working design system — the two artifacts recruiters most want to see.",
+          "You'll leave with a complete case study and a working design system â€” the two artifacts recruiters most want to see.",
       },
       {
         question: "Is the content up to date for 2026?",
@@ -566,9 +566,9 @@ export const courseResources = [
     price: "$8.99",
     originalPrice: "$39.99",
     promise:
-      "Turn a strategy into campaigns you can measure — paid, organic, and email — and learn what the numbers actually mean.",
+      "Turn a strategy into campaigns you can measure â€” paid, organic, and email â€” and learn what the numbers actually mean.",
     description: [
-      "Marketing is decisions, not tricks. You'll define goals and KPIs, build personas and positioning, and plan campaigns across paid ads, organic, SEO, and email — using free tools and a small test budget.",
+      "Marketing is decisions, not tricks. You'll define goals and KPIs, build personas and positioning, and plan campaigns across paid ads, organic, SEO, and email â€” using free tools and a small test budget.",
       "The second half is analytics: setting up tracking, reading dashboards, understanding attribution, and calculating ROI. You'll leave able to run experiments with A/B testing and report performance in terms that matter to a business.",
     ],
     projects: [
@@ -629,7 +629,7 @@ export const courseResources = [
       {
         question: "Is analytics hard for beginners?",
         answer:
-          "We start from zero — explaining what each metric means before you ever touch a dashboard.",
+          "We start from zero â€” explaining what each metric means before you ever touch a dashboard.",
       },
     ],
   },
@@ -642,7 +642,7 @@ export const courseResources = [
     price: "$15.99",
     originalPrice: "$79.99",
     promise:
-      "Design, secure, and operate production-grade Node.js APIs — with caching, real-time features, and observability.",
+      "Design, secure, and operate production-grade Node.js APIs â€” with caching, real-time features, and observability.",
     description: [
       "This is advanced content for developers who already write Node.js. You'll design versioned REST APIs, document them with OpenAPI, and harden them against real threats with authentication, rate limiting, and input validation.",
       "From there you'll add PostgreSQL data access, Redis caching, background jobs, and real-time features, then learn to test and observe the whole system. You finish by containerizing and deploying with zero-downtime releases.",
@@ -718,7 +718,7 @@ export const courseResources = [
     price: "$11.99",
     originalPrice: "$59.99",
     promise:
-      "Build and publish a real cross-platform app with Flutter — widgets, state management, APIs, and store releases.",
+      "Build and publish a real cross-platform app with Flutter â€” widgets, state management, APIs, and store releases.",
     description: [
       "Starting from the Dart language, you'll learn the widget model, layouts, and theming before moving into modern state management with Riverpod, navigation, and async flows.",
       "The project half integrates REST APIs, local storage, and push notifications, and you'll prepare real builds for Android and iOS (Mac required for the App Store). The course closes with you publishing a production-style app.",
@@ -781,7 +781,7 @@ export const courseResources = [
       {
         question: "Will I build a real app?",
         answer:
-          "Yes — a complete, production-style app that you can publish to the stores.",
+          "Yes â€” a complete, production-style app that you can publish to the stores.",
       },
     ],
   },
@@ -874,7 +874,7 @@ export const courseResources = [
       "Communicate with clarity, run better meetings, and give feedback people can actually act on.",
     description: [
       "Communication is the multiplier on every other skill. You'll learn frameworks for clear writing, active listening, and running meetings and one-on-ones that build trust instead of consuming time.",
-      "The course then moves to the hard stuff — difficult conversations, feedback that lands, and psychological safety. Each module includes a real-world exercise you can apply the same week, and about 40 minutes a week is all it takes.",
+      "The course then moves to the hard stuff â€” difficult conversations, feedback that lands, and psychological safety. Each module includes a real-world exercise you can apply the same week, and about 40 minutes a week is all it takes.",
     ],
     projects: [
       "Personal communication improvement plan",
@@ -924,7 +924,7 @@ export const courseResources = [
       {
         question: "Is this useful if I'm not a manager?",
         answer:
-          "Yes — the communication and feedback frameworks apply to any professional role.",
+          "Yes â€” the communication and feedback frameworks apply to any professional role.",
       },
       {
         question: "Are there practical exercises?",
@@ -947,7 +947,7 @@ export const courseResources = [
     price: "$16.99",
     originalPrice: "$84.99",
     promise:
-      "Write, test, secure, and deploy Solidity smart contracts — then connect them to a real dApp.",
+      "Write, test, secure, and deploy Solidity smart contracts â€” then connect them to a real dApp.",
     description: [
       "For JavaScript developers moving into web3, this course covers Solidity from data types to inheritance, with testing and deployment on testnets from the start.",
       "Security is a dedicated module: you'll study common exploits like reentrancy, learn auditing patterns, and apply gas-optimization and upgradeability techniques. You finish by building a complete token and dApp that interacts with your deployed contracts.",
@@ -1001,7 +1001,7 @@ export const courseResources = [
       {
         question: "Do I need to buy cryptocurrency to practice?",
         answer:
-          "No — all exercises run on local and test networks with no real funds required.",
+          "No â€” all exercises run on local and test networks with no real funds required.",
       },
       {
         question: "Is security training included?",
@@ -1023,7 +1023,7 @@ export const courseResources = [
     reviews: 76,
     price: "$0.00",
     promise:
-      "Learn semantic HTML and modern CSS from zero — then publish your first website for free.",
+      "Learn semantic HTML and modern CSS from zero â€” then publish your first website for free.",
     description: [
       "A completely free, structured introduction to frontend. You'll write semantic, accessible HTML, style it with modern CSS including Flexbox and Grid, and make it responsive with mobile-first techniques.",
       "Everything is project-based: you'll build practice pages, a layout challenge, and finally a portfolio site that you publish for free. No paid tools and nothing to install to get started.",
@@ -1076,12 +1076,12 @@ export const courseResources = [
       {
         question: "Is this course really free?",
         answer:
-          "Yes — the entire course is free, with no hidden fees or paid certificate required to finish.",
+          "Yes â€” the entire course is free, with no hidden fees or paid certificate required to finish.",
       },
       {
         question: "How fast can I finish it?",
         answer:
-          "Most learners complete it in 4–6 weeks at a few hours per week, but it's fully self-paced.",
+          "Most learners complete it in 4â€“6 weeks at a few hours per week, but it's fully self-paced.",
       },
       {
         question: "What do I need to install?",
@@ -1099,7 +1099,7 @@ export const courseResources = [
     price: "$29.99",
     originalPrice: "$199.99",
     promise:
-      "Ship three production full-stack apps in six months — React, Node, databases, auth, and deployment, with weekly code reviews.",
+      "Ship three production full-stack apps in six months â€” React, Node, databases, auth, and deployment, with weekly code reviews.",
     description: [
       "A structured, intensive track that takes you from working frontend skills to confident full-stack development. Each month pairs guided projects with code reviews, so you write real features every week rather than just following along.",
       "You'll master React, Node.js and Express, relational and document databases, authentication and payments, and end by deploying three production apps with CI/CD. Weekly cohort sessions keep you accountable and unstuck.",
@@ -1134,7 +1134,7 @@ export const courseResources = [
     requirements: [
       "Working knowledge of HTML, CSS, and basic JavaScript",
       "A computer with Node.js installed",
-      "10–15 hours per week to dedicate to the track",
+      "10â€“15 hours per week to dedicate to the track",
     ],
     targetAudience: [
       "Junior developers preparing for full-stack roles",
@@ -1153,12 +1153,12 @@ export const courseResources = [
       {
         question: "How much time do I need each week?",
         answer:
-          "Plan for 10–15 hours per week across six months, including the weekly code reviews.",
+          "Plan for 10â€“15 hours per week across six months, including the weekly code reviews.",
       },
       {
         question: "Do I need backend experience?",
         answer:
-          "No — the track assumes frontend basics and teaches the backend from the ground up.",
+          "No â€” the track assumes frontend basics and teaches the backend from the ground up.",
       },
     ],
   },
@@ -1225,7 +1225,7 @@ export const courseResources = [
       {
         question: "Is this a university-issued credential?",
         answer:
-          "Yes — it is a diploma certificate issued by Northbridge University with a verifiable transcript.",
+          "Yes â€” it is a diploma certificate issued by Northbridge University with a verifiable transcript.",
       },
       {
         question: "Can I take it part-time?",
@@ -1243,7 +1243,7 @@ export const courseResources = [
     price: "$1299.00",
     originalPrice: "$2499.00",
     promise:
-      "An 18-month graduate-level program in data analytics — advanced modeling, business intelligence, and a supervised research thesis.",
+      "An 18-month graduate-level program in data analytics â€” advanced modeling, business intelligence, and a supervised research thesis.",
     description: [
       "Built for working professionals, this Northbridge graduate program pairs advanced statistical modeling with business intelligence dashboards and a supervised research thesis over three six-month terms.",
       "You'll progress through machine learning pipelines, experimentation and causal inference, and data storytelling, ending with a thesis and a defended final presentation you can show employers.",
@@ -1295,7 +1295,7 @@ export const courseResources = [
       {
         question: "Is this recognized as a degree?",
         answer:
-          "It is a graduate certificate from Northbridge University — a real credential, not an accredited master's degree.",
+          "It is a graduate certificate from Northbridge University â€” a real credential, not an accredited master's degree.",
       },
       {
         question: "How structured is the schedule?",
@@ -1365,7 +1365,7 @@ export const courseResources = [
       {
         question: "How much time does the EMBA require?",
         answer:
-          "About 6–8 hours per week, with monthly live seminars and annual consulting engagements.",
+          "About 6â€“8 hours per week, with monthly live seminars and annual consulting engagements.",
       },
       {
         question: "Do I need an undergraduate degree?",
@@ -1440,7 +1440,7 @@ export const courseResources = [
       {
         question: "Can I work while studying?",
         answer:
-          "Yes — lectures are recorded and assessments have weekly windows, though it is designed as a full-time load.",
+          "Yes â€” lectures are recorded and assessments have weekly windows, though it is designed as a full-time load.",
       },
     ],
   },
@@ -1453,7 +1453,7 @@ export const courseResources = [
     price: "$5999.00",
     originalPrice: "$9999.00",
     promise:
-      "A five-year doctoral track for working professionals — research methods, a supervised dissertation, and publishable scholarship.",
+      "A five-year doctoral track for working professionals â€” research methods, a supervised dissertation, and publishable scholarship.",
     description: [
       "Northbridge's professional doctorate moves from advanced research methods and literature review through supervised dissertation research over five structured years.",
       "You'll produce publishable-grade scholarship in an applied data science domain, with an annual review panel and a final dissertation defense before a university committee.",
@@ -1505,7 +1505,7 @@ export const courseResources = [
       {
         question: "Do I need a supervisor from the start?",
         answer:
-          "Yes — you are matched with a faculty supervisor at enrollment and meet them monthly.",
+          "Yes â€” you are matched with a faculty supervisor at enrollment and meet them monthly.",
       },
       {
         question: "Is a dissertation really expected?",
@@ -1515,4 +1515,8 @@ export const courseResources = [
     ],
   },
 ];
+
+
+export default courses;
+
 
