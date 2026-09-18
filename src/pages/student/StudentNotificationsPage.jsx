@@ -30,9 +30,9 @@ import {
 
 const NOTIFICATION_FILTERS = [
   { label: "All", value: "all" },
-  { label: "Announcements", value: "announcements" },
-  { label: "Deadlines", value: "deadlines" },
-  { label: "Completions", value: "completions" },
+  { label: "Announcements", value: "announcement" },
+  { label: "Deadlines", value: "deadline" },
+  { label: "Completions", value: "completion" },
 ];
 
 const TYPE_ICON = {
@@ -53,17 +53,17 @@ const EMPTY_COPY = {
     title: "No notifications yet",
     description: "You'll see updates from your instructors here — new due dates, course updates, and important announcements.",
   },
-  announcements: {
+  announcement: {
     icon: Megaphone,
     title: "No announcements",
     description: "Course announcements from your instructors will appear here.",
   },
-  deadlines: {
+  deadline: {
     icon: Clock,
     title: "No upcoming deadlines",
     description: "All caught up — you have no tasks due soon.",
   },
-  completions: {
+  completion: {
     icon: GraduationCap,
     title: "No completions yet",
     description: "Complete a course to see your achievement here.",
@@ -188,15 +188,15 @@ export default function StudentNotificationsPage() {
   // Force fresh read on each render after mutation
   const allNotifications = useMemo(() => {
     void revision;
-    return getNotifications("all");
+    return getNotifications();
   }, [revision]);
   const filteredNotifications = useMemo(() => {
     void revision;
-    return getNotifications(filter);
+    return getNotifications(undefined, filter);
   }, [filter, revision]);
 
   const counts = useMemo(() => {
-    const c = { all: allNotifications.length, announcements: 0, deadlines: 0, completions: 0 };
+    const c = { all: allNotifications.length, announcement: 0, deadline: 0, completion: 0 };
     allNotifications.forEach((n) => {
       if (c[n.type] !== undefined) c[n.type] += 1;
     });

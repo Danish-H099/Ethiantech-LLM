@@ -11,11 +11,13 @@
  * @property {number} rating Overall instructor rating (1–5).
  * @property {number} students Total learners taught.
  * @property {number} courses Number of published courses.
+ * @property {string} createdAt ISO timestamp.
+ * @property {string} updatedAt ISO timestamp.
  */
 
 export const tutors = [
   {
-    id: "richard-james",
+    id: "richard-james", createdAt: "2024-01-01T00:00:00.000Z", updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Richard James",
     photo: "https://randomuser.me/api/portraits/men/32.jpg",
     title: "Senior Full Stack Engineer",
@@ -25,7 +27,7 @@ export const tutors = [
     courses: 5,
   },
   {
-    id: "sarah-chen",
+    id: "sarah-chen", createdAt: "2024-01-02T00:00:00.000Z", updatedAt: "2024-01-02T00:00:00.000Z",
     name: "Sarah Chen",
     photo: "https://randomuser.me/api/portraits/women/44.jpg",
     title: "Data Scientist & ML Educator",
@@ -35,7 +37,7 @@ export const tutors = [
     courses: 4,
   },
   {
-    id: "emily-parker",
+    id: "emily-parker", createdAt: "2024-01-03T00:00:00.000Z", updatedAt: "2024-01-03T00:00:00.000Z",
     name: "Emily Parker",
     photo: "https://randomuser.me/api/portraits/women/68.jpg",
     title: "Product Design Lead",
@@ -45,7 +47,7 @@ export const tutors = [
     courses: 1,
   },
   {
-    id: "michael-torres",
+    id: "michael-torres", createdAt: "2024-01-04T00:00:00.000Z", updatedAt: "2024-01-04T00:00:00.000Z",
     name: "Michael Torres",
     photo: "https://randomuser.me/api/portraits/men/75.jpg",
     title: "Growth Marketing Consultant",
@@ -55,7 +57,7 @@ export const tutors = [
     courses: 1,
   },
   {
-    id: "david-kim",
+    id: "david-kim", createdAt: "2024-01-05T00:00:00.000Z", updatedAt: "2024-01-05T00:00:00.000Z",
     name: "David Kim",
     photo: "https://randomuser.me/api/portraits/men/52.jpg",
     title: "Backend Architect",
@@ -65,7 +67,7 @@ export const tutors = [
     courses: 2,
   },
   {
-    id: "anna-kowalski",
+    id: "anna-kowalski", createdAt: "2024-01-06T00:00:00.000Z", updatedAt: "2024-01-06T00:00:00.000Z",
     name: "Anna Kowalski",
     photo: "https://randomuser.me/api/portraits/women/79.jpg",
     title: "Mobile Engineer & Flutter Trainer",
@@ -75,7 +77,7 @@ export const tutors = [
     courses: 1,
   },
   {
-    id: "james-wilson",
+    id: "james-wilson", createdAt: "2024-01-07T00:00:00.000Z", updatedAt: "2024-01-07T00:00:00.000Z",
     name: "James Wilson",
     photo: "https://randomuser.me/api/portraits/men/41.jpg",
     title: "Cloud Solutions Architect",
@@ -85,7 +87,7 @@ export const tutors = [
     courses: 2,
   },
   {
-    id: "lisa-grant",
+    id: "lisa-grant", createdAt: "2024-01-08T00:00:00.000Z", updatedAt: "2024-01-08T00:00:00.000Z",
     name: "Lisa Grant",
     photo: "https://randomuser.me/api/portraits/women/56.jpg",
     title: "Leadership Coach",
@@ -95,7 +97,7 @@ export const tutors = [
     courses: 2,
   },
   {
-    id: "alex-nguyen",
+    id: "alex-nguyen", createdAt: "2024-01-09T00:00:00.000Z", updatedAt: "2024-01-09T00:00:00.000Z",
     name: "Alex Nguyen",
     photo: "https://randomuser.me/api/portraits/men/64.jpg",
     title: "Blockchain Engineer",
@@ -105,7 +107,7 @@ export const tutors = [
     courses: 1,
   },
   {
-    id: "priya-sharma",
+    id: "priya-sharma", createdAt: "2024-01-10T00:00:00.000Z", updatedAt: "2024-01-10T00:00:00.000Z",
     name: "Priya Sharma",
     photo: "https://randomuser.me/api/portraits/women/33.jpg",
     title: "Frontend Mentor",

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { m as Motion, useReducedMotion } from "motion/react";
-import { Clock, CheckCircle2, TrendingUp, RotateCcw, AlertTriangle, Eye, AlertCircle, ListCheck } from "lucide-react";
+import { Clock, CheckCircle2, TrendingUp, RotateCcw, AlertTriangle, Eye, AlertCircle, ListCheck, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   getQuizData,
   getQuizAttempts,
@@ -12,6 +12,7 @@ import {
   hasRemainingAttempts,
 } from "src/services/studentRepository";
 import { createReveal } from "src/lib/animationVariants";
+import { DEFAULT_STUDENT_ID } from "src/data/students";
 import LessonCompleteButton from "src/components/student/LessonCompleteButton";
 import LessonPlayerPlaceholder from "src/components/student/LessonPlayerPlaceholder";
 import ConfirmDialog from "src/components/ui/ConfirmDialog";
@@ -32,11 +33,11 @@ function deriveInitialState(courseId, lessonId, spec, questions, isCompleted) {
       currentQuestion: 0,
     };
   }
-  const attempts = getQuizAttempts(courseId, lessonId) || [];
-  const draft = getQuizDraftAnswers(courseId, lessonId);
+  const attempts = getQuizAttempts(DEFAULT_STUDENT_ID, courseId, lessonId) || [];
+  const draft = getQuizDraftAnswers(DEFAULT_STUDENT_ID, courseId, lessonId);
   const passedAttempts = attempts.filter((a) => a.score >= spec.passingScore);
   const hasPassed = passedAttempts.length > 0;
-  const remaining = hasRemainingAttempts(courseId, lessonId);
+  const remaining = hasRemainingAttempts(DEFAULT_STUDENT_ID, courseId, lessonId);
 
   if (hasPassed) {
     const latest = passedAttempts[passedAttempts.length - 1];
@@ -815,27 +816,27 @@ export default function LessonPlayerQuiz({ resolved, courseId, isCompleted, onRe
 
   const { mode, result, answers, currentQuestion } = state;
 
-  const attempts = getQuizAttempts(courseId, lessonId) || [];
+  const attempts = getQuizAttempts(DEFAULT_STUDENT_ID, courseId, lessonId) || [];
   const attemptsUsed = attempts.length;
   const passedAttempts = spec
     ? attempts.filter((a) => a.score >= spec.passingScore)
     : [];
   const hasPassed = passedAttempts.length > 0;
   const bestScore = attemptsUsed > 0 ? Math.max(...attempts.map((a) => a.score)) : null;
-  const remainingAttempts = hasRemainingAttempts(courseId, lessonId);
+  const remainingAttempts = hasRemainingAttempts(DEFAULT_STUDENT_ID, courseId, lessonId);
   const answeredCount = countAnswered(questions, answers);
   const answeredIds = buildAnsweredSet(questions, answers);
 
   useEffect(() => {
     if (mode === "active") {
-      saveQuizDraftAnswers(courseId, lessonId, answers);
+      saveQuizDraftAnswers(DEFAULT_STUDENT_ID, courseId, lessonId, answers);
     }
   }, [currentQuestion, answers, mode, courseId, lessonId]);
 
   useEffect(() => {
     const onBeforeUnload = (e) => {
       if (mode === "active" && hasUnsavedAnswers(answers)) {
-        saveQuizDraftAnswers(courseId, lessonId, answers);
+        saveQuizDraftAnswers(DEFAULT_STUDENT_ID, courseId, lessonId, answers);
         e.preventDefault();
         e.returnValue = "";
       }
@@ -846,11 +847,11 @@ export default function LessonPlayerQuiz({ resolved, courseId, isCompleted, onRe
 
   useEffect(() => {
     if (mode === "active") {
-      saveQuizDraftAnswers(courseId, lessonId, answers);
+      saveQuizDraftAnswers(DEFAULT_STUDENT_ID, courseId, lessonId, answers);
     }
     return () => {
       if (mode === "active") {
-        saveQuizDraftAnswers(courseId, lessonId, answers);
+        saveQuizDraftAnswers(DEFAULT_STUDENT_ID, courseId, lessonId, answers);
       }
     };
   }, [answers, mode, courseId, lessonId]);
@@ -866,14 +867,17 @@ export default function LessonPlayerQuiz({ resolved, courseId, isCompleted, onRe
     setState((s) => ({ ...s, answers: next }));
   }
   function setCurrentQuestion(index) {
-    setState((s) => ({ ...s, currentQuestion: index }));
+    setState((s) => ({
+      ...s,
+      currentQuestion: typeof index === "function" ? index(s.currentQuestion) : index,
+    }));
   }
 
   function handleAnswer(questionId, nextValue) {
     const next = { ...answers, [questionId]: nextValue };
     setAnswers(next);
     if (mode === "active") {
-      saveQuizDraftAnswers(courseId, lessonId, next);
+      saveQuizDraftAnswers(DEFAULT_STUDENT_ID, courseId, lessonId, next);
     }
   }
 
@@ -888,12 +892,12 @@ export default function LessonPlayerQuiz({ resolved, courseId, isCompleted, onRe
   function handleRetry() {
     setAnswers({});
     setCurrentQuestion(0);
-    clearQuizDraftAnswers(courseId, lessonId);
+    clearQuizDraftAnswers(DEFAULT_STUDENT_ID, courseId, lessonId);
     setMode("active", null);
   }
 
   function navigateQuestion(to) {
-    saveQuizDraftAnswers(courseId, lessonId, answers);
+    saveQuizDraftAnswers(DEFAULT_STUDENT_ID, courseId, lessonId, answers);
     setCurrentQuestion(Math.max(0, Math.min(to, totalQuestions - 1)));
   }
 
@@ -926,7 +930,7 @@ export default function LessonPlayerQuiz({ resolved, courseId, isCompleted, onRe
   function handleConfirmSubmit() {
     setShowConfirm(false);
     setIsSubmitting(true);
-    const outcome = submitQuizAttempt(courseId, lessonId, answers);
+    const outcome = submitQuizAttempt(DEFAULT_STUDENT_ID, courseId, lessonId, answers);
     setIsSubmitting(false);
     setState({
       mode: "results",
@@ -1076,7 +1080,7 @@ export default function LessonPlayerQuiz({ resolved, courseId, isCompleted, onRe
         bestScore={bestScore}
         remainingAttempts={remainingAttempts}
         maxAttempts={spec.maxAttempts}
-        hasDraft={Boolean(getQuizDraftAnswers(courseId, lessonId))}
+        hasDraft={Boolean(getQuizDraftAnswers(DEFAULT_STUDENT_ID, courseId, lessonId))}
         isPassed={hasPassed}
         isCompleted={isCompleted}
         isOverrideComplete={isOverrideComplete}

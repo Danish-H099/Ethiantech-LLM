@@ -10,6 +10,7 @@ import { formatDueLabel } from "src/lib/format";
 import { LESSON_TYPE_LABELS, LESSON_TYPE_ICONS } from "src/lib/lesson";
 import { hideOnError } from "src/lib/assets";
 import { fadeIn, createStaggerItem } from "src/lib/animationVariants";
+import { DEFAULT_STUDENT_ID } from "src/data/students";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
 import {
   UnderlineTabList,
@@ -254,8 +255,8 @@ export default function StudentTasksPage() {
   const [now] = useState(() => Date.now());
 
   // Full list powers the tab count badges; the filtered list powers the list.
-  const allTasks = useMemo(() => getTasks("all"), []);
-  const tasks = useMemo(() => getTasks(filter), [filter]);
+  const allTasks = useMemo(() => getTasks(DEFAULT_STUDENT_ID, "all"), []);
+  const tasks = useMemo(() => getTasks(DEFAULT_STUDENT_ID, filter), [filter]);
 
   return (
     <div>
