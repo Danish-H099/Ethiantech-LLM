@@ -1,18 +1,19 @@
-import { students } from "src/data/students";
+import { students, studentById } from "src/data/students";
 
 const STORAGE_KEY = "ethiantech-student-profile";
 
-const FALLBACK_PROFILE = {
-  id: "u-alex",
+const DEFAULT_PROFILE = {
+  id: "student-001",
   firstName: "Alex",
   lastName: "Chen",
   fullName: "Alex Chen",
   email: "alex.chen@example.edu",
   avatar: "https://randomuser.me/api/portraits/men/32.jpg",
   role: "Learner",
-  joinedAt: "2024-08-15T00:00:00.000Z",
+  joinedAt: new Date(Date.now() - 142 * 24 * 60 * 60 * 1000).toISOString(),
   timezone: "America/New_York",
   goal: "Complete the Full-Stack Web Development track by December",
+  bio: "Full-stack web development student passionate about React and backend systems. I enjoy building clean, accessible interfaces and contributing to open-source projects in my spare time.",
   socialLinks: {
     linkedin: "",
     github: "",
@@ -28,9 +29,6 @@ const FALLBACK_PROFILE = {
     },
   },
 };
-
-/** Canonical seed profile sourced from the students table. */
-const DEFAULT_PROFILE = students[0] ? { ...students[0] } : FALLBACK_PROFILE;
 
 let memoryProfile = null;
 
@@ -63,26 +61,26 @@ function saveProfile(profile) {
   }
 }
 
-/** Get the current student profile. */
-export function getStudentProfile() {
-  return loadProfile();
+export function getProfile(studentId) {
+  const profile = loadProfile();
+  if (studentId && profile.id !== studentId) {
+    const student = studentById[studentId];
+    if (student) return { ...DEFAULT_PROFILE, ...student };
+  }
+  return profile;
 }
 
-/**
- * Update student profile fields. Merges the provided updates into the
- * existing profile and persists the result.
- */
-export function updateStudentProfile(updates) {
+export function updateProfile(studentId, updates) {
   const current = loadProfile();
   const next = { ...current, ...updates };
+  if (updates.firstName || updates.lastName) {
+    next.fullName = `${next.firstName} ${next.lastName}`.trim();
+  }
   saveProfile(next);
   return next;
 }
 
-/**
- * Update profile preferences. Merges into the preferences sub-object.
- */
-export function updatePreferences(prefs) {
+export function updatePreferences(studentId, prefs) {
   const current = loadProfile();
   const next = {
     ...current,
@@ -92,9 +90,6 @@ export function updatePreferences(prefs) {
   return next;
 }
 
-/**
- * Reset preferences to defaults.
- */
 export function resetPreferences() {
   const current = loadProfile();
   const next = {
@@ -103,4 +98,12 @@ export function resetPreferences() {
   };
   saveProfile(next);
   return next;
+}
+
+export function getAllStudents() {
+  return students;
+}
+
+export function getStudentById(studentId) {
+  return studentById[studentId] || null;
 }
