@@ -1,9 +1,10 @@
 import { m as Motion } from "motion/react";
 import { User, MoreVertical } from "lucide-react";
-import { studentRoster } from "src/data/roster";
+import { getStudentRoster } from "src/services/tutorDashboard";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 
 export default function StudentsEnrolledPage() {
+  const studentRoster = getStudentRoster();
   return (
     <div>
       <div className="mb-8">
