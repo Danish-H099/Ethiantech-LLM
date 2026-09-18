@@ -90,4 +90,4 @@ export function getWishlistRecommendations(wishlistedCourses, excludedIds = [], 
 }
 
 export const getCourseReviews = (courseId) =>
-  reviews.filter((review) => review.courseId === courseId);
+  reviews.filter((review) => review.courseId === Number(courseId));

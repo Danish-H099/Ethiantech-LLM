@@ -16,7 +16,7 @@
  * @property {string} tagline Short marketing line.
  * @property {string} about Longer description shown on course pages.
  * @property {string} location Headquarter location.
- * @property {string} founded Year established.
+ * @property {number} founded Year established.
  *
  * @typedef {Object} Instructor
  * @property {string} id Stable slug id referenced by courses.

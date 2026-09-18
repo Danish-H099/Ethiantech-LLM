@@ -20,6 +20,7 @@ export default function StudentNavbar({ sidebarOpen, setSidebarOpen, hamburgerRe
   const unreadCount = getUnreadCount();
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
+  const lastToggleTime = useRef(0);
   const visibleRef = useRef(true);
 
   function handleLogout() {
@@ -31,17 +32,22 @@ export default function StudentNavbar({ sidebarOpen, setSidebarOpen, hamburgerRe
     function handleScroll() {
       const scrollY = window.scrollY;
       const delta = scrollY - lastScrollY.current;
+      lastScrollY.current = scrollY;
+      // Lockout timer + larger threshold prevent rapid toggles that interrupt CSS transitions
+      if (Math.abs(delta) < 10) return;
+      const now = Date.now();
+      if (now - lastToggleTime.current < 300) return;
       let next = visibleRef.current;
       if (scrollY <= 0) {
         next = true;
-      } else if (delta > 8) {
+      } else if (delta > 10) {
         next = false;
-      } else if (delta < -8) {
+      } else if (delta < -10) {
         next = true;
       }
-      lastScrollY.current = scrollY;
       if (next !== visibleRef.current) {
         visibleRef.current = next;
+        lastToggleTime.current = now;
         setVisible(next);
         onVisibilityChange?.(next);
       }
@@ -88,7 +94,7 @@ export default function StudentNavbar({ sidebarOpen, setSidebarOpen, hamburgerRe
         {/* Profile dropdown — desktop only; on mobile the profile actions
             live inside the sidebar drawer. */}
         <div className="hidden lg:block">
-          <DropdownMenu.Root>
+          <DropdownMenu.Root modal={false}>
             <DropdownMenu.Trigger asChild>
               <button
                 aria-label="Open profile menu"

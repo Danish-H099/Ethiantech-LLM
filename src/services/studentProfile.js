@@ -1,14 +1,16 @@
+import { students } from "src/data/students";
+
 const STORAGE_KEY = "ethiantech-student-profile";
 
-const DEFAULT_PROFILE = {
-  id: "student-001",
+const FALLBACK_PROFILE = {
+  id: "u-alex",
   firstName: "Alex",
   lastName: "Chen",
   fullName: "Alex Chen",
   email: "alex.chen@example.edu",
   avatar: "https://randomuser.me/api/portraits/men/32.jpg",
   role: "Learner",
-  joinedAt: new Date(Date.now() - 142 * 24 * 60 * 60 * 1000).toISOString(),
+  joinedAt: "2024-08-15T00:00:00.000Z",
   timezone: "America/New_York",
   goal: "Complete the Full-Stack Web Development track by December",
   socialLinks: {
@@ -26,6 +28,9 @@ const DEFAULT_PROFILE = {
     },
   },
 };
+
+/** Canonical seed profile sourced from the students table. */
+const DEFAULT_PROFILE = students[0] ? { ...students[0] } : FALLBACK_PROFILE;
 
 let memoryProfile = null;
 
@@ -89,7 +94,6 @@ export function updatePreferences(prefs) {
 
 /**
  * Reset preferences to defaults.
- * @returns {typeof DEFAULT_PROFILE} The updated profile.
  */
 export function resetPreferences() {
   const current = loadProfile();

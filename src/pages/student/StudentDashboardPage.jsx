@@ -18,7 +18,8 @@ import CourseCard from "src/components/CourseCard";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
 import { hideOnError } from "src/lib/assets";
 
-import { CHART_ACCENTS } from "src/data/chart";
+import { CHART_ACCENTS } from "src/lib/chartConfig";
+import { DEFAULT_STUDENT_ID } from "src/data/students";
 import {
   getEnrolledCourses,
   getLearningActivity,
@@ -516,8 +517,8 @@ export default function StudentDashboardPage() {
   // --- Data (single source of truth: studentRepository) ---
   const student = getStudentProfile();
   const enrolledCourses = getEnrolledCourses();
-  const urgentDeadlines = getUpcomingDeadlines(DEADLINE_POOL_SIZE);
-  const recommendedCourses = getRecommendedCourses(RECOMMENDATION_COUNT);
+const urgentDeadlines = getUpcomingDeadlines(DEFAULT_STUDENT_ID, DEADLINE_POOL_SIZE);
+  const recommendedCourses = getRecommendedCourses(DEFAULT_STUDENT_ID, RECOMMENDATION_COUNT);
   const streak = getStreak(nowMs);
   const thisWeekHours = getLearningActivity().at(-1)?.hours ?? 0;
   const WEEKLY_GOAL_HOURS = 5;
