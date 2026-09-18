@@ -14,10 +14,9 @@ import {
 } from "recharts";
 import { DollarSign, Users } from "lucide-react";
 import { getIcon } from "src/components/ui/IconMap";
-import { getTutorStats, getEarningsOverTime, getStudentsOverTime } from "src/services/tutorDashboard";
-import { studentRoster } from "src/data/roster";
-import { CHART_ACCENTS, CHART_PINK } from "src/data/chart";
-import { GRID_STROKE, TICK_FILL, TOOLTIP_STYLE, GRID_DEFAULTS } from "src/data/chart";
+import { getTutorStats, getEarningsOverTime, getStudentsOverTime, getStudentRoster } from "src/services/tutorDashboard";
+import { CHART_ACCENTS, CHART_PINK } from "src/lib/chartConfig";
+import { GRID_STROKE, TICK_FILL, TOOLTIP_STYLE, GRID_DEFAULTS } from "src/lib/chartConfig";
 import { fadeIn, fadeUp, viewportOnce, createStaggerItem } from "src/lib/animationVariants";
 
 export default function TutorDashboardPage() {
@@ -29,7 +28,7 @@ export default function TutorDashboardPage() {
   const tutorStats = getTutorStats();
   const earningsOverTime = getEarningsOverTime();
   const studentsOverTime = getStudentsOverTime();
-  const recentStudents = studentRoster.slice(0, 5);
+  const recentStudents = getStudentRoster().slice(0, 5);
 
   return (
     <div>

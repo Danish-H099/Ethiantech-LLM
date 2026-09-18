@@ -63,6 +63,7 @@ import {
   addLessonNote,
   deleteNote,
 } from "src/services/studentRepository";
+import { DEFAULT_STUDENT_ID } from "src/data/students";
 
 const COURSE_BREADCRUMBS = { label: "My Courses", link: "/student/my-courses" };
 
@@ -840,7 +841,7 @@ export default function StudentLessonPlayerPage() {
   const [completion, setCompletion] = useState(null);
 
   const course = getCourseById(courseId);
-  const data = getEnrolledCourseData(courseId);
+  const data = getEnrolledCourseData(DEFAULT_STUDENT_ID, courseId);
 
   const resolved = lessonId ? resolveLesson(course?.id, lessonId) : null;
 
@@ -873,12 +874,12 @@ export default function StudentLessonPlayerPage() {
   const rLessonIndex = resolved?.lessonIndex;
   useEffect(() => {
     if (!rLessonId || rSectionIndex == null || rLessonIndex == null) return;
-    const view = getEnrolledCourseData(courseId);
+    const view = getEnrolledCourseData(DEFAULT_STUDENT_ID, courseId);
     if (view.status !== "ready") return;
     const status =
       view.sections[rSectionIndex]?.lessons?.[rLessonIndex]?.status;
     if (status && status !== LESSON_STATUS.LOCKED) {
-      recordLessonAccess(courseId, rLessonId);
+      recordLessonAccess(DEFAULT_STUDENT_ID, courseId, rLessonId);
     }
   }, [courseId, rLessonId, rSectionIndex, rLessonIndex]);
 
@@ -963,20 +964,20 @@ export default function StudentLessonPlayerPage() {
   const preceding = findPrecedingLesson(sections, resolved.sectionIndex, resolved.lessonIndex);
   const drawerId = "player-syllabus-drawer";
 
-  const lessonState = getLessonProgress(course.id, resolved.lessonId);
+  const lessonState = getLessonProgress(DEFAULT_STUDENT_ID, course.id, resolved.lessonId);
   const isCompleted = lessonState?.status === LESSON_STATUS.COMPLETED;
   const videoProgress = lessonState?.videoProgress;
 
   const handleRevision = () => setRevision((r) => r + 1);
 
   const handleComplete = () => {
-    const result = completeLesson(course.id, resolved.lessonId);
+    const result = completeLesson(DEFAULT_STUDENT_ID, course.id, resolved.lessonId);
     setRevision((r) => r + 1);
     setCompletion(result);
   };
 
   const handleProgress = (patch) => {
-    updateLessonProgress(course.id, resolved.lessonId, { videoProgress: patch });
+    updateLessonProgress(DEFAULT_STUDENT_ID, course.id, resolved.lessonId, { videoProgress: patch });
   };
 
   const flatForNav = [];
