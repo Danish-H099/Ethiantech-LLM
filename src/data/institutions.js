@@ -14,7 +14,9 @@
  * @property {string} tagline Short marketing line.
  * @property {string} about Longer description shown on course pages.
  * @property {string} location Headquarter location.
- * @property {string} founded Year established.
+ * @property {number} founded Year established.
+ * @property {string} createdAt ISO timestamp.
+ * @property {string} updatedAt ISO timestamp.
  */
 
 export const institutions = [
@@ -26,7 +28,9 @@ export const institutions = [
     about:
       "Northbridge University is a research-led institution preparing learners for data-driven careers in analytics, AI, and machine learning through rigorous, practice-based programs.",
     location: "Boston, Massachusetts",
-    founded: "1964",
+    founded: 1964,
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
   },
   {
     id: "cloudpath-academy",
@@ -36,7 +40,9 @@ export const institutions = [
     about:
       "CloudPath Academy trains engineers in cloud architecture, DevOps, and platform engineering with hands-on labs, real infrastructure, and certification-aligned curricula.",
     location: "Toronto, Canada (remote-first)",
-    founded: "2019",
+    founded: 2019,
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
   },
 ];
 

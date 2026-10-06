@@ -4,17 +4,20 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { m as Motion } from "motion/react";
 import {
   Award,
-  AtSign,
   Camera,
   Download,
-  ExternalLink,
+  FileText,
   Globe,
+  Pencil,
   RotateCcw,
   Save,
   Settings,
+  Share2,
   Trophy,
   User,
 } from "lucide-react";
+import { FaGithub, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
+import { toast } from "sonner";
 
 import {
   getStudentProfile,
@@ -63,37 +66,110 @@ const MOTION_OPTIONS = [
 
 // ---------------------------------------------------------------- sections
 
-function ProfileHeader({ profile, onAvatarChange }) {
+function ProfileHeader({ profile, onAvatarChange, onEditProfile }) {
+  const socialLinks = [
+    {
+      label: "LinkedIn",
+      href: profile.socialLinks?.linkedin,
+      icon: "linkedin",
+    },
+    {
+      label: "GitHub",
+      href: profile.socialLinks?.github,
+      icon: "github",
+    },
+    {
+      label: "Website",
+      href: profile.socialLinks?.website,
+      icon: "website",
+    },
+  ].filter((link) => link.href);
+
   return (
-    <div className="mb-8 flex flex-col items-center gap-5 sm:flex-row sm:items-start">
-      <div className="group relative">
-        <div className="relative h-24 w-24 overflow-hidden rounded-full bg-brand/10 shadow-avatar">
-          <img
-            src={profile.avatar}
-            alt={`${profile.fullName} avatar`}
-            className="h-full w-full object-cover"
-            loading="lazy"
-            decoding="async"
-            onError={avatarFallback}
-          />
+    <section className="card overflow-hidden">
+      <div className="bg-tint-student px-5 py-6 sm:px-7">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end">
+          <div className="group relative shrink-0">
+            <div className="relative h-28 w-28 overflow-hidden rounded-full border-4 border-white bg-brand/10 shadow-avatar">
+              <img
+                src={profile.avatar}
+                alt={`${profile.fullName} avatar`}
+                className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+                onError={avatarFallback}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={onAvatarChange}
+              aria-label="Change avatar"
+              className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-student"
+            >
+              <Camera size={22} aria-hidden="true" />
+            </button>
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <h1 className="page-title mt-2">{profile.fullName}</h1>
+            <p className="mt-1 text-sm-fluid text-ink-muted">{profile.email}</p>
+            <p className="mt-0.5 text-sm-fluid text-ink-muted">
+              Member since{" "}
+              {new Date(profile.joinedAt).toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              })}
+            </p>
+
+            {socialLinks.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2" aria-label="Social links">
+                {socialLinks.map(({ label, href, icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${label} profile (opens in a new tab)`}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-white text-ink transition hover:border-accent-student hover:text-accent-student focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-student"
+                  >
+                    {icon === "linkedin" ? (
+                      <FaLinkedinIn size={17} aria-hidden="true" />
+                    ) : icon === "github" ? (
+                      <FaGithub size={17} aria-hidden="true" />
+                    ) : (
+                      <Globe size={17} aria-hidden="true" />
+                    )}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={onEditProfile}
+            className="btn-outline shrink-0 self-end p-3"
+          >
+            <Pencil size={16} aria-hidden="true" />
+            Edit profile
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={onAvatarChange}
-          aria-label="Change avatar"
-          className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition group-hover:opacity-100"
-        >
-          <Camera size={20} className="text-white" aria-hidden="true" />
-        </button>
       </div>
-      <div className="text-center sm:text-left">
-        <h1 className="page-title">{profile.fullName}</h1>
-        <p className="mt-1 text-sm-fluid text-ink-muted">{profile.email}</p>
-        <p className="mt-0.5 text-sm-fluid text-ink-muted">
-          Member since {new Date(profile.joinedAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-        </p>
+    </section>
+  );
+}
+
+function AboutSection({ bio }) {
+  return (
+    <section className="mt-6 card p-5 sm:p-6" aria-labelledby="about-heading">
+      <div className="flex items-center gap-2">
+        <FileText size={18} className="text-accent-student" aria-hidden="true" />
+        <h2 id="about-heading" className="section-title">About</h2>
       </div>
-    </div>
+      <p className="mt-3 text-sm-fluid leading-relaxed text-ink-muted">
+        {bio?.trim() || "Add a short bio to help instructors and fellow learners know more about you."}
+      </p>
+    </section>
   );
 }
 
@@ -104,6 +180,7 @@ function AccountTab({ profile }) {
     email: profile.email,
     timezone: profile.timezone,
     goal: profile.goal,
+    bio: profile.bio ?? "",
     linkedin: profile.socialLinks?.linkedin ?? "",
     github: profile.socialLinks?.github ?? "",
     website: profile.socialLinks?.website ?? "",
@@ -123,6 +200,7 @@ function AccountTab({ profile }) {
       email: form.email,
       timezone: form.timezone,
       goal: form.goal,
+      bio: form.bio,
       socialLinks: {
         linkedin: form.linkedin,
         github: form.github,
@@ -205,11 +283,24 @@ function AccountTab({ profile }) {
           />
         </div>
 
+        <div className="mt-5">
+          <label htmlFor="bio" className="label">About</label>
+          <textarea
+            id="bio"
+            name="bio"
+            value={form.bio}
+            onChange={handleChange}
+            rows={4}
+            placeholder="Tell learners a little about yourself..."
+            className="input resize-none"
+          />
+        </div>
+
         <h3 className="mt-8 mb-4 text-body-lg font-semibold text-ink">Social Links</h3>
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <label htmlFor="linkedin" className="label">
-              <ExternalLink size={14} className="inline-block" aria-hidden="true" /> LinkedIn
+              <FaLinkedinIn size={14} className="inline-block" aria-hidden="true" /> LinkedIn
             </label>
             <input
               id="linkedin"
@@ -223,7 +314,7 @@ function AccountTab({ profile }) {
           </div>
           <div>
             <label htmlFor="github" className="label">
-              <AtSign size={14} className="inline-block" aria-hidden="true" /> GitHub
+              <FaGithub size={14} className="inline-block" aria-hidden="true" /> GitHub
             </label>
             <input
               id="github"
@@ -270,6 +361,12 @@ function AccountTab({ profile }) {
 }
 
 function CertificateCard({ cert }) {
+  function handleShare(platform) {
+    toast.success(`${platform} share ready`, {
+      description: "Mock share action — no external post was created.",
+    });
+  }
+
   return (
     <div className="card overflow-hidden">
       {cert.courseImage && (
@@ -314,14 +411,40 @@ function CertificateCard({ cert }) {
             </span>
           )}
         </div>
-        <button
-          type="button"
-          onClick={() => window.print()}
-          className="btn-outline mt-3 w-full py-2 text-sm-fluid"
-        >
-          <Download size={14} aria-hidden="true" />
-          Download Certificate
-        </button>
+        <div className="mt-3 flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-xs font-medium text-ink-muted">
+            <Share2 size={13} aria-hidden="true" />
+            Share achievement
+          </div>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="btn-outline w-full py-2 text-sm-fluid"
+          >
+            <Download size={14} aria-hidden="true" />
+            Download Certificate
+          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => handleShare("LinkedIn")}
+              aria-label="Share certificate on LinkedIn (mock action)"
+              className="btn-outline flex items-center justify-center gap-2 py-2 text-sm-fluid"
+            >
+              <FaLinkedinIn size={15} aria-hidden="true" />
+              LinkedIn
+            </button>
+            <button
+              type="button"
+              onClick={() => handleShare("X")}
+              aria-label="Share certificate on X (mock action)"
+              className="btn-outline flex items-center justify-center gap-2 py-2 text-sm-fluid"
+            >
+              <FaXTwitter size={15} aria-hidden="true" />
+              X
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -424,7 +547,7 @@ function PreferencesTab({ profile }) {
           />
           <div className="mt-1 flex justify-between text-xs text-ink-muted">
             <span>60%</span>
-            <span>100%</span>
+            <span>130%</span>
             <span>200%</span>
           </div>
         </div>
@@ -537,7 +660,12 @@ export default function StudentProfilePage() {
 
   return (
     <div>
-      <ProfileHeader profile={profile} onAvatarChange={handleAvatarChange} />
+      <ProfileHeader
+        profile={profile}
+        onAvatarChange={handleAvatarChange}
+        onEditProfile={() => setActiveTab("account")}
+      />
+      <AboutSection bio={profile.bio} />
 
       <Tabs.Root value={activeTab} onValueChange={setActiveTab}>
         <UnderlineTabList ariaLabel="Profile sections">

@@ -24,7 +24,7 @@ import WishlistHeartButton from "src/components/student/WishlistHeartButton";
 import Stars from "src/components/ui/Stars";
 import { AVATAR_PLACEHOLDER, avatarFallback } from "src/lib/assets";
 import { getCourseReviews } from "src/services/courses";
-import { getLessonMedia } from "src/services/lessonMedia";
+import { getLessonMedia } from "src/data/lessonMedia";
 import { formatTotalDuration, parsePrice } from "src/lib/format";
 import {
   fadeUp,

@@ -243,11 +243,6 @@ export const SignupPopup = ({ onClose, onSwitchToLogin }) => {
         >
             <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); handleAuth(); }}>
                 <div>
-                    <label className="label" htmlFor="signup-name">Full Name</label>
-                    <input id="signup-name" type="text" className="input-sm" placeholder="Enter your full name" />
-                </div>
-
-                <div>
                     <label className="label" htmlFor="signup-email">Email</label>
                     <input id="signup-email" type="email" className="input-sm" placeholder="Enter your email" />
                 </div>

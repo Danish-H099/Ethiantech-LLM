@@ -162,13 +162,71 @@ export default function Header({ onLoginClick, onSignupClick }) {
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
-          <button
-            type="button"
-            onClick={onSignupClick}
-            className="btn-brand min-h-11 rounded-full px-4 py-2 text-nav"
-          >
-            Create Account
-          </button>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button
+                type="button"
+                className="btn-brand inline-flex min-h-11 select-none items-center gap-1.5 rounded-full px-4 py-2 text-nav"
+              >
+                Create Account
+                <ChevronDown
+                  size={16}
+                  className="transition-transform duration-slow data-[state=open]:rotate-180"
+                  aria-hidden="true"
+                />
+              </button>
+            </DropdownMenu.Trigger>
+
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                align="end"
+                sideOffset={8}
+                className="z-50 w-[264px] rounded-xl border border-border bg-white p-1.5 shadow-dropdown"
+              >
+                <DropdownMenu.Item asChild className="rounded-lg outline-none data-[highlighted]:bg-surface-soft">
+                  <button
+                    type="button"
+                    onClick={onSignupClick}
+                    className="flex w-full items-start gap-3 px-2.5 py-2.5 text-left"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-tint-pink">
+                      <BookOpen size={18} className="text-brand" aria-hidden="true" />
+                    </span>
+                    <span>
+                      <span className="block text-nav font-semibold text-ink">
+                        Join as Learner
+                      </span>
+                      <span className="block text-sm text-ink-muted">
+                        Learn new skills with expert-led courses
+                      </span>
+                    </span>
+                  </button>
+                </DropdownMenu.Item>
+
+                <DropdownMenu.Separator className="my-1 border-t border-border" />
+
+                <DropdownMenu.Item asChild className="rounded-lg outline-none data-[highlighted]:bg-surface-soft">
+                  <button
+                    type="button"
+                    onClick={onSignupClick}
+                    className="flex w-full items-start gap-3 px-2.5 py-2.5 text-left"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-tint-pink">
+                      <GraduationCap size={18} className="text-brand" aria-hidden="true" />
+                    </span>
+                    <span>
+                      <span className="block text-nav font-semibold text-ink">
+                        Join as Instructor
+                      </span>
+                      <span className="block text-sm text-ink-muted">
+                        Teach as a tutor or course provider
+                      </span>
+                    </span>
+                  </button>
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
         </nav>
 
         <button

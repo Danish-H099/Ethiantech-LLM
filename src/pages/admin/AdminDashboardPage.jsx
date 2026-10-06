@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { m as Motion, useReducedMotion } from "motion/react";
 import { getAdminStats } from "src/services/adminData";
-import { CHART_ACCENTS } from "src/data/chart";
+import { CHART_ACCENTS } from "src/lib/chartConfig";
 import DashboardStatCard from "src/components/ui/DashboardStatCard";
 import { viewportOnce, createStaggerItem } from "src/lib/animationVariants";
 

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { getGradeDetail } from "src/services/studentRepository";
+import { DEFAULT_STUDENT_ID } from "src/data/students";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
 import { LESSON_STATUS } from "src/lib/statuses";
 import LessonProgressBar from "src/components/student/LessonProgressBar";
@@ -67,9 +68,18 @@ function ProgressHeroCard({ detail }) {
           )}
         </div>
         <StatusBadge status={detail.status} />
+        {detail.grade && (
+          <span className="badge bg-surface-soft text-ink-muted">
+            Grade {detail.grade}
+          </span>
+        )}
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-3">
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <MetricCard
+          label="Score"
+          value={detail.score != null ? `${detail.score}` : "—"}
+        />
         <MetricCard
           label="Progress"
           value={`${detail.progress ?? 0}%`}
@@ -294,7 +304,7 @@ function CertificateCard({ detail }) {
 
 export default function StudentCourseGradesPage() {
   const { courseId } = useParams();
-  const detail = useMemo(() => getGradeDetail(courseId), [courseId]);
+  const detail = useMemo(() => getGradeDetail(DEFAULT_STUDENT_ID, courseId), [courseId]);
 
   if (!detail) {
     return (

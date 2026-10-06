@@ -13,8 +13,8 @@ import {
 import { TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { m as Motion, useReducedMotion } from "motion/react";
 import { getMonthlyRevenue, getRevenueByCategory } from "src/services/adminData";
-import { CHART_PINK } from "src/data/chart";
-import { GRID_STROKE, TICK_FILL, TOOLTIP_STYLE, GRID_DEFAULTS } from "src/data/chart";
+import { CHART_PINK } from "src/lib/chartConfig";
+import { GRID_STROKE, TICK_FILL, TOOLTIP_STYLE, GRID_DEFAULTS } from "src/lib/chartConfig";
 import { fadeIn, viewportOnce, createStaggerItem } from "src/lib/animationVariants";
 
 const summaryCards = [

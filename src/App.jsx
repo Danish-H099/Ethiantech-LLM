@@ -27,6 +27,7 @@ const StudentCourseOverviewPage = lazy(() => import("src/pages/student/StudentCo
 const StudentLessonPlayerPage = lazy(() => import("src/pages/student/StudentLessonPlayerPage"));
 const StudentTasksPage = lazy(() => import("src/pages/student/StudentTasksPage"));
 const StudentGradesPage = lazy(() => import("src/pages/student/StudentGradesPage"));
+const StudentCourseGradesPage = lazy(() => import("src/pages/student/StudentCourseGradesPage"));
 const StudentAnalyticsPage = lazy(() => import("src/pages/student/StudentAnalyticsPage"));
 const StudentWishlistPage = lazy(() => import("src/pages/student/StudentWishlistPage"));
 const StudentNotesPage = lazy(() => import("src/pages/student/StudentNotesPage"));
@@ -83,6 +84,7 @@ function App() {
           <Route path="course/:courseId/play" element={<StudentLessonPlayerPage />} />
            <Route path="tasks" element={<StudentTasksPage />} />
           <Route path="grades" element={<StudentGradesPage />} />
+          <Route path="grades/:courseId" element={<StudentCourseGradesPage />} />
           <Route path="analytics" element={<StudentAnalyticsPage />} />
           <Route path="wishlist" element={<StudentWishlistPage />} />
           <Route path="notes" element={<StudentNotesPage />} />

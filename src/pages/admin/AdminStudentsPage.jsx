@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { m as Motion, useReducedMotion } from "motion/react";
 import { getRegionStudents } from "src/services/adminData";
-import { TOOLTIP_STYLE } from "src/data/chart";
+import { TOOLTIP_STYLE } from "src/lib/chartConfig";
 import { fadeIn, viewportOnce, easeArrive, createStaggerItem } from "src/lib/animationVariants";
 
 export default function AdminStudentsPage() {

@@ -40,6 +40,7 @@ import {
   getCourseAnnouncementsFor,
   getCourseResourcesFor,
 } from "src/services/studentRepository";
+import { DEFAULT_STUDENT_ID } from "src/data/students";
 
 const COURSE_TABS = [
   { value: "syllabus", label: "Syllabus" },
@@ -433,7 +434,7 @@ export default function StudentCourseOverviewPage() {
   // Snapshot "now" once so relative labels stay stable across re-renders.
   const [now] = useState(() => Date.now());
 
-  const data = useMemo(() => getEnrolledCourseData(courseId), [courseId]);
+  const data = useMemo(() => getEnrolledCourseData(DEFAULT_STUDENT_ID, courseId), [courseId]);
 
   // Resolve resume CTA label from the syllabus-derived status + target lesson so
   // the CTA matches what the syllabus actually shows. Labels are terse commands

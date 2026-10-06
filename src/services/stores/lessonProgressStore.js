@@ -1,4 +1,5 @@
 import { LESSON_STATUS } from "src/lib/statuses";
+import { studentLessonProgress } from "src/data/studentProgress";
 
 const STORAGE_KEY = "ethiantech-lesson-progress";
 
@@ -70,19 +71,67 @@ export function buildSeedModel(flatLessons, seedCount) {
   return { lessons, lastAccessedLessonId: null };
 }
 
+/**
+ * Builds the seed progress model from the canonical lesson-progress table
+ * (src/data/studentProgress.js). Only rows whose status matters for the
+ * learner are carried in: completed lessons (plus any quiz/submission state)
+ * and explicitly in-progress lessons. Absent rows mean "not-started".
+ */
+export function buildSeedModelFromRows(courseId, flatLessons) {
+  const numericId = Number(courseId);
+  const expected = new Set(flatLessons.map((fl) => fl.lessonId));
+  const lessons = {};
+  studentLessonProgress
+    .filter(
+      (r) =>
+        r.courseId === numericId &&
+        r.status !== LESSON_STATUS.NOT_STARTED &&
+        expected.has(r.lessonId)
+    )
+    .forEach((r) => {
+      const entry = { status: r.status, completedAt: r.completedAt ?? null };
+      if (r.quiz) entry.quiz = r.quiz;
+      if (r.submission) entry.submission = r.submission;
+      lessons[r.lessonId] = entry;
+    });
+  return { lessons, lastAccessedLessonId: null };
+}
+
 export const MAX_ATTEMPTS = 20;
 
 export const MAX_SUBMISSION_STORAGE = 5 * 1024 * 1024;
 
+/** Row lookup helper — falls back to the canonical data table when nothing is stored. */
+function seedLessonRow(courseId, lessonId) {
+  const numericId = Number(courseId);
+  const lid = String(lessonId);
+  return (
+    studentLessonProgress.find(
+      (r) => r.courseId === numericId && r.lessonId === lid
+    ) || null
+  );
+}
+
 export function getQuizRecord(courseId, lessonId) {
   const model = getCourseModel(courseId);
-  if (!model) return null;
-  const record = model.lessons[String(lessonId)];
-  const quiz = record?.quiz;
-  if (!quiz || typeof quiz !== "object" || Array.isArray(quiz)) return null;
+  if (model) {
+    const record = model.lessons[String(lessonId)];
+    const quiz = record?.quiz;
+    if (quiz && typeof quiz === "object" && !Array.isArray(quiz)) {
+      return {
+        attempts: Array.isArray(quiz.attempts) ? [...quiz.attempts] : [],
+        lastAnswers: quiz.lastAnswers ?? null,
+      };
+    }
+    return null;
+  }
+  const seedQuiz = seedLessonRow(courseId, lessonId)?.quiz;
+  if (!seedQuiz || typeof seedQuiz !== "object" || Array.isArray(seedQuiz)) {
+    return null;
+  }
   return {
-    attempts: Array.isArray(quiz.attempts) ? [...quiz.attempts] : [],
-    lastAnswers: quiz.lastAnswers ?? null,
+    attempts: Array.isArray(seedQuiz.attempts) ? [...seedQuiz.attempts] : [],
+    lastAnswers: seedQuiz.lastAnswers ?? null,
   };
 }
 
@@ -133,14 +182,26 @@ export function appendQuizAttempt(courseId, lessonId, attempt) {
 
 export function getSubmissionRecord(courseId, lessonId) {
   const model = getCourseModel(courseId);
-  if (!model) return null;
-  const record = model.lessons[String(lessonId)];
-  const sub = record?.submission;
-  if (!sub || typeof sub !== "object" || Array.isArray(sub)) return null;
+  if (model) {
+    const record = model.lessons[String(lessonId)];
+    const sub = record?.submission;
+    if (sub && typeof sub === "object" && !Array.isArray(sub)) {
+      return {
+        attempt: sub.attempt ?? null,
+        draft: sub.draft ?? null,
+        submittedAt: sub.submittedAt ?? null,
+      };
+    }
+    return null;
+  }
+  const seedSub = seedLessonRow(courseId, lessonId)?.submission;
+  if (!seedSub || typeof seedSub !== "object" || Array.isArray(seedSub)) {
+    return null;
+  }
   return {
-    attempt: sub.attempt ?? null,
-    draft: sub.draft ?? null,
-    submittedAt: sub.submittedAt ?? null,
+    attempt: seedSub.attempt ?? null,
+    draft: seedSub.draft ?? null,
+    submittedAt: seedSub.submittedAt ?? null,
   };
 }
 

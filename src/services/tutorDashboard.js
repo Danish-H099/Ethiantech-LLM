@@ -1,3 +1,5 @@
+import { studentRoster } from "src/data/roster";
+
 export const tutorStats = [
   { label: "Total Earnings", value: "$62,025", change: "+12.5%", up: true, iconName: "DollarSign" },
   { label: "Total Students", value: "2,820", change: "+8.2%", up: true, iconName: "Users" },
@@ -31,4 +33,9 @@ export function getEarningsOverTime() {
 }
 export function getStudentsOverTime() {
   return studentsOverTime;
+}
+
+/** Tutor-facing roster of enrolled learners across the tutor's courses. */
+export function getStudentRoster() {
+  return studentRoster;
 }

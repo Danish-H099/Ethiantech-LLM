@@ -218,6 +218,10 @@
     @apply mb-1 block text-sm-fluid font-medium text-ink;
   }
 
+  .accent-brand {
+    accent-color: var(--color-brand);
+  }
+
   .badge {
     @apply inline-flex items-center rounded-full px-3 py-1 text-sm font-medium;
   }

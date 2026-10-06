@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { m as Motion, useReducedMotion } from "motion/react";
 import {
   Plus,
@@ -17,8 +17,8 @@ import {
 } from "src/services/studentRepository";
 import StudentEmptyState from "src/components/student/StudentEmptyState";
 import { fadeIn, viewportOnce, createStaggerItem } from "src/lib/animationVariants";
-import { NOTEBOOK_COLORS } from "src/data/chart";
-import { GRID_STROKE } from "src/data/chart";
+import { NOTEBOOK_COLORS } from "src/lib/chartConfig";
+import { GRID_STROKE } from "src/lib/chartConfig";
 
 const courseColors = NOTEBOOK_COLORS;
 
