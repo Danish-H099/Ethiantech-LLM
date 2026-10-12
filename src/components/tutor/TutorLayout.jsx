@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   PlusSquare,
@@ -10,8 +10,13 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Info,
 } from "lucide-react";
 import { clearMockAuth } from "src/utils/authMock";
+import {
+  getTutorOnboardingState,
+  TUTOR_STATUS,
+} from "src/services/stores/tutorOnboarding";
 import TutorNavbar from "src/components/tutor/TutorNavbar";
 import Footer from "src/components/Footer";
 import RouteLoader from "src/components/ui/RouteLoader";
@@ -29,6 +34,7 @@ export default function TutorLayout() {
   const sidebarRef = useRef(null);
   const hamburgerRef = useRef(null);
   const navigate = useNavigate();
+  const { status: onboardingStatus } = getTutorOnboardingState();
 
   function handleLogout() {
     clearMockAuth();
@@ -213,6 +219,27 @@ export default function TutorLayout() {
           id="main"
           className="flex-1 bg-surface p-6 lg:p-8"
         >
+          {onboardingStatus === TUTOR_STATUS.SUBMITTED && (
+            <div className="mb-6 flex flex-wrap items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3">
+              <Info size={18} className="mt-0.5 shrink-0 text-amber-700" aria-hidden="true" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm-fluid font-semibold text-amber-800">
+                  Verification in progress — Sandbox Mode
+                </p>
+                <p className="mt-1 text-sm-fluid text-amber-700">
+                  Your instructor profile is under admin review (usually 24–48 hours).
+                  You can draft courses and curriculum, but publishing, student
+                  enrollments and payouts unlock once you&apos;re approved.
+                </p>
+              </div>
+              <Link
+                to="/tutor/onboarding/status"
+                className="text-sm-fluid font-medium text-amber-800 underline transition hover:text-amber-900"
+              >
+                View application status
+              </Link>
+            </div>
+          )}
           <Suspense fallback={<RouteLoader />}>
             <Outlet />
           </Suspense>
