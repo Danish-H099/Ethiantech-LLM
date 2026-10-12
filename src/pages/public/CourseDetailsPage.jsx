@@ -671,6 +671,7 @@ export default function CourseDetailsPage() {
         <Header
           onLoginClick={() => setPopupState("login")}
           onSignupClick={() => setPopupState("signup")}
+          onTeachClick={() => setPopupState("signup-tutor")}
         />
         <main id="main" className="flex-1">
           <section className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 py-32 text-center">
@@ -711,6 +712,7 @@ export default function CourseDetailsPage() {
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
+        onTeachClick={() => setPopupState("signup-tutor")}
       />
 
       <main id="main" className="flex-1">

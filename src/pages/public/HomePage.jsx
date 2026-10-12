@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { m as Motion, useReducedMotion } from "motion/react";
 import Header from "src/components/Header";
 import courses from "src/services/courses";
 import Footer from "src/components/Footer";
 import { Building2, GraduationCap, Users, BookOpen } from "lucide-react";
 import { AuthPopupGate } from "src/components/AuthPopups";
+import { getTutorEntryPath } from "src/services/stores/tutorOnboarding";
 import demoVideoUrl from "src/assets/demo.mp4?url";
 import CourseCard from "src/components/CourseCard";
 import TestimonialCard from "src/components/TestimonialCard";
@@ -315,7 +316,7 @@ function CTASection({ onGetStarted, staggerItem }) {
   );
 }
 
-function PartnerSection({ staggerItem }) {
+function PartnerSection({ staggerItem, onTeachClick }) {
   return (
     <section className="bg-surface py-20">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
@@ -350,13 +351,14 @@ function PartnerSection({ staggerItem }) {
                 Share your expertise with thousands of learners. Create courses, build your
                 brand, and earn revenue doing what you love.
               </p>
-              <Link
-                to="/tutor/dashboard"
+              <button
+                type="button"
+                onClick={onTeachClick}
                 className="mt-6 inline-flex items-center gap-2 text-sm-fluid font-medium text-brand-strong hover:underline"
               >
                 Become an instructor
                 <span aria-hidden="true">→</span>
-              </Link>
+              </button>
             </div>
           </Motion.div>
 
@@ -387,8 +389,21 @@ function PartnerSection({ staggerItem }) {
 
 export default function HomePage() {
   const [popupState, setPopupState] = useState("none");
+  const navigate = useNavigate();
   const shouldReduceMotion = useReducedMotion();
   const staggerItem = useMemo(() => createStaggerItem(!!shouldReduceMotion), [shouldReduceMotion]);
+
+  // Shared by the header and the "Become an instructor" card: signed-in
+  // instructors go straight to their tutor area, everyone else gets the
+  // instructor signup popup.
+  function handleTeachClick() {
+    const entryPath = getTutorEntryPath();
+    if (entryPath) {
+      navigate(entryPath);
+      return;
+    }
+    setPopupState("signup-tutor");
+  }
 
   const stats = useMemo(() => {
     const learners = courses.reduce((sum, course) => sum + course.students, 0);
@@ -408,6 +423,7 @@ export default function HomePage() {
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
+        onTeachClick={() => setPopupState("signup-tutor")}
       />
       <main id="main" className="flex-1">
         <HeroSection
@@ -419,7 +435,7 @@ export default function HomePage() {
         <FeaturedCoursesSection staggerItem={staggerItem} />
         <TestimonialsSection staggerItem={staggerItem} />
         <CTASection onGetStarted={() => setPopupState("signup")} staggerItem={staggerItem} />
-        <PartnerSection staggerItem={staggerItem} />
+        <PartnerSection staggerItem={staggerItem} onTeachClick={handleTeachClick} />
       </main>
       <Footer />
 
