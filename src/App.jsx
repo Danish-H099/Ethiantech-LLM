@@ -1,9 +1,10 @@
 import { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import HomePage from "src/pages/public/HomePage";
 import CourseListPage from "src/pages/public/CourseListPage";
 import CourseDetailsPage from "src/pages/public/CourseDetailsPage";
 import TutorLayout from "src/components/tutor/TutorLayout";
+import TutorRouteGuard from "src/components/tutor/TutorRouteGuard";
 import AdminLayout from "src/components/admin/AdminLayout";
 import StudentLayout from "src/components/student/StudentLayout";
 import RouteLoader from "src/components/ui/RouteLoader";
@@ -11,6 +12,8 @@ import { Toaster } from "sonner";
 import "src/App.css";
 
 // Learning player + all authenticated app pages stay lazy (route-level code splitting).
+const TutorOnboardingPage = lazy(() => import("src/pages/tutor/TutorOnboardingPage"));
+const TutorOnboardingStatusPage = lazy(() => import("src/pages/tutor/TutorOnboardingStatusPage"));
 const AddCoursePage = lazy(() => import("src/pages/tutor/AddCoursePage"));
 const TutorDashboardPage = lazy(() => import("src/pages/tutor/TutorDashboardPage"));
 const TutorCoursesPage = lazy(() => import("src/pages/tutor/TutorCoursesPage"));
@@ -60,12 +63,19 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/courses" element={<CourseListPage />} />
         <Route path="/course/:id" element={<CourseDetailsPage />} />
-        <Route path="/tutor" element={<TutorLayout />}>
-          <Route index element={<Navigate to="add-course" replace />} />
-          <Route path="dashboard" element={<TutorDashboardPage />} />
-          <Route path="add-course" element={<AddCoursePage />} />
-          <Route path="courses" element={<TutorCoursesPage />} />
-          <Route path="students" element={<StudentsEnrolledPage />} />
+        <Route path="/tutor" element={<TutorRouteGuard />}>
+          {/* Onboarding lives outside TutorLayout — distraction-free, no sidebar. */}
+          <Route element={<Suspense fallback={<RouteLoader />}><Outlet /></Suspense>}>
+            <Route path="onboarding" element={<TutorOnboardingPage />} />
+            <Route path="onboarding/status" element={<TutorOnboardingStatusPage />} />
+          </Route>
+          <Route element={<TutorLayout />}>
+            <Route index element={<Navigate to="add-course" replace />} />
+            <Route path="dashboard" element={<TutorDashboardPage />} />
+            <Route path="add-course" element={<AddCoursePage />} />
+            <Route path="courses" element={<TutorCoursesPage />} />
+            <Route path="students" element={<StudentsEnrolledPage />} />
+          </Route>
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />

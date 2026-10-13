@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, m as Motion } from "motion/react";
 import {
@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { mobileMenu } from "src/lib/animationVariants";
+import { getTutorEntryPath } from "src/services/stores/tutorOnboarding";
 import logo from "src/assets/logo.webp";
 
 const navLinkClass = (active, textSize, minH = "min-h-11") =>
@@ -22,14 +23,28 @@ const navLinkClass = (active, textSize, minH = "min-h-11") =>
       : "font-medium text-ink-muted hover:bg-surface-soft hover:text-brand-strong"
   }`;
 
-export default function Header({ onLoginClick, onSignupClick }) {
+export default function Header({ onLoginClick, onSignupClick, onTeachClick }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const closeMenu = () => setMobileMenuOpen(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [lastPathname, setLastPathname] = useState(pathname);
   const isHome = pathname === "/";
   const isCourses = pathname.startsWith("/courses") || pathname.startsWith("/course/");
+
+  // Every "Teach on EthianTech" entry point funnels here: signed-in instructors
+  // jump straight to the right tutor route for their verification status, while
+  // visitors open the signup popup with the instructor arm pre-selected.
+  function handleTeachClick() {
+    closeMenu();
+    const entryPath = getTutorEntryPath();
+    if (entryPath) {
+      navigate(entryPath);
+      return;
+    }
+    onTeachClick?.();
+  }
 
   if (lastPathname !== pathname) {
     setLastPathname(pathname);
@@ -124,7 +139,11 @@ export default function Header({ onLoginClick, onSignupClick }) {
                 className="z-50 w-[264px] rounded-xl border border-border bg-white p-1.5 shadow-dropdown"
               >
                 <DropdownMenu.Item asChild className="rounded-lg outline-none data-[highlighted]:bg-surface-soft">
-                  <Link to="/tutor/dashboard" className="flex items-start gap-3 px-2.5 py-2.5">
+                  <button
+                    type="button"
+                    onClick={handleTeachClick}
+                    className="flex w-full items-start gap-3 px-2.5 py-2.5 text-left"
+                  >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-tint-pink">
                       <GraduationCap size={18} className="text-brand" aria-hidden="true" />
                     </span>
@@ -136,7 +155,7 @@ export default function Header({ onLoginClick, onSignupClick }) {
                         Create courses and earn revenue
                       </span>
                     </span>
-                  </Link>
+                  </button>
                 </DropdownMenu.Item>
 
                 <DropdownMenu.Separator className="my-1 border-t border-border" />
@@ -208,7 +227,7 @@ export default function Header({ onLoginClick, onSignupClick }) {
                 <DropdownMenu.Item asChild className="rounded-lg outline-none data-[highlighted]:bg-surface-soft">
                   <button
                     type="button"
-                    onClick={onSignupClick}
+                    onClick={handleTeachClick}
                     className="flex w-full items-start gap-3 px-2.5 py-2.5 text-left"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-tint-pink">
@@ -289,14 +308,14 @@ export default function Header({ onLoginClick, onSignupClick }) {
                 <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-ink-muted">
                   For organizations &amp; creators
                 </p>
-                <Link
-                  to="/tutor/dashboard"
-                  onClick={closeMenu}
+                <button
+                  type="button"
+                  onClick={handleTeachClick}
                   className={navLinkClass(false, "text-body", "min-h-12")}
                 >
                   <GraduationCap size={20} className="shrink-0" aria-hidden="true" />
                   Teach on EthianTech
-                </Link>
+                </button>
                 <a
                   href="mailto:info@ethiantech.com?subject=Team%20training%20inquiry"
                   onClick={closeMenu}

@@ -57,6 +57,7 @@ export default function CourseVideo() {
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
+        onTeachClick={() => setPopupState("signup-tutor")}
       />
 
       <main id="main" className="flex-1">
@@ -313,11 +314,27 @@ export default function CourseVideo() {
             onSwitchToSignup={() => setPopupState("signup")}
           />
         )}
+        {popupState === "login-tutor" && (
+          <LoginPopup
+            key="login-tutor"
+            initialRole="tutor"
+            onClose={() => setPopupState("none")}
+            onSwitchToSignup={() => setPopupState("signup-tutor")}
+          />
+        )}
         {popupState === "signup" && (
           <SignupPopup
             key="signup"
             onClose={() => setPopupState("none")}
             onSwitchToLogin={() => setPopupState("login")}
+          />
+        )}
+        {popupState === "signup-tutor" && (
+          <SignupPopup
+            key="signup-tutor"
+            initialRole="tutor"
+            onClose={() => setPopupState("none")}
+            onSwitchToLogin={() => setPopupState("login-tutor")}
           />
         )}
       </AnimatePresence>

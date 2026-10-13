@@ -4,7 +4,8 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { AnimatePresence, m as Motion } from 'motion/react';
 import { X, Eye, EyeOff } from 'lucide-react';
 import { backdrop, modal } from 'src/lib/animationVariants';
-import { setStudentAuthed } from 'src/utils/authMock';
+import { setStudentAuthed, setTutorAuthed } from 'src/utils/authMock';
+import { getTutorEntryPath } from 'src/services/stores/tutorOnboarding';
 
 // Focus handling for the modal dialogs: land on the first field on open (not
 // the close button) and restore focus to the opener on close. The popups are
@@ -43,6 +44,40 @@ const MockGoogleButton = ({ text, onClick }) => (
     </button>
 );
 
+// Segmented control choosing which arm of the auth flow to go through.
+// Selecting the tutor option routes the account into instructor onboarding
+// instead of the student dashboard.
+const SIGNUP_ROLES = [
+    { value: "student", label: "I'm a Student" },
+    { value: "tutor", label: "I want to Teach" },
+];
+
+const LOGIN_ROLES = [
+    { value: "student", label: "As a Student" },
+    { value: "tutor", label: "As an Instructor" },
+];
+
+const RoleToggle = ({ role, onChange, options = SIGNUP_ROLES }) => (
+    <div role="group" aria-label="Account type" className="grid grid-cols-2 gap-1 rounded-lg bg-surface-soft p-1">
+        {options.map((option) => {
+            const active = role === option.value;
+            return (
+                <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => onChange(option.value)}
+                    aria-pressed={active}
+                    className={`rounded-md px-3 py-2 text-sm-fluid font-medium transition ${
+                        active ? "bg-white text-ink shadow-sm" : "text-ink-muted hover:text-ink"
+                    }`}
+                >
+                    {option.label}
+                </button>
+            );
+        })}
+    </div>
+);
+
 // Shared dialog shell: portal, animated backdrop/content, focus handling,
 // backdrop click-to-close, a pinned close button, and the Google + divider
 // header. Only the form body and switch-to-other-mode copy vary per popup.
@@ -53,6 +88,7 @@ function AuthDialog({
     dividerText,
     footerText,
     footerActionText,
+    intro,
     onFooterAction,
     onClose,
     onGoogleClick,
@@ -101,6 +137,8 @@ function AuthDialog({
                                 <Dialog.Title className="mb-6 text-center text-heading font-bold text-ink">{title}</Dialog.Title>
 
                                 <div className="space-y-4">
+                                    {intro}
+
                                     <MockGoogleButton text={googleText} onClick={onGoogleClick} />
 
                                     <div className="relative">
@@ -130,13 +168,21 @@ function AuthDialog({
     );
 }
 
-export const LoginPopup = ({ onClose, onSwitchToSignup }) => {
+export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" }) => {
+    const [role, setRole] = useState(initialRole);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     function handleAuth() {
-        setStudentAuthed();
         onClose();
+        if (role === "tutor") {
+            // Instructor sign-in: restore the tutor session and land wherever
+            // their application currently stands.
+            setTutorAuthed();
+            navigate(getTutorEntryPath() ?? "/tutor/onboarding", { replace: true });
+            return;
+        }
+        setStudentAuthed();
         let returnTo = "/student";
         try {
           const stored = sessionStorage.getItem("ethiantech_login_return_to");
@@ -158,6 +204,7 @@ export const LoginPopup = ({ onClose, onSwitchToSignup }) => {
             dividerText="Or continue with email"
             footerText="Don&apos;t have an account?"
             footerActionText="Sign up"
+            intro={<RoleToggle role={role} onChange={setRole} options={LOGIN_ROLES} />}
             onFooterAction={onSwitchToSignup}
             onClose={onClose}
             onGoogleClick={handleAuth}
@@ -208,14 +255,22 @@ export const LoginPopup = ({ onClose, onSwitchToSignup }) => {
     );
 };
 
-export const SignupPopup = ({ onClose, onSwitchToLogin }) => {
+export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" }) => {
+    const [role, setRole] = useState(initialRole);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
 
     function handleAuth() {
-        setStudentAuthed();
         onClose();
+        if (role === "tutor") {
+            // Instructor arm: flag the session as a tutor and hand off to the
+            // onboarding wizard (or wherever their application already sits).
+            setTutorAuthed();
+            navigate(getTutorEntryPath() ?? "/tutor/onboarding", { replace: true });
+            return;
+        }
+        setStudentAuthed();
         let returnTo = "/student";
         try {
           const stored = sessionStorage.getItem("ethiantech_login_return_to");
@@ -237,6 +292,7 @@ export const SignupPopup = ({ onClose, onSwitchToLogin }) => {
             dividerText="Or sign up with email"
             footerText="Already have an account?"
             footerActionText="Sign in"
+            intro={<RoleToggle role={role} onChange={setRole} />}
             onFooterAction={onSwitchToLogin}
             onClose={onClose}
             onGoogleClick={handleAuth}
@@ -290,16 +346,24 @@ export const SignupPopup = ({ onClose, onSwitchToLogin }) => {
                 </div>
 
                 <button type="submit" className="btn-brand btn-brand-flat mt-2 w-full rounded-lg px-4 py-2">
-                    Create Account
+                    {role === "tutor" ? "Create Instructor Account" : "Create Account"}
                 </button>
+                {role === "tutor" && (
+                    <p className="text-center text-sm-fluid text-ink-muted">
+                        You&apos;ll choose a teaching track and set up your instructor profile next.
+                    </p>
+                )}
             </form>
         </AuthDialog>
     );
 };
 
-// Renders whichever auth popup matches `state` ("login" | "signup" | "none").
+// Renders whichever auth popup matches `state`
+// ("login" | "login-tutor" | "signup" | "signup-tutor" | "none").
+// The chosen role carries across the login <-> signup switch so an instructor
+// never lands back in the student arm by clicking "Sign up"/"Sign in".
 // mode="wait" lets the outgoing dialog finish its exit before the next mounts,
-// so login <-> signup switches never overlap two open dialogs.
+// so switches never overlap two open dialogs.
 export const AuthPopupGate = ({ state, onStateChange }) => (
     <AnimatePresence mode="wait">
         {state === "login" && (
@@ -309,11 +373,27 @@ export const AuthPopupGate = ({ state, onStateChange }) => (
                 onSwitchToSignup={() => onStateChange("signup")}
             />
         )}
+        {state === "login-tutor" && (
+            <LoginPopup
+                key="login-tutor"
+                initialRole="tutor"
+                onClose={() => onStateChange("none")}
+                onSwitchToSignup={() => onStateChange("signup-tutor")}
+            />
+        )}
         {state === "signup" && (
             <SignupPopup
                 key="signup"
                 onClose={() => onStateChange("none")}
                 onSwitchToLogin={() => onStateChange("login")}
+            />
+        )}
+        {state === "signup-tutor" && (
+            <SignupPopup
+                key="signup-tutor"
+                initialRole="tutor"
+                onClose={() => onStateChange("none")}
+                onSwitchToLogin={() => onStateChange("login-tutor")}
             />
         )}
     </AnimatePresence>

@@ -332,6 +332,7 @@ export default function CourseListPage() {
       <Header
         onLoginClick={() => setPopupState("login")}
         onSignupClick={() => setPopupState("signup")}
+        onTeachClick={() => setPopupState("signup-tutor")}
       />
 
       <main id="main" className="flex-1">
