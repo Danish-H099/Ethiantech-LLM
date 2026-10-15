@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { AlertTriangle, Check, Clock, Lock } from "lucide-react";
 import OnboardingShell from "src/components/tutor/onboarding/OnboardingShell";
 import {
   getTutorOnboardingState,
@@ -43,9 +44,35 @@ const STATUS_META = {
   },
 };
 
+/** Review checklist shown on the status hub, derived from the current status. */
+function buildTimeline(status) {
+  const submitted = [TUTOR_STATUS.SUBMITTED, TUTOR_STATUS.APPROVED, TUTOR_STATUS.REJECTED].includes(status);
+  const reviewed = [TUTOR_STATUS.APPROVED, TUTOR_STATUS.REJECTED].includes(status);
+  const approved = status === TUTOR_STATUS.APPROVED;
+  return [
+    { label: "Account created", state: "done" },
+    {
+      label: submitted ? "Profile & credentials submitted" : "Submit profile & credentials",
+      state: submitted ? "done" : "active",
+    },
+    {
+      label: reviewed
+        ? approved
+          ? "Application approved"
+          : "Review complete — changes requested"
+        : "Admin review (usually 24–48 hours)",
+      state: reviewed ? (approved ? "done" : "active") : submitted ? "active" : "idle",
+    },
+    {
+      label: approved ? "Publishing & payouts unlocked" : "Publishing & payouts",
+      state: approved ? "done" : "idle",
+    },
+  ];
+}
+
 export default function TutorOnboardingStatusPage() {
   const navigate = useNavigate();
-  const { status, tier, submittedAt } = getTutorOnboardingState();
+  const { status, tier, submittedAt, reviewNote } = getTutorOnboardingState();
   const meta = STATUS_META[status] ?? STATUS_META[TUTOR_STATUS.NOT_STARTED];
   const submittedLabel = submittedAt
     ? new Date(submittedAt).toLocaleString("en-US", {
@@ -83,6 +110,47 @@ export default function TutorOnboardingStatusPage() {
         {submittedLabel && (
           <p className="mt-3 text-sm-fluid text-ink-muted">Submitted on {submittedLabel}</p>
         )}
+
+        {status === TUTOR_STATUS.REJECTED && reviewNote && (
+          <div className="mt-4 flex items-start gap-3 rounded-lg border border-error/40 bg-error-soft p-4">
+            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-error" />
+            <div>
+              <p className="text-sm-fluid font-semibold text-ink">Reviewer note</p>
+              <p className="mt-1 text-sm-fluid text-ink-muted">{reviewNote}</p>
+            </div>
+          </div>
+        )}
+
+        <ol className="mt-6 space-y-3 border-t border-border pt-6">
+          {buildTimeline(status).map((item) => (
+            <li key={item.label} className="flex items-center gap-3">
+              <span
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+                  item.state === "done"
+                    ? "bg-success-soft text-success"
+                    : item.state === "active"
+                      ? "bg-amber-100 text-amber-700"
+                      : "bg-surface-soft text-ink-muted"
+                }`}
+              >
+                {item.state === "done" ? (
+                  <Check size={14} strokeWidth={3} />
+                ) : item.state === "active" ? (
+                  <Clock size={14} />
+                ) : (
+                  <Lock size={13} />
+                )}
+              </span>
+              <span
+                className={`text-sm-fluid ${
+                  item.state === "idle" ? "text-ink-muted" : "font-medium text-ink"
+                }`}
+              >
+                {item.label}
+              </span>
+            </li>
+          ))}
+        </ol>
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link to={meta.action.to} className="btn-brand rounded-lg px-5 py-2.5 text-sm-fluid">
