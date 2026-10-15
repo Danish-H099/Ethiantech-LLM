@@ -6,6 +6,7 @@ import { X, Eye, EyeOff } from 'lucide-react';
 import { backdrop, modal } from 'src/lib/animationVariants';
 import { setStudentAuthed, setTutorAuthed } from 'src/utils/authMock';
 import { getTutorEntryPath } from 'src/services/stores/tutorOnboarding';
+import { registerInstructor } from "src/services/auth";
 
 // Focus handling for the modal dialogs: land on the first field on open (not
 // the close button) and restore focus to the opener on close. The popups are
@@ -67,9 +68,8 @@ const RoleToggle = ({ role, onChange, options = SIGNUP_ROLES }) => (
                     type="button"
                     onClick={() => onChange(option.value)}
                     aria-pressed={active}
-                    className={`rounded-md px-3 py-2 text-sm-fluid font-medium transition ${
-                        active ? "bg-white text-ink shadow-sm" : "text-ink-muted hover:text-ink"
-                    }`}
+                    className={`rounded-md px-3 py-2 text-sm-fluid font-medium transition ${active ? "bg-white text-ink shadow-sm" : "text-ink-muted hover:text-ink"
+                        }`}
                 >
                     {option.label}
                 </button>
@@ -185,13 +185,13 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
         setStudentAuthed();
         let returnTo = "/student";
         try {
-          const stored = sessionStorage.getItem("ethiantech_login_return_to");
-          if (stored) {
-            sessionStorage.removeItem("ethiantech_login_return_to");
-            returnTo = stored;
-          }
+            const stored = sessionStorage.getItem("ethiantech_login_return_to");
+            if (stored) {
+                sessionStorage.removeItem("ethiantech_login_return_to");
+                returnTo = stored;
+            }
         } catch {
-          // ignore storage failures (private mode, quota, etc.)
+            // ignore storage failures (private mode, quota, etc.)
         }
         navigate(returnTo, { replace: true });
     }
@@ -259,29 +259,59 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
     const [role, setRole] = useState(initialRole);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
     const navigate = useNavigate();
 
-    function handleAuth() {
-        onClose();
-        if (role === "tutor") {
-            // Instructor arm: flag the session as a tutor and hand off to the
-            // onboarding wizard (or wherever their application already sits).
-            setTutorAuthed();
-            navigate(getTutorEntryPath() ?? "/tutor/onboarding", { replace: true });
+
+    async function handleAuth(e) {
+        e?.preventDefault();
+        setError("");
+
+        if (role !== "tutor") {
+            // Keep your existing student signup flow for now.
+            onClose();
+            setStudentAuthed();
+            navigate("/student", { replace: true });
             return;
         }
-        setStudentAuthed();
-        let returnTo = "/student";
-        try {
-          const stored = sessionStorage.getItem("ethiantech_login_return_to");
-          if (stored) {
-            sessionStorage.removeItem("ethiantech_login_return_to");
-            returnTo = stored;
-          }
-        } catch {
-          // ignore storage failures (private mode, quota, etc.)
+
+        if (password !== confirmPassword) {
+            setError("Passwords do not match.");
+            return;
         }
-        navigate(returnTo, { replace: true });
+
+        if (password.length < 8) {
+            setError("Password must be at least 8 characters.");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const data = await registerInstructor({
+                name: name.trim(),
+                email: email.trim(),
+                password,
+            });
+
+            // Store the returned JWT for subsequent authenticated requests.
+            localStorage.setItem("authToken", data.token);
+
+            onClose();
+            setTutorAuthed();
+            navigate("/tutor/onboarding", { replace: true });
+        } catch (err) {
+            setError(err.message || "Unable to register. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -297,11 +327,32 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
             onClose={onClose}
             onGoogleClick={handleAuth}
         >
-            <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); handleAuth(); }}>
+            <form
+                className="space-y-3"
+                onSubmit={handleAuth}
+            >
+
                 <div>
-                    <label className="label" htmlFor="signup-email">Email</label>
-                    <input id="signup-email" type="email" className="input-sm" placeholder="Enter your email" />
+                    <label className="label" htmlFor="signup-name">Full Name</label>
+                    <input
+                        id="signup-name"
+                        type="text"
+                        className="input-sm"
+                        placeholder="Enter your full name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
                 </div>
+                <input
+                    id="signup-email"
+                    type="email"
+                    className="input-sm"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
 
                 <div>
                     <label className="label" htmlFor="signup-password">Password</label>
@@ -311,6 +362,10 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
                             type={showPassword ? "text" : "password"}
                             className="input-sm pr-10"
                             placeholder="Enter your password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            minLength={8}
                         />
                         <button
                             type="button"
@@ -332,6 +387,10 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
                             type={showConfirmPassword ? "text" : "password"}
                             className="input-sm pr-10"
                             placeholder="Confirm your password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            minLength={8}
                         />
                         <button
                             type="button"
@@ -345,8 +404,16 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
                     </div>
                 </div>
 
-                <button type="submit" className="btn-brand btn-brand-flat mt-2 w-full rounded-lg px-4 py-2">
-                    {role === "tutor" ? "Create Instructor Account" : "Create Account"}
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn-brand btn-brand-flat mt-2 w-full rounded-lg px-4 py-2 disabled:opacity-60"
+                >
+                    {loading
+                        ? "Creating account..."
+                        : role === "tutor"
+                            ? "Create Instructor Account"
+                            : "Create Account"}
                 </button>
                 {role === "tutor" && (
                     <p className="text-center text-sm-fluid text-ink-muted">

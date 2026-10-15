@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { m as Motion, useReducedMotion } from "motion/react";
 import Header from "src/components/Header";
@@ -62,6 +62,8 @@ const testimonials = [
 ];
 
 function HeroSection({ onGetStarted, staggerItem, shouldReduceMotion }) {
+
+
   return (
     <section className="relative isolate min-h-[75vh] overflow-hidden bg-ink">
       {!shouldReduceMotion && (
@@ -393,6 +395,7 @@ export default function HomePage() {
   const shouldReduceMotion = useReducedMotion();
   const staggerItem = useMemo(() => createStaggerItem(!!shouldReduceMotion), [shouldReduceMotion]);
 
+    
   // Shared by the header and the "Become an instructor" card: signed-in
   // instructors go straight to their tutor area, everyone else gets the
   // instructor signup popup.
@@ -417,6 +420,28 @@ export default function HomePage() {
       { value: `${avgRating.toFixed(1)}/5`, label: "Average rating" },
     ];
   }, []);
+
+//   useEffect(() => {
+// const fetchUsers = async () => {
+// try {
+// const response = await fetch("http://localhost:5000/users");
+
+//   if (!response.ok) {
+//     throw new Error(`HTTP error: ${response.status}`);
+//   }
+
+//   const data = await response.json();
+
+//   console.log("Backend connected successfully!");
+//   console.log("Users API response:", data);
+// } catch (error) {
+//   console.error("Failed to connect to backend:", error);
+// }
+
+// };
+
+// fetchUsers();
+// }, []);
 
   return (
     <div className="relative flex min-h-screen flex-col bg-surface font-outfit text-ink">
