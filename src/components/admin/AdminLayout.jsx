@@ -42,9 +42,15 @@ export default function AdminLayout() {
         />
       )}
 
-      <div className="flex h-screen">
+      {/* Full-width header — lifted out of the sidebar+main row so it spans the
+          whole viewport, leaving the row below to match sidebar/main. */}
+      <AdminNavbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+      {/* Workspace row — the whole window scrolls as a single scroll context
+          (no h-screen, no nested overflow on main). */}
+      <div className="flex flex-1">
         <aside
-          className={`scrollbar-brand fixed inset-y-0 left-0 z-50 flex w-[251px] flex-col border-r border-gray-300 bg-white transition-transform duration-200 lg:static lg:h-full lg:overflow-y-auto lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-50 flex w-[251px] flex-col border-r border-gray-300 bg-white transition-transform duration-200 lg:relative lg:z-0 lg:translate-x-0 ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -57,7 +63,7 @@ export default function AdminLayout() {
             </span>
           </div>
 
-          <nav className="mt-2 flex flex-col gap-1 px-3">
+          <nav className="relative mt-2 flex flex-col gap-1 px-3 py-5 lg:sticky lg:top-[74px]">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -81,17 +87,16 @@ export default function AdminLayout() {
           </nav>
         </aside>
 
-        <div className="flex flex-1 flex-col">
-          <AdminNavbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
-          <main id="main" className="scrollbar-brand flex-1 overflow-auto bg-surface p-6 lg:p-8">
-            <Suspense fallback={<RouteLoader />}>
-              <Outlet />
-            </Suspense>
-          </main>
-          <Footer />
-        </div>
+        <main id="main" className="min-w-0 flex-1 bg-surface p-6 lg:p-8">
+          <Suspense fallback={<RouteLoader />}>
+            <Outlet />
+          </Suspense>
+        </main>
       </div>
+
+      {/* Full-width footer at the page bottom — placed outside the workspace row
+          so it can never pin over `main` and never steals its height. */}
+      <Footer />
     </div>
   );
 }

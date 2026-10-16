@@ -1,7 +1,12 @@
 import { useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { AnimatePresence, m as Motion } from "motion/react";
-import { Upload, Plus, Trash2, ChevronDown, ChevronUp, Video } from "lucide-react";
+import { Upload, Plus, Trash2, ChevronDown, ChevronUp, Video, Lock } from "lucide-react";
 import { buttonPress, slideUp } from "src/lib/animationVariants";
+import {
+  getTutorOnboardingState,
+  TUTOR_STATUS,
+} from "src/services/stores/tutorOnboarding";
 
 const inputBase =
   "input h-[40px]";
@@ -26,6 +31,11 @@ const emptyLesson = () => ({ title: "", video: null });
 const emptySection = () => ({ title: "", lessons: [emptyLesson()] });
 
 export default function AddCoursePage() {
+  // Sandbox Mode: authoring is allowed while verification is pending, but
+  // publishing is gated until an admin approves the instructor (fail-closed on
+  // any non-approved status).
+  const { status } = getTutorOnboardingState();
+  const isSandbox = status !== TUTOR_STATUS.APPROVED;
   const [form, setForm] = useState({
     title: "",
     headings: "",
@@ -179,6 +189,8 @@ export default function AddCoursePage() {
 
   function handleSubmit(e) {
     e.preventDefault();
+    // Sandbox Mode guard — no submission path while verification is pending.
+    if (isSandbox) return;
     setSubmitted(true);
     const newErrors = validate();
     setErrors(newErrors);
@@ -603,15 +615,29 @@ export default function AddCoursePage() {
           </button>
         </div>
 
-        {/* ADD button */}
+        {/* Publish button */}
         <Motion.button
           type="submit"
           variants={buttonPress}
           whileTap="tap"
-          className="flex h-[40px] w-full items-center justify-center rounded bg-brand text-sm-fluid text-white transition hover:bg-brand/90 sm:w-[91px]"
+          disabled={isSandbox}
+          className="flex h-[40px] w-full items-center justify-center gap-2 rounded bg-brand text-sm-fluid text-white transition hover:bg-brand/90 disabled:cursor-default disabled:opacity-60 disabled:hover:bg-brand sm:w-[172px]"
         >
-          ADD
+          {isSandbox && <Lock size={15} aria-hidden="true" />}
+          Publish Course
         </Motion.button>
+
+        {isSandbox && (
+          <p className="mt-3 flex items-start gap-2 text-sm-fluid text-ink-muted">
+            <Lock size={14} aria-hidden="true" className="mt-0.5 shrink-0" />
+            <span>
+              Publishing unlocks once an administrator approves your application.{" "}
+              <Link to="/tutor/onboarding/status" className="link">
+                View application status
+              </Link>
+            </span>
+          </p>
+        )}
       </form>
     </div>
   );

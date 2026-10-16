@@ -141,6 +141,36 @@ export function submitTutorOnboarding(payload = {}) {
 }
 
 /**
+ * Admin decision: clear the application for full tutor access.
+ * Only a submitted application can be decided on; anything else is a no-op.
+ */
+export function approveTutorOnboarding() {
+  const store = readStore();
+  if (store.status !== TUTOR_STATUS.SUBMITTED) return { ...store };
+  store.status = TUTOR_STATUS.APPROVED;
+  store.reviewedAt = new Date().toISOString();
+  store.reviewNote = "";
+  writeStore(store);
+  return { ...store };
+}
+
+/**
+ * Admin decision: send the application back with a note explaining what to
+ * fix. Only a submitted application can be decided on. The note resurfaces on
+ * the tutor's status hub (see TutorOnboardingStatusPage) until the applicant
+ * edits the wizard again — saving a step clears it via submitTutorOnboarding.
+ */
+export function rejectTutorOnboarding(reviewNote = "") {
+  const store = readStore();
+  if (store.status !== TUTOR_STATUS.SUBMITTED) return { ...store };
+  store.status = TUTOR_STATUS.REJECTED;
+  store.reviewedAt = new Date().toISOString();
+  store.reviewNote = typeof reviewNote === "string" ? reviewNote.trim() : "";
+  writeStore(store);
+  return { ...store };
+}
+
+/**
  * Where a "Teach on EthianTech" entry point should land for the current
  * visitor: the tutor area for signed-in instructors, or null when the visitor
  * still needs to sign up through the instructor arm of the signup popup.
