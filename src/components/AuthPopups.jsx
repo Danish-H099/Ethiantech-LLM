@@ -45,6 +45,13 @@ const MockGoogleButton = ({ text, onClick }) => (
     </button>
 );
 
+function handleGoogleAuth() {
+  const accountType = role === "tutor" ? "tutor" : "student";
+
+  window.location.href =
+    `${import.meta.env.VITE_API_URL}/auth/google?${accountType}`;
+}
+
 // Segmented control choosing which arm of the auth flow to go through.
 // Selecting the tutor option routes the account into instructor onboarding
 // instead of the student dashboard.
@@ -247,7 +254,7 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
             intro={<RoleToggle role={role} onChange={setRole} options={LOGIN_ROLES} />}
             onFooterAction={onSwitchToSignup}
             onClose={onClose}
-            onGoogleClick={handleAuth}
+            onGoogleClick={handleGoogleAuth}
         >
             <form
                 className="space-y-4"
@@ -394,7 +401,7 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
             intro={<RoleToggle role={role} onChange={setRole} />}
             onFooterAction={onSwitchToLogin}
             onClose={onClose}
-            onGoogleClick={handleAuth}
+            onGoogleClick={handleGoogleAuth}
         >
             <form
                 className="space-y-3"
