@@ -6,7 +6,7 @@ import { X, Eye, EyeOff } from 'lucide-react';
 import { backdrop, modal } from 'src/lib/animationVariants';
 import { setStudentAuthed, setTutorAuthed } from 'src/utils/authMock';
 import { getTutorEntryPath } from 'src/services/stores/tutorOnboarding';
-import { registerInstructor } from "src/services/auth";
+import { registerInstructor, loginInstructor } from "src/services/auth";
 
 // Focus handling for the modal dialogs: land on the first field on open (not
 // the close button) and restore focus to the opener on close. The popups are
@@ -171,30 +171,70 @@ function AuthDialog({
 export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" }) => {
     const [role, setRole] = useState(initialRole);
     const [showPassword, setShowPassword] = useState(false);
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
     const navigate = useNavigate();
 
-    function handleAuth() {
-        onClose();
-        if (role === "tutor") {
-            // Instructor sign-in: restore the tutor session and land wherever
-            // their application currently stands.
-            setTutorAuthed();
-            navigate(getTutorEntryPath() ?? "/tutor/onboarding", { replace: true });
+
+    async function handleAuth(e) {
+        e?.preventDefault();
+        setError("");
+
+        // Keep student login mocked for now.
+        if (role !== "tutor") {
+            onClose();
+            setStudentAuthed();
+
+            let returnTo = "/student";
+
+            try {
+                const stored = sessionStorage.getItem(
+                    "ethiantech_login_return_to"
+                );
+
+                if (stored) {
+                    sessionStorage.removeItem(
+                        "ethiantech_login_return_to"
+                    );
+                    returnTo = stored;
+                }
+            } catch {
+                // Ignore storage failures.
+            }
+
+            navigate(returnTo, { replace: true });
             return;
         }
-        setStudentAuthed();
-        let returnTo = "/student";
+
         try {
-            const stored = sessionStorage.getItem("ethiantech_login_return_to");
-            if (stored) {
-                sessionStorage.removeItem("ethiantech_login_return_to");
-                returnTo = stored;
-            }
-        } catch {
-            // ignore storage failures (private mode, quota, etc.)
+            setLoading(true);
+
+            const data = await loginInstructor({
+                email: email.trim(),
+                password,
+            });
+
+            // Assumes your backend returns { token: "..." }.
+            localStorage.setItem("authToken", data.token);
+
+            setTutorAuthed();
+            onClose();
+
+            navigate(
+                getTutorEntryPath() ?? "/tutor/onboarding",
+                { replace: true }
+            );
+        } catch (err) {
+            setError(err.message || "Unable to log in. Please try again.");
+        } finally {
+            setLoading(false);
         }
-        navigate(returnTo, { replace: true });
     }
+
 
     return (
         <AuthDialog
@@ -209,7 +249,10 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
             onClose={onClose}
             onGoogleClick={handleAuth}
         >
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleAuth(); }}>
+            <form
+                className="space-y-4"
+                onSubmit={handleAuth}
+            >
                 <div>
                     <label className="label" htmlFor="login-email">Email</label>
                     <input
@@ -217,6 +260,9 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
                         type="email"
                         className="input-sm"
                         placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
                     />
                 </div>
 
@@ -228,7 +274,15 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
                             type={showPassword ? "text" : "password"}
                             className="input-sm pr-10"
                             placeholder="Enter your password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
                         />
+                        {error && (
+                            <p className="text-sm text-red-600" role="alert">
+                                {error}
+                            </p>
+                        )}
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
@@ -247,8 +301,12 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
                     </button>
                 </div>
 
-                <button type="submit" className="btn-brand btn-brand-flat w-full rounded-lg px-4 py-2">
-                    Sign In
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn-brand btn-brand-flat w-full rounded-lg px-4 py-2 disabled:opacity-60"
+                >
+                    {loading ? "Signing in..." : "Sign In"}
                 </button>
             </form>
         </AuthDialog>
