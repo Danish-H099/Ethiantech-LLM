@@ -333,7 +333,6 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
         setError("");
 
         if (role !== "tutor") {
-            // Keep your existing student signup flow for now.
             onClose();
             setStudentAuthed();
             navigate("/student", { replace: true });
@@ -359,12 +358,24 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
                 password,
             });
 
-            // Store the returned JWT for subsequent authenticated requests.
+            // Store JWT separately
             localStorage.setItem("authToken", data.token);
+
+            // Store instructor details
+            localStorage.setItem(
+                "tutor",
+                JSON.stringify({
+                    name: data.user.name,
+                    email: data.user.email,
+                    role: data.user.role,
+                    approved: false,
+                })
+            );
 
             onClose();
             setTutorAuthed();
             navigate("/tutor/onboarding", { replace: true });
+
         } catch (err) {
             setError(err.message || "Unable to register. Please try again.");
         } finally {
