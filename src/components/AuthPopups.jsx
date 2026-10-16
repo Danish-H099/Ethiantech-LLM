@@ -45,16 +45,7 @@ const MockGoogleButton = ({ text, onClick }) => (
     </button>
 );
 
-function handleGoogleAuth() {
-  const accountType = role === "tutor" ? "tutor" : "student";
-
-  window.location.href =
-    `${import.meta.env.VITE_API_URL}/auth/google?${accountType}`;
-}
-
 // Segmented control choosing which arm of the auth flow to go through.
-// Selecting the tutor option routes the account into instructor onboarding
-// instead of the student dashboard.
 const SIGNUP_ROLES = [
     { value: "student", label: "I'm a Student" },
     { value: "tutor", label: "I want to Teach" },
@@ -75,8 +66,7 @@ const RoleToggle = ({ role, onChange, options = SIGNUP_ROLES }) => (
                     type="button"
                     onClick={() => onChange(option.value)}
                     aria-pressed={active}
-                    className={`rounded-md px-3 py-2 text-sm-fluid font-medium transition ${active ? "bg-white text-ink shadow-sm" : "text-ink-muted hover:text-ink"
-                        }`}
+                    className={`rounded-md px-3 py-2 text-sm-fluid font-medium transition ${active ? "bg-white text-ink shadow-sm" : "text-ink-muted hover:text-ink"}`}
                 >
                     {option.label}
                 </button>
@@ -85,9 +75,7 @@ const RoleToggle = ({ role, onChange, options = SIGNUP_ROLES }) => (
     </div>
 );
 
-// Shared dialog shell: portal, animated backdrop/content, focus handling,
-// backdrop click-to-close, a pinned close button, and the Google + divider
-// header. Only the form body and switch-to-other-mode copy vary per popup.
+// Shared dialog shell
 function AuthDialog({
     title,
     closeLabel,
@@ -186,32 +174,27 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
 
     const navigate = useNavigate();
 
+    function handleGoogleAuth() {
+        const endpoint = role === "tutor" ? "/auth/google/tutor" : "/auth/google/student";
+        window.location.href = `${import.meta.env.VITE_API_URL}${endpoint}`;
+    }
 
     async function handleAuth(e) {
         e?.preventDefault();
         setError("");
 
-        // Keep student login mocked for now.
         if (role !== "tutor") {
             onClose();
             setStudentAuthed();
 
             let returnTo = "/student";
-
             try {
-                const stored = sessionStorage.getItem(
-                    "ethiantech_login_return_to"
-                );
-
+                const stored = sessionStorage.getItem("ethiantech_login_return_to");
                 if (stored) {
-                    sessionStorage.removeItem(
-                        "ethiantech_login_return_to"
-                    );
+                    sessionStorage.removeItem("ethiantech_login_return_to");
                     returnTo = stored;
                 }
-            } catch {
-                // Ignore storage failures.
-            }
+            } catch { }
 
             navigate(returnTo, { replace: true });
             return;
@@ -219,29 +202,22 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
 
         try {
             setLoading(true);
-
             const data = await loginInstructor({
                 email: email.trim(),
                 password,
             });
 
-            // Assumes your backend returns { token: "..." }.
             localStorage.setItem("authToken", data.token);
-
             setTutorAuthed();
             onClose();
 
-            navigate(
-                getTutorEntryPath() ?? "/tutor/onboarding",
-                { replace: true }
-            );
+            navigate(getTutorEntryPath() ?? "/tutor/onboarding", { replace: true });
         } catch (err) {
             setError(err.message || "Unable to log in. Please try again.");
         } finally {
             setLoading(false);
         }
     }
-
 
     return (
         <AuthDialog
@@ -256,10 +232,7 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
             onClose={onClose}
             onGoogleClick={handleGoogleAuth}
         >
-            <form
-                className="space-y-4"
-                onSubmit={handleAuth}
-            >
+            <form className="space-y-4" onSubmit={handleAuth}>
                 <div>
                     <label className="label" htmlFor="login-email">Email</label>
                     <input
@@ -334,6 +307,10 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
 
     const navigate = useNavigate();
 
+function handleGoogleAuth() {
+    const endpoint = role === "tutor" ? "/auth/google/tutor" : "/auth/google/student";
+    window.location.href = `${import.meta.env.VITE_API_URL}${endpoint}`;
+}
 
     async function handleAuth(e) {
         e?.preventDefault();
@@ -358,17 +335,13 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
 
         try {
             setLoading(true);
-
             const data = await registerInstructor({
                 name: name.trim(),
                 email: email.trim(),
                 password,
             });
 
-            // Store JWT separately
             localStorage.setItem("authToken", data.token);
-
-            // Store instructor details
             localStorage.setItem(
                 "tutor",
                 JSON.stringify({
@@ -382,7 +355,6 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
             onClose();
             setTutorAuthed();
             navigate("/tutor/onboarding", { replace: true });
-
         } catch (err) {
             setError(err.message || "Unable to register. Please try again.");
         } finally {
@@ -403,11 +375,7 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
             onClose={onClose}
             onGoogleClick={handleGoogleAuth}
         >
-            <form
-                className="space-y-3"
-                onSubmit={handleAuth}
-            >
-
+            <form className="space-y-3" onSubmit={handleAuth}>
                 <div>
                     <label className="label" htmlFor="signup-name">Full Name</label>
                     <input
@@ -420,15 +388,18 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
                         required
                     />
                 </div>
-                <input
-                    id="signup-email"
-                    type="email"
-                    className="input-sm"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
+                <div>
+                    <label className="label" htmlFor="signup-email">Email</label>
+                    <input
+                        id="signup-email"
+                        type="email"
+                        className="input-sm"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
 
                 <div>
                     <label className="label" htmlFor="signup-password">Password</label>
@@ -501,12 +472,6 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
     );
 };
 
-// Renders whichever auth popup matches `state`
-// ("login" | "login-tutor" | "signup" | "signup-tutor" | "none").
-// The chosen role carries across the login <-> signup switch so an instructor
-// never lands back in the student arm by clicking "Sign up"/"Sign in".
-// mode="wait" lets the outgoing dialog finish its exit before the next mounts,
-// so switches never overlap two open dialogs.
 export const AuthPopupGate = ({ state, onStateChange }) => (
     <AnimatePresence mode="wait">
         {state === "login" && (
