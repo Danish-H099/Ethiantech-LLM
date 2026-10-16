@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { m as Motion, useReducedMotion } from "motion/react";
 import Header from "src/components/Header";

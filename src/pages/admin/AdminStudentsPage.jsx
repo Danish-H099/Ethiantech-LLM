@@ -18,7 +18,7 @@ export default function AdminStudentsPage() {
     <div>
       <div className="mb-8">
         <h1 className="page-title">Student Analytics</h1>
-        <p className="mt-1 text-sm-fluid text-ink-muted">Region-wise student distribution across the platform</p>
+        <p className="mt-1 text-sm-fluid text-ink-muted">Region-wise learner distribution across the platform</p>
       </div>
 
       <div className="mb-8 grid gap-6 xl:grid-cols-2">

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { AlertTriangle, Check, Clock, Lock } from "lucide-react";
-import OnboardingShell from "src/components/tutor/onboarding/OnboardingShell";
+import OnboardingShell from "src/components/tutor/OnboardingShell";
 import {
   getTutorOnboardingState,
   TUTOR_STATUS,
@@ -12,14 +12,14 @@ const STATUS_META = {
     badgeLabel: "Not started",
     heading: "Start your instructor application",
     body: "Pick a teaching track, add your profile and credentials, and submit for verification. It usually takes under 10 minutes.",
-    action: { label: "Start Application", to: "/tutor/onboarding" },
+    action: { label: "Start Application", to: "/tutor/profile" },
   },
   [TUTOR_STATUS.IN_PROGRESS]: {
     badge: "badge-status-drafting",
     badgeLabel: "In progress",
     heading: "Finish your application",
     body: "Your draft is saved. Pick up where you left off and submit it for verification when you're ready.",
-    action: { label: "Continue Application", to: "/tutor/onboarding" },
+    action: { label: "Continue Application", to: "/tutor/profile" },
   },
   [TUTOR_STATUS.SUBMITTED]: {
     badge: "badge-status-submitted",
@@ -32,7 +32,7 @@ const STATUS_META = {
     badge: "badge-status-completed",
     badgeLabel: "Approved",
     heading: "You're a verified instructor",
-    body: "Your application passed review. Publish courses, enroll students, and set up payouts from your dashboard.",
+    body: "Your application passed review. Publish courses, enroll learners, and set up payouts from your dashboard.",
     action: { label: "Go to Dashboard", to: "/tutor/dashboard" },
   },
   [TUTOR_STATUS.REJECTED]: {
@@ -40,7 +40,7 @@ const STATUS_META = {
     badgeLabel: "Changes requested",
     heading: "We need a few changes",
     body: "Your application needs revisions before it can be approved. Update your details and resubmit for review.",
-    action: { label: "Edit Application", to: "/tutor/onboarding" },
+    action: { label: "Edit Application", to: "/tutor/profile" },
   },
 };
 

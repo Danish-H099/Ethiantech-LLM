@@ -35,7 +35,7 @@ export default function TutorDashboardPage() {
       <div className="mb-8">
         <h1 className="page-title">Dashboard</h1>
         <p className="mt-1 text-sm-fluid text-ink-muted">
-          Overview of your courses, earnings, and student enrollments
+          Overview of your courses, earnings, and learner enrollments
         </p>
       </div>
 

@@ -171,14 +171,22 @@ export function rejectTutorOnboarding(reviewNote = "") {
 }
 
 /**
+ * True once the application has been submitted (or later approved), meaning
+ * the instructor profile is considered "complete" enough that the wizard is no
+ * longer the primary call-to-action.
+ */
+export function isTutorProfileCompleted(state = readStore()) {
+  return state.status === TUTOR_STATUS.SUBMITTED || state.status === TUTOR_STATUS.APPROVED;
+}
+
+/**
  * Where a "Teach on EthianTech" entry point should land for the current
  * visitor: the tutor area for signed-in instructors, or null when the visitor
  * still needs to sign up through the instructor arm of the signup popup.
  */
 export function getTutorEntryPath() {
   if (!isTutorAuthed()) return null;
-  const { status } = readStore();
-  if (status === TUTOR_STATUS.APPROVED) return "/tutor/dashboard";
-  if (status === TUTOR_STATUS.SUBMITTED) return "/tutor/onboarding/status";
-  return "/tutor/onboarding";
+  const state = readStore();
+  if (isTutorProfileCompleted(state)) return "/tutor/dashboard";
+  return "/tutor/profile";
 }

@@ -46,7 +46,7 @@ export default function AdminCoursesPage() {
             <tr className="table-header">
               <th className="px-5 py-4 font-medium">Course</th>
               <th className="px-5 py-4 font-medium">Instructor</th>
-              <th className="px-5 py-4 font-medium">Students</th>
+              <th className="px-5 py-4 font-medium">Learners</th>
               <th className="px-5 py-4 font-medium">Status</th>
               <th className="px-5 py-4 text-right font-medium">Earnings</th>
               <th className="px-5 py-4 text-right font-medium">Actions</th>
