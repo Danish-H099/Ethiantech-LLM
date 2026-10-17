@@ -149,7 +149,7 @@ function InstructorSection({ instructors }) {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Users size={14} aria-hidden="true" />
-                  {instructor.students.toLocaleString()} students
+                  {instructor.students.toLocaleString()} learners
                 </span>
               </div>
               <p className="mt-2 text-body text-ink-muted">
@@ -261,7 +261,7 @@ function CourseFaq({ faq }) {
 function RelatedCourses({ courses, staggerItem }) {
   return (
     <section>
-      <h2 className="detail-section-title">Students also enrolled in</h2>
+      <h2 className="detail-section-title">Learners also enrolled in</h2>
       <Motion.div
         variants={staggerContainer}
         initial="hidden"
@@ -356,7 +356,7 @@ function CourseHero({ course, staggerItem, mobileCardRef, enrollProps, onLoginCl
         </Link>
         <span className="flex items-center gap-1.5 text-sm-fluid text-ink-muted">
           <Users size={16} />
-          {course.students.toLocaleString()} students
+          {course.students.toLocaleString()} learners
         </span>
         <WishlistHeartButton
           courseId={course.id}
@@ -545,7 +545,7 @@ function MobilePurchaseBar({ course }) {
           <span className="flex min-w-0 items-center gap-1.5 text-sm-fluid text-ink-muted">
             <Stars rating={course.rating} size={12} />
             <span className="truncate">
-              {course.rating} · {course.students.toLocaleString()} students
+              {course.rating} · {course.students.toLocaleString()} learners
             </span>
           </span>
         </div>

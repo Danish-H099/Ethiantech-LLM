@@ -16,6 +16,7 @@ import { clearMockAuth } from "src/utils/authMock";
 import {
   getTutorOnboardingState,
   TUTOR_STATUS,
+  isTutorProfileCompleted,
 } from "src/services/stores/tutorOnboarding";
 import TutorNavbar from "src/components/tutor/TutorNavbar";
 import Footer from "src/components/Footer";
@@ -25,7 +26,7 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/tutor/dashboard" },
   { label: "Add Course", icon: PlusSquare, path: "/tutor/add-course" },
   { label: "My Courses", icon: BookOpen, path: "/tutor/courses" },
-  { label: "Student Enrolled", icon: Users, path: "/tutor/students" },
+  { label: "Learners Enrolled", icon: Users, path: "/tutor/students" },
 ];
 
 export default function TutorLayout() {
@@ -34,7 +35,8 @@ export default function TutorLayout() {
   const sidebarRef = useRef(null);
   const hamburgerRef = useRef(null);
   const navigate = useNavigate();
-  const { status: onboardingStatus } = getTutorOnboardingState();
+  const onboardingState = getTutorOnboardingState();
+  const onboardingStatus = onboardingState.status;
 
   function handleLogout() {
     clearMockAuth();
@@ -198,7 +200,10 @@ export default function TutorLayout() {
           <div className="mt-auto border-t border-gray-300 px-3 py-4 lg:hidden">
             <button
               type="button"
-              onClick={() => setSidebarOpen(false)}
+              onClick={() => {
+                setSidebarOpen(false);
+                navigate("/tutor/profile");
+              }}
               className="flex w-full items-center gap-3 rounded px-3 py-2.5 text-sm-fluid text-ink transition hover:bg-gray-50"
             >
               <User size={16} />
@@ -219,24 +224,44 @@ export default function TutorLayout() {
           id="main"
           className="flex-1 bg-surface p-6 lg:p-8"
         >
-          {onboardingStatus === TUTOR_STATUS.SUBMITTED && (
+          {/* Sandbox banner — shown for any unapproved status so tutors know their
+              publishing is restricted and how to unlock it. */}
+          {!isTutorProfileCompleted(onboardingState) && (
             <div className="mb-6 flex flex-wrap items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3">
               <Info size={18} className="mt-0.5 shrink-0 text-amber-700" aria-hidden="true" />
               <div className="min-w-0 flex-1">
                 <p className="text-sm-fluid font-semibold text-amber-800">
-                  Verification in progress — Sandbox Mode
+                  {(() => {
+                    if (onboardingStatus === TUTOR_STATUS.SUBMITTED) {
+                      return "Verification in progress — Sandbox Mode";
+                    }
+                    if (onboardingStatus === TUTOR_STATUS.REJECTED) {
+                      return "Action required — changes requested on your profile";
+                    }
+                    return "Complete your instructor profile to unlock course publishing";
+                  })()}
                 </p>
                 <p className="mt-1 text-sm-fluid text-amber-700">
-                  Your instructor profile is under admin review (usually 24–48 hours).
-                  You can draft courses and curriculum, but publishing, student
-                  enrollments and payouts unlock once you&apos;re approved.
+                  {(() => {
+                    if (onboardingStatus === TUTOR_STATUS.SUBMITTED) {
+                      return "Your instructor profile is under admin review (usually 24–48 hours). You can draft courses and curriculum, but publishing, learner enrollments and payouts unlock once you're approved.";
+                    }
+                    if (onboardingStatus === TUTOR_STATUS.REJECTED) {
+                      return "Update your details and resubmit for review to unlock publishing.";
+                    }
+                    return "Pick a teaching track, add your profile and credentials, and submit for verification. Publishing unlocks once you're approved.";
+                  })()}
                 </p>
               </div>
               <Link
-                to="/tutor/onboarding/status"
+                to="/tutor/profile"
                 className="text-sm-fluid font-medium text-amber-800 underline transition hover:text-amber-900"
               >
-                View application status
+                {(() => {
+                  if (onboardingStatus === TUTOR_STATUS.SUBMITTED) return "View application status";
+                  if (onboardingStatus === TUTOR_STATUS.REJECTED) return "Edit application";
+                  return "Complete your profile";
+                })()}
               </Link>
             </div>
           )}

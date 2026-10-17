@@ -15,7 +15,7 @@ import RouteLoader from "src/components/ui/RouteLoader";
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { label: "Revenue", icon: DollarSign, path: "/admin/revenue" },
-  { label: "Students", icon: Globe, path: "/admin/students" },
+  { label: "Learners", icon: Globe, path: "/admin/students" },
   { label: "Instructors", icon: GraduationCap, path: "/admin/instructors" },
   { label: "Courses", icon: BookOpen, path: "/admin/courses" },
   { label: "Users", icon: Users, path: "/admin/users" },

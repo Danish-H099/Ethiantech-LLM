@@ -65,7 +65,7 @@ export default function EnrollCard({ course, totalDuration, totalLectures, disco
             <BookOpen size={14} /> {totalLectures} lessons
           </span>
           <span className="flex items-center gap-1">
-            <PlayCircle size={14} /> {course.students.toLocaleString()} students
+            <PlayCircle size={14} /> {course.students.toLocaleString()} learners
           </span>
         </div>
 

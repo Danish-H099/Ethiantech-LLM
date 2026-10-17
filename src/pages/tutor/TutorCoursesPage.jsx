@@ -1,25 +1,46 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { m as Motion } from "motion/react";
+import { Lock } from "lucide-react";
 import courses from "src/services/courses";
 import { parsePrice } from "src/lib/format";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
+import {
+  getTutorOnboardingState,
+  isTutorProfileCompleted,
+} from "src/services/stores/tutorOnboarding";
 
 const CURRENT_TUTOR_ID = "richard-james";
 
-function StatusToggle({ initialStatus }) {
+/** Status toggle — locked (non-interactive) until the instructor is approved. */
+function StatusToggle({ initialStatus, isApproved }) {
   const [isLive, setIsLive] = useState(initialStatus === "Live");
+
+  if (!isApproved) {
+    return (
+      <button
+        role="switch"
+        aria-checked={isLive}
+        disabled
+        className="relative inline-flex h-7 w-[52px] shrink-0 cursor-not-allowed items-center rounded-full bg-toggle transition-colors"
+      >
+        <span
+          className={`absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-sm transition-transform ${isLive ? "translate-x-6" : "translate-x-0"}`}
+        />
+        <Lock size={10} className="absolute right-1 text-ink-muted/40" />
+      </button>
+    );
+  }
 
   return (
     <button
       role="switch"
       aria-checked={isLive}
       onClick={() => setIsLive(!isLive)}
-      className={`relative inline-flex h-7 w-[52px] shrink-0 cursor-pointer items-center rounded-full transition-colors ${isLive ? "bg-brand" : "bg-toggle"
-        }`}
+      className={`relative inline-flex h-7 w-[52px] shrink-0 cursor-pointer items-center rounded-full transition-colors ${isLive ? "bg-brand" : "bg-toggle"}`}
     >
       <span
-        className={`absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-sm transition-transform ${isLive ? "translate-x-6" : "translate-x-0"
-          }`}
+        className={`absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-sm transition-transform ${isLive ? "translate-x-6" : "translate-x-0"}`}
       />
     </button>
   );
@@ -33,6 +54,8 @@ export default function TutorCoursesPage() {
       status: "Live",
       earnings: Math.round(parsePrice(course.price) * course.students),
     }));
+
+  const isApproved = isTutorProfileCompleted(getTutorOnboardingState());
 
   return (
     <div>
@@ -54,7 +77,7 @@ export default function TutorCoursesPage() {
           <thead>
             <tr className="table-header">
               <th className="px-5 py-4 font-medium">Course</th>
-              <th className="px-5 py-3 font-medium">Students</th>
+              <th className="px-5 py-3 font-medium">Learners</th>
               <th className="px-5 py-4 font-medium">Status</th>
               <th className="px-5 py-4 text-right font-medium">Earnings</th>
             </tr>
@@ -78,7 +101,7 @@ export default function TutorCoursesPage() {
                 <td className="px-5 py-4">{course.students}</td>
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
-                    <StatusToggle initialStatus={course.status} />
+                    <StatusToggle initialStatus={course.status} isApproved={isApproved} />
                     <span
                       className={`text-sm-fluid ${course.status === "Live"
                           ? "text-brand"
