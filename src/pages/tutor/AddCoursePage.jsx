@@ -632,7 +632,7 @@ export default function AddCoursePage() {
             <Lock size={14} aria-hidden="true" className="mt-0.5 shrink-0" />
             <span>
               Publishing unlocks once an administrator approves your application.{" "}
-              <Link to="/tutor/onboarding/status" className="link">
+              <Link to="/tutor/profile" className="link">
                 View application status
               </Link>
             </span>
@@ -642,3 +642,4 @@ export default function AddCoursePage() {
     </div>
   );
 }
+

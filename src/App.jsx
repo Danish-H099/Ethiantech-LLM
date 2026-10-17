@@ -12,8 +12,7 @@ import { Toaster } from "sonner";
 import "src/App.css";
 
 // Learning player + all authenticated app pages stay lazy (route-level code splitting).
-const TutorOnboardingPage = lazy(() => import("src/pages/tutor/TutorOnboardingPage"));
-const TutorOnboardingStatusPage = lazy(() => import("src/pages/tutor/TutorOnboardingStatusPage"));
+const TutorProfilePage = lazy(() => import("src/pages/tutor/TutorProfilePage"));
 const AddCoursePage = lazy(() => import("src/pages/tutor/AddCoursePage"));
 const TutorDashboardPage = lazy(() => import("src/pages/tutor/TutorDashboardPage"));
 const TutorCoursesPage = lazy(() => import("src/pages/tutor/TutorCoursesPage"));
@@ -64,14 +63,11 @@ function App() {
         <Route path="/courses" element={<CourseListPage />} />
         <Route path="/course/:id" element={<CourseDetailsPage />} />
         <Route path="/tutor" element={<TutorRouteGuard />}>
-          {/* Onboarding lives outside TutorLayout — distraction-free, no sidebar. */}
-          <Route element={<Suspense fallback={<RouteLoader />}><Outlet /></Suspense>}>
-            <Route path="onboarding" element={<TutorOnboardingPage />} />
-            <Route path="onboarding/status" element={<TutorOnboardingStatusPage />} />
-          </Route>
+          {/* Onboarding wizard + status hub now live at /tutor/profile (inside TutorLayout). */}
           <Route element={<TutorLayout />}>
-            <Route index element={<Navigate to="add-course" replace />} />
+            <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<TutorDashboardPage />} />
+            <Route path="profile" element={<TutorProfilePage />} />
             <Route path="add-course" element={<AddCoursePage />} />
             <Route path="courses" element={<TutorCoursesPage />} />
             <Route path="students" element={<StudentsEnrolledPage />} />

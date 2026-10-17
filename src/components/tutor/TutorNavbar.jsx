@@ -31,10 +31,7 @@ export default function TutorNavbar({ sidebarOpen, setSidebarOpen, hamburgerRef 
           Tutor
         </span>
       </Link>
-
       <div className="flex items-center gap-3">
-        {/* Profile dropdown — desktop only; on mobile the profile actions
-            live inside the sidebar drawer. */}
         <div className="hidden lg:block">
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
@@ -51,7 +48,6 @@ export default function TutorNavbar({ sidebarOpen, setSidebarOpen, hamburgerRef 
                 <ChevronDown size={16} className="text-ink-muted" />
               </button>
             </DropdownMenu.Trigger>
-
             <DropdownMenu.Portal>
               <DropdownMenu.Content
                 align="end"
@@ -59,16 +55,12 @@ export default function TutorNavbar({ sidebarOpen, setSidebarOpen, hamburgerRef 
                 className="z-50 w-[194px] rounded border border-gray-200 bg-surface-soft shadow-dropdown"
               >
                 <DropdownMenu.Item asChild className="outline-none">
-                  <button
-                    className="flex w-full items-center gap-3 px-5 py-3 text-sm-fluid text-gray-800 transition data-[highlighted]:bg-gray-100 hover:bg-gray-100"
-                  >
+                  <Link to="/tutor/profile" className="flex w-full items-center gap-3 px-5 py-3 text-sm-fluid text-gray-800 transition data-[highlighted]:bg-gray-100 hover:bg-gray-100">
                     <User size={16} />
                     My Profile
-                  </button>
+                  </Link>
                 </DropdownMenu.Item>
-
                 <DropdownMenu.Separator className="border-t border-gray-200" />
-
                 <DropdownMenu.Item
                   onSelect={handleLogout}
                   className="flex items-center gap-3 px-5 py-3 text-sm-fluid text-gray-800 outline-none transition data-[highlighted]:bg-gray-100 hover:bg-gray-100"
@@ -80,8 +72,6 @@ export default function TutorNavbar({ sidebarOpen, setSidebarOpen, hamburgerRef 
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
         </div>
-
-        {/* Mobile hamburger — rightmost on small screens */}
         <button
           ref={hamburgerRef}
           aria-label={sidebarOpen ? "Close menu" : "Open menu"}

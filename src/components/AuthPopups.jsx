@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
 import { AnimatePresence, m as Motion } from 'motion/react';
-import { X, Eye, EyeOff } from 'lucide-react';
+import { X, Eye, EyeOff, BookOpen, GraduationCap } from 'lucide-react';
 import { backdrop, modal } from 'src/lib/animationVariants';
 import { setStudentAuthed, setTutorAuthed } from 'src/utils/authMock';
 import { getTutorEntryPath } from 'src/services/stores/tutorOnboarding';
@@ -45,30 +45,45 @@ const MockGoogleButton = ({ text, onClick }) => (
     </button>
 );
 
+function handleGoogleAuth(role) {
+  const accountType = role === "tutor" ? "tutor" : "student";
+
+  window.location.href =
+    `${import.meta.env.VITE_API_URL}/auth/google?${accountType}`;
+}
+
 // Segmented control choosing which arm of the auth flow to go through.
 const SIGNUP_ROLES = [
-    { value: "student", label: "I'm a Student" },
-    { value: "tutor", label: "I want to Teach" },
+    { value: "student", label: "I'm a Learner", icon: BookOpen },
+    { value: "tutor", label: "I'm an Instructor", icon: GraduationCap },
 ];
 
 const LOGIN_ROLES = [
-    { value: "student", label: "As a Student" },
-    { value: "tutor", label: "As an Instructor" },
+    { value: "student", label: "As a Learner", icon: BookOpen },
+    { value: "tutor", label: "As an Instructor", icon: GraduationCap },
 ];
 
 const RoleToggle = ({ role, onChange, options = SIGNUP_ROLES }) => (
-    <div role="group" aria-label="Account type" className="grid grid-cols-2 gap-1 rounded-lg bg-surface-soft p-1">
+    <div role="group" aria-label="Account type" className="grid grid-cols-2 gap-1 rounded-xl bg-surface-soft p-1">
         {options.map((option) => {
             const active = role === option.value;
+            const Icon = option.icon;
             return (
                 <button
                     key={option.value}
                     type="button"
                     onClick={() => onChange(option.value)}
                     aria-pressed={active}
-                    className={`rounded-md px-3 py-2 text-sm-fluid font-medium transition ${active ? "bg-white text-ink shadow-sm" : "text-ink-muted hover:text-ink"}`}
+                    className={`relative overflow-hidden rounded-lg px-3 py-2 text-sm-fluid font-medium transition-all duration-200 ${
+                        active
+                            ? "bg-white text-ink shadow-md border-l-[3px] border-brand ring-1 ring-brand/10"
+                            : "text-ink-muted hover:text-ink hover:bg-white/40 border-l-[3px] border-transparent"
+                    }`}
                 >
-                    {option.label}
+                    <span className={`inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors ${active ? "bg-brand/10 text-brand" : "bg-ink/5 text-ink-muted"}`}>
+                        <Icon size={16} aria-hidden="true" strokeWidth={2.5} />
+                    </span>
+                    <span className="block font-semibold">{option.label}</span>
                 </button>
             );
         })}
@@ -211,7 +226,10 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
             setTutorAuthed();
             onClose();
 
-            navigate(getTutorEntryPath() ?? "/tutor/onboarding", { replace: true });
+            navigate(
+                getTutorEntryPath() ?? "/tutor/profile",
+                { replace: true }
+            );
         } catch (err) {
             setError(err.message || "Unable to log in. Please try again.");
         } finally {
@@ -227,10 +245,12 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
             dividerText="Or continue with email"
             footerText="Don&apos;t have an account?"
             footerActionText="Sign up"
-            intro={<RoleToggle role={role} onChange={setRole} options={LOGIN_ROLES} />}
+            intro={
+                <RoleToggle role={role} onChange={setRole} options={LOGIN_ROLES} />
+            }
             onFooterAction={onSwitchToSignup}
             onClose={onClose}
-            onGoogleClick={handleGoogleAuth}
+            onGoogleClick={() => handleGoogleAuth(role)}
         >
             <form className="space-y-4" onSubmit={handleAuth}>
                 <div>
@@ -354,7 +374,8 @@ function handleGoogleAuth() {
 
             onClose();
             setTutorAuthed();
-            navigate("/tutor/onboarding", { replace: true });
+            navigate(getTutorEntryPath() ?? "/tutor/profile", { replace: true });
+
         } catch (err) {
             setError(err.message || "Unable to register. Please try again.");
         } finally {
@@ -370,10 +391,12 @@ function handleGoogleAuth() {
             dividerText="Or sign up with email"
             footerText="Already have an account?"
             footerActionText="Sign in"
-            intro={<RoleToggle role={role} onChange={setRole} />}
+            intro={
+                <RoleToggle role={role} onChange={setRole} />
+            }
             onFooterAction={onSwitchToLogin}
             onClose={onClose}
-            onGoogleClick={handleGoogleAuth}
+            onGoogleClick={() => handleGoogleAuth(role)}
         >
             <form className="space-y-3" onSubmit={handleAuth}>
                 <div>
@@ -386,7 +409,7 @@ function handleGoogleAuth() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
-                    />
+                        />
                 </div>
                 <div>
                     <label className="label" htmlFor="signup-email">Email</label>
@@ -400,7 +423,6 @@ function handleGoogleAuth() {
                         required
                     />
                 </div>
-
                 <div>
                     <label className="label" htmlFor="signup-password">Password</label>
                     <div className="relative">

@@ -453,7 +453,7 @@ export const courses = [
     targetAudience: [
       "Beginners starting a career in data science",
       "Analysts who want to add Python to their toolkit",
-      "Students preparing for university coursework in data analytics",
+      "Learners preparing for university coursework in data analytics",
     ],
     language: "English",
     languages: ["English", "Spanish", "Hindi", "German"],
@@ -757,7 +757,7 @@ export const courses = [
     targetAudience: [
       "Web developers wanting to move into mobile",
       "Freelancers who want to serve mobile clients",
-      "Students building a first cross-platform app",
+      "Learners building a first cross-platform app",
     ],
     language: "English",
     languages: ["English", "Spanish", "Hindi", "Arabic"],
@@ -1062,7 +1062,7 @@ export const courses = [
     targetAudience: [
       "Absolute beginners starting web development",
       "Career switchers exploring frontend as a path",
-      "Students who want a free, structured introduction",
+      "Learners who want a free, structured introduction",
     ],
     language: "English",
     languages: ["English", "Spanish", "Arabic", "Portuguese"],

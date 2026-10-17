@@ -12,7 +12,7 @@ export default function StudentsEnrolledPage() {
           Students Enrolled
         </h1>
         <p className="mt-1 text-sm-fluid text-ink-muted">
-          View all students enrolled in your courses
+          View all learners enrolled in your courses
         </p>
       </div>
 
