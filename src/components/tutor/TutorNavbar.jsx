@@ -10,8 +10,28 @@ import {
 } from "lucide-react";
 import { clearMockAuth } from "src/utils/authMock";
 
+import { useState, useEffect } from 'react';
+
+
 export default function TutorNavbar({ sidebarOpen, setSidebarOpen, hamburgerRef }) {
   const navigate = useNavigate();
+
+  // Inside your component:
+  const [userName, setUserName] = useState("User");
+
+  useEffect(() => {
+    try {
+      const storedTutor = localStorage.getItem("tutor");
+      if (storedTutor) {
+        const parsed = JSON.parse(storedTutor);
+        if (parsed?.name) {
+          setUserName(parsed.name);
+        }
+      }
+    } catch (e) {
+      // Fallback if parsing fails
+    }
+  }, []);
 
   function handleLogout() {
     clearMockAuth();
@@ -40,7 +60,7 @@ export default function TutorNavbar({ sidebarOpen, setSidebarOpen, hamburgerRef 
                 className="flex select-none items-center gap-2 rounded transition hover:bg-gray-50 focus-visible:outline-none"
               >
                 <span className="hidden text-sm-fluid text-ink-muted sm:inline">
-                  Hi! <span className="font-medium text-ink">Richard</span>
+                  Hi! <span className="font-medium text-ink">{userName}</span>
                 </span>
                 <div className="relative flex h-[45px] w-[45px] items-center justify-center overflow-hidden rounded-full bg-brand/10 shadow-avatar">
                   <GraduationCap size={20} className="text-brand" />

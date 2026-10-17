@@ -222,7 +222,18 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
                 password,
             });
 
-            localStorage.setItem("authToken", data.token);
+            // localStorage.setItem("authToken", data.token);
+            localStorage.setItem(
+                "tutor",
+                JSON.stringify({
+                    id:data.user.id,
+                    name: data.user.name,
+                    email: data.user.email,
+                    role: data.user.role,
+                    approved: false,
+                    authToken: data.token,
+                })
+            );
             setTutorAuthed();
             onClose();
 
@@ -361,14 +372,16 @@ function handleGoogleAuth() {
                 password,
             });
 
-            localStorage.setItem("authToken", data.token);
+            // localStorage.setItem("authToken", data.token);
             localStorage.setItem(
                 "tutor",
                 JSON.stringify({
+                    id:data.user.id,
                     name: data.user.name,
                     email: data.user.email,
                     role: data.user.role,
                     approved: false,
+                    authToken: data.token,
                 })
             );
 
