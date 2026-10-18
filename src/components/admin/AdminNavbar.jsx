@@ -1,9 +1,18 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronDown, LogOut, User, Menu, X, Shield } from "lucide-react";
 
 export default function AdminNavbar({ sidebarOpen, setSidebarOpen }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    setDropdownOpen(false);
+    // No admin session state exists yet (the /admin area is unguarded mock
+    // UI), so logging out simply leaves the admin area.
+    navigate("/", { replace: true });
+  }
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -51,7 +60,7 @@ export default function AdminNavbar({ sidebarOpen, setSidebarOpen }) {
             </button>
             <div className="border-t border-gray-200" />
             <button
-              onClick={() => setDropdownOpen(false)}
+              onClick={handleLogout}
               className="flex w-full items-center gap-3 px-5 py-3 text-left text-sm-fluid text-gray-800 transition hover:bg-gray-100"
             >
               <LogOut size={16} />
