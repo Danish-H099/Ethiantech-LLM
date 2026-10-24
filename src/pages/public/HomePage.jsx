@@ -1,12 +1,14 @@
-import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { m as Motion, useReducedMotion } from "motion/react";
+import { toast } from "sonner";
 import Header from "src/components/Header";
 import courses from "src/services/courses";
 import Footer from "src/components/Footer";
 import { Building2, GraduationCap, Users, BookOpen } from "lucide-react";
 import { AuthPopupGate } from "src/components/AuthPopups";
 import { getTutorEntryPath } from "src/services/stores/tutorOnboarding";
+import { setStudentAuthed, setTutorAuthed } from "src/utils/authMock";
 import demoVideoUrl from "src/assets/demo.mp4?url";
 import CourseCard from "src/components/CourseCard";
 import TestimonialCard from "src/components/TestimonialCard";
@@ -392,8 +394,75 @@ function PartnerSection({ staggerItem, onTeachClick }) {
 export default function HomePage() {
   const [popupState, setPopupState] = useState("none");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const shouldReduceMotion = useReducedMotion();
   const staggerItem = useMemo(() => createStaggerItem(!!shouldReduceMotion), [shouldReduceMotion]);
+
+  // Google OAuth lands on this existing public route with either
+  // ?token=...&user=... (success) or ?error=oauth_failed (failure).
+  // Persist the session, clean the URL, and route to the right dashboard.
+  useEffect(() => {
+    const oauthError = searchParams.get("error");
+    const token = searchParams.get("token");
+    const userParam = searchParams.get("user");
+
+    if (oauthError) {
+      window.history.replaceState({}, "", "/");
+      toast.error("Google authentication failed. Please try again.");
+      return;
+    }
+
+    if (!token || !userParam) return;
+
+    let user = null;
+    try {
+      user = JSON.parse(userParam);
+    } catch {
+      user = null;
+    }
+
+    // Strip the sensitive params from the address bar immediately.
+    window.history.replaceState({}, "", "/");
+
+    if (!user?.role || !user?.name) {
+      toast.error("Google authentication failed. Please try again.");
+      return;
+    }
+
+    if (user.role === "INSTRUCTOR") {
+      localStorage.setItem(
+        "tutor",
+        JSON.stringify({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          approved: false,
+          authToken: token,
+        })
+      );
+      setTutorAuthed();
+      toast.success(`Welcome back, ${user.name}`);
+      navigate(getTutorEntryPath() ?? "/tutor/profile", { replace: true });
+      return;
+    }
+
+    setStudentAuthed();
+    toast.success(`Welcome back, ${user.name}`);
+
+    let returnTo = "/student";
+    try {
+      const stored = sessionStorage.getItem("ethiantech_login_return_to");
+      if (stored) {
+        sessionStorage.removeItem("ethiantech_login_return_to");
+        returnTo = stored;
+      }
+    } catch {
+      returnTo = "/student";
+    }
+
+    navigate(returnTo, { replace: true });
+  }, [searchParams, navigate]);
 
     
   // Shared by the header and the "Become an instructor" card: signed-in

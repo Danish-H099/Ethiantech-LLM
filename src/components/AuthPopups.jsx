@@ -45,13 +45,6 @@ const MockGoogleButton = ({ text, onClick }) => (
     </button>
 );
 
-function handleGoogleAuth(role) {
-  const accountType = role === "tutor" ? "tutor" : "student";
-
-  window.location.href =
-    `${import.meta.env.VITE_API_URL}/auth/google?${accountType}`;
-}
-
 // Segmented control choosing which arm of the auth flow to go through.
 const SIGNUP_ROLES = [
     { value: "student", label: "I'm a Learner", icon: BookOpen },
@@ -189,7 +182,7 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
 
     const navigate = useNavigate();
 
-    function handleGoogleAuth() {
+    function handleGoogleAuth(role) {
         const endpoint = role === "tutor" ? "/auth/google/tutor" : "/auth/google/student";
         window.location.href = `${import.meta.env.VITE_API_URL}${endpoint}`;
     }
@@ -338,7 +331,7 @@ export const SignupPopup = ({ onClose, onSwitchToLogin, initialRole = "student" 
 
     const navigate = useNavigate();
 
-function handleGoogleAuth() {
+function handleGoogleAuth(role) {
     const endpoint = role === "tutor" ? "/auth/google/tutor" : "/auth/google/student";
     window.location.href = `${import.meta.env.VITE_API_URL}${endpoint}`;
 }

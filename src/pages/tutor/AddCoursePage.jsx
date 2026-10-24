@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { AnimatePresence, m as Motion } from "motion/react";
 import { Upload, Plus, Trash2, ChevronDown, ChevronUp, Video, Lock } from "lucide-react";
 import { buttonPress, slideUp } from "src/lib/animationVariants";
@@ -54,6 +54,10 @@ export default function AddCoursePage() {
   const fileInputRef = useRef(null);
   const dragRef = useRef(null);
   const videoInputRefs = useRef(new Map());
+
+  if (status !== TUTOR_STATUS.APPROVED) {
+    return <Navigate to="/tutor/profile" replace />;
+  }
 
   function handleChange(e) {
     const { name, value } = e.target;

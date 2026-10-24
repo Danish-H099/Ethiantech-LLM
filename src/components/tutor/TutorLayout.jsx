@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Info,
+  Lock,
 } from "lucide-react";
 import { clearMockAuth } from "src/utils/authMock";
 import {
@@ -165,6 +166,28 @@ export default function TutorLayout() {
 
             {navItems.map((item) => {
               const Icon = item.icon;
+              const isAddCourse = item.path === "/tutor/add-course";
+              const disabled = isAddCourse && onboardingStatus !== TUTOR_STATUS.APPROVED;
+              if (disabled) {
+                return (
+                  <span
+                    key={item.path}
+                    className="flex items-center gap-3 rounded px-3 py-2.5 text-sm-fluid opacity-40 cursor-not-allowed border-l-[3px] border-transparent select-none"
+                    title="Publishing unlocks once approved. Complete your profile."
+                    aria-disabled="true"
+                  >
+                    <Icon size={18} className="shrink-0" />
+                    <span
+                      className={`whitespace-nowrap transition-all duration-200 ${
+                        collapsed ? "lg:w-0 lg:overflow-hidden lg:opacity-0" : "lg:w-auto lg:opacity-100"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                    <Lock size={14} className="ml-auto shrink-0 opacity-60" aria-hidden="true" />
+                  </span>
+                );
+              }
               return (
                 <NavLink
                   key={item.path}
