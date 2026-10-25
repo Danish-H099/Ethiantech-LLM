@@ -5,10 +5,7 @@ import { Lock } from "lucide-react";
 import courses from "src/services/courses";
 import { parsePrice } from "src/lib/format";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
-import {
-  getTutorOnboardingState,
-  isTutorProfileCompleted,
-} from "src/services/stores/tutorOnboarding";
+import { isTutorApproved } from "src/services/tutorProfile";
 
 const CURRENT_TUTOR_ID = "richard-james";
 
@@ -55,7 +52,7 @@ export default function TutorCoursesPage() {
       earnings: Math.round(parsePrice(course.price) * course.students),
     }));
 
-  const isApproved = isTutorProfileCompleted(getTutorOnboardingState());
+  const isApproved = isTutorApproved();
 
   return (
     <div>

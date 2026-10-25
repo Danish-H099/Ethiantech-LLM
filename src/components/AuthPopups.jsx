@@ -5,7 +5,10 @@ import { AnimatePresence, m as Motion } from 'motion/react';
 import { X, Eye, EyeOff, BookOpen, GraduationCap } from 'lucide-react';
 import { backdrop, modal } from 'src/lib/animationVariants';
 import { setStudentAuthed, setTutorAuthed } from 'src/utils/authMock';
-import { getTutorEntryPath } from 'src/services/stores/tutorOnboarding';
+import {
+    getTutorEntryPath,
+    resetTutorOnboarding,
+} from 'src/services/stores/tutorOnboarding';
 import { registerInstructor, loginInstructor } from "src/services/auth";
 
 // Focus handling for the modal dialogs: land on the first field on open (not
@@ -223,7 +226,7 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
                     name: data.user.name,
                     email: data.user.email,
                     role: data.user.role,
-                    approved: false,
+                    approved: data.user.approved,
                     authToken: data.token,
                 })
             );
@@ -373,14 +376,15 @@ function handleGoogleAuth(role) {
                     name: data.user.name,
                     email: data.user.email,
                     role: data.user.role,
-                    approved: false,
+                    approved: data.user.approved,
                     authToken: data.token,
                 })
             );
 
+            resetTutorOnboarding();
             onClose();
             setTutorAuthed();
-            navigate(getTutorEntryPath() ?? "/tutor/profile", { replace: true });
+            navigate("/tutor/profile", { replace: true });
 
         } catch (err) {
             setError(err.message || "Unable to register. Please try again.");

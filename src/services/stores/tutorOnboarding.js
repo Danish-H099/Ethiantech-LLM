@@ -128,6 +128,18 @@ export function saveTutorOnboardingStep(patch) {
   return { ...store };
 }
 
+/**
+ * Clear the local application record so a newly registered instructor starts
+ * onboarding from scratch. Logout deliberately keeps this record, so a fresh
+ * signup in the same browser would otherwise inherit the previous account's
+ * submitted/approved status.
+ */
+export function resetTutorOnboarding() {
+  const store = defaultState();
+  writeStore(store);
+  return { ...store };
+}
+
 /** Mark the application as submitted and queue it for admin review. */
 export function submitTutorOnboarding(payload = {}) {
   const store = readStore();

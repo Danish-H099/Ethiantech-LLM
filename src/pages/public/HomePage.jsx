@@ -437,7 +437,7 @@ export default function HomePage() {
           name: user.name,
           email: user.email,
           role: user.role,
-          approved: false,
+          approved: user.approved,
           authToken: token,
         })
       );

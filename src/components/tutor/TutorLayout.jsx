@@ -14,10 +14,10 @@ import {
   Lock,
 } from "lucide-react";
 import { clearMockAuth } from "src/utils/authMock";
+import { isTutorApproved } from "src/services/tutorProfile";
 import {
   getTutorOnboardingState,
   TUTOR_STATUS,
-  isTutorProfileCompleted,
 } from "src/services/stores/tutorOnboarding";
 import TutorNavbar from "src/components/tutor/TutorNavbar";
 import Footer from "src/components/Footer";
@@ -36,8 +36,8 @@ export default function TutorLayout() {
   const sidebarRef = useRef(null);
   const hamburgerRef = useRef(null);
   const navigate = useNavigate();
-  const onboardingState = getTutorOnboardingState();
-  const onboardingStatus = onboardingState.status;
+  const { status: onboardingStatus } = getTutorOnboardingState();
+  const tutorApproved = isTutorApproved();
 
   function handleLogout() {
     clearMockAuth();
@@ -167,13 +167,13 @@ export default function TutorLayout() {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isAddCourse = item.path === "/tutor/add-course";
-              const disabled = isAddCourse && onboardingStatus !== TUTOR_STATUS.APPROVED;
+              const disabled = isAddCourse && !tutorApproved;
               if (disabled) {
                 return (
                   <span
                     key={item.path}
                     className="flex items-center gap-3 rounded px-3 py-2.5 text-sm-fluid opacity-40 cursor-not-allowed border-l-[3px] border-transparent select-none"
-                    title="Publishing unlocks once approved. Complete your profile."
+                    title="Publishing unlocks once an admin approves your account."
                     aria-disabled="true"
                   >
                     <Icon size={18} className="shrink-0" />
@@ -249,7 +249,7 @@ export default function TutorLayout() {
         >
           {/* Sandbox banner — shown for any unapproved status so tutors know their
               publishing is restricted and how to unlock it. */}
-          {!isTutorProfileCompleted(onboardingState) && (
+          {!tutorApproved && (
             <div className="mb-6 flex flex-wrap items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3">
               <Info size={18} className="mt-0.5 shrink-0 text-amber-700" aria-hidden="true" />
               <div className="min-w-0 flex-1">

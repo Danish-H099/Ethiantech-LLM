@@ -3,10 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { AnimatePresence, m as Motion } from "motion/react";
 import { Upload, Plus, Trash2, ChevronDown, ChevronUp, Video, Lock } from "lucide-react";
 import { buttonPress, slideUp } from "src/lib/animationVariants";
-import {
-  getTutorOnboardingState,
-  TUTOR_STATUS,
-} from "src/services/stores/tutorOnboarding";
+import { isTutorApproved } from "src/services/tutorProfile";
 
 const inputBase =
   "input h-[40px]";
@@ -32,10 +29,9 @@ const emptySection = () => ({ title: "", lessons: [emptyLesson()] });
 
 export default function AddCoursePage() {
   // Sandbox Mode: authoring is allowed while verification is pending, but
-  // publishing is gated until an admin approves the instructor (fail-closed on
-  // any non-approved status).
-  const { status } = getTutorOnboardingState();
-  const isSandbox = status !== TUTOR_STATUS.APPROVED;
+  // publishing is gated until the instructor account is approved (fail-closed).
+  const tutorApproved = isTutorApproved();
+  const isSandbox = !tutorApproved;
   const [form, setForm] = useState({
     title: "",
     headings: "",
@@ -55,8 +51,8 @@ export default function AddCoursePage() {
   const dragRef = useRef(null);
   const videoInputRefs = useRef(new Map());
 
-  if (status !== TUTOR_STATUS.APPROVED) {
-    return <Navigate to="/tutor/profile" replace />;
+  if (!tutorApproved) {
+    return <Navigate to="/tutor/dashboard" replace />;
   }
 
   function handleChange(e) {

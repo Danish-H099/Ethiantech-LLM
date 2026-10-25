@@ -11,6 +11,55 @@ export function getTutorToken() {
   }
 }
 
+/**
+ * Fail-closed approval check for the signed-in instructor account.
+ * Publishing gates stay locked unless the stored account is explicitly approved.
+ */
+export function isTutorApproved() {
+  try {
+    if (typeof localStorage === "undefined") return false;
+    const raw = localStorage.getItem("tutor");
+    if (!raw) return false;
+    return JSON.parse(raw)?.approved === true;
+  } catch {
+    return false;
+  }
+}
+
+/** Mirror the server's approval decision into the stored instructor account. */
+function applyTutorApproval(approved) {
+  try {
+    if (typeof localStorage === "undefined") return;
+    const raw = localStorage.getItem("tutor");
+    if (!raw) return;
+    const tutor = JSON.parse(raw);
+    if (tutor?.approved === approved) return;
+    localStorage.setItem("tutor", JSON.stringify({ ...tutor, approved }));
+  } catch {
+    // Malformed or unavailable storage — leave it untouched.
+  }
+}
+
+/**
+ * Re-read the instructor's approval status so an admin decision applies on the
+ * next page load instead of waiting for the tutor to log in again.
+ * Returns the fresh boolean, or null when the check could not be completed
+ * (offline, server error) so callers can keep the stored value.
+ */
+export async function syncTutorApproval() {
+  if (!getTutorToken()) return null;
+
+  try {
+    // 404 (no profile yet) resolves to null, which counts as "not approved".
+    const profile = await fetchMyTutorProfile();
+    const approved = profile?.approved === true;
+    applyTutorApproval(approved);
+    return approved;
+  } catch {
+    return null;
+  }
+}
+
 
 export async function uploadTutorProfile({
   fullName,
