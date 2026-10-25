@@ -3,10 +3,13 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { AnimatePresence, m as Motion } from "motion/react";
 import { Check, Inbox, Loader2, User } from "lucide-react";
 import { toast } from "sonner";
-import { getInstructors } from "src/services/adminData";
-import { fadeIn, viewportOnce } from "src/lib/animationVariants";
+import { fadeIn } from "src/lib/animationVariants";
 import Stars from "src/components/ui/Stars";
-import { approveTutor, fetchPendingTutors } from "src/services/adminApproval";
+import {
+  approveTutor,
+  fetchApprovedTutors,
+  fetchPendingTutors,
+} from "src/services/adminApproval";
 
 function TabTrigger({ value, badge, children }) {
   return (
@@ -38,7 +41,9 @@ export default function AdminInstructorsPage() {
   const [error, setError] = useState("");
   const [approvingId, setApprovingId] = useState(null);
 
-  const [instructors] = useState(() => getInstructors());
+  const [approvedTutors, setApprovedTutors] = useState([]);
+  const [tutorsLoading, setTutorsLoading] = useState(true);
+  const [tutorsError, setTutorsError] = useState("");
 
   async function loadPending() {
     try {
@@ -53,8 +58,22 @@ export default function AdminInstructorsPage() {
     }
   }
 
+  async function loadApproved() {
+    try {
+      setTutorsLoading(true);
+      setTutorsError("");
+      const tutors = await fetchApprovedTutors();
+      setApprovedTutors(tutors);
+    } catch (err) {
+      setTutorsError(err.message || "Failed to load active tutors.");
+    } finally {
+      setTutorsLoading(false);
+    }
+  }
+
   useEffect(() => {
     loadPending();
+    loadApproved();
   }, []);
 
   async function handleApprove(tutor) {
@@ -64,6 +83,7 @@ export default function AdminInstructorsPage() {
       await approveTutor(tutor.id);
       toast.success(`${tutor.fullName} approved`);
       setPendingTutors((prev) => prev.filter((t) => t.id !== tutor.id));
+      await loadApproved();
     } catch (err) {
       toast.error(err.message || "Failed to approve tutor.");
     } finally {
@@ -191,52 +211,110 @@ export default function AdminInstructorsPage() {
         </Tabs.Content>
 
         <Tabs.Content value="active" className="pt-6">
-          <Motion.div
-            variants={fadeIn}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportOnce}
-            className="card scrollbar-brand overflow-x-auto"
-          >
-            <table className="w-full min-w-[750px] border-collapse">
-              <thead>
-                <tr className="table-header">
-                  <th className="px-5 py-4 font-medium">Instructor</th>
-                  <th className="px-5 py-4 font-medium">Courses</th>
-                  <th className="px-5 py-4 font-medium">Learners</th>
-                  <th className="px-5 py-4 font-medium">Avg Rating</th>
-                  <th className="px-5 py-4 text-right font-medium">Earnings</th>
-                </tr>
-              </thead>
-              <tbody>
-                {instructors.map((inst) => (
-                  <tr key={inst.id} className="table-row odd:bg-surface-soft">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-brand/10">
-                          <User size={18} className="text-brand" />
-                        </div>
-                        <span className="whitespace-nowrap font-medium text-ink">
-                          {inst.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">{inst.courses}</td>
-                    <td className="px-5 py-4">{inst.students.toLocaleString()}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-ink">{inst.rating}</span>
-                        <Stars rating={inst.rating} />
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-right font-medium text-ink">
-                      ${inst.earnings.toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Motion.div>
+          <AnimatePresence mode="wait" initial={false}>
+            {tutorsLoading ? (
+              <Motion.div
+                key="active-loading"
+                variants={fadeIn}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="card flex items-center justify-center gap-2 px-6 py-12 text-ink-muted"
+              >
+                <Loader2 size={18} className="animate-spin" />
+                <span className="text-sm-fluid">Loading active tutors...</span>
+              </Motion.div>
+            ) : tutorsError ? (
+              <Motion.div
+                key="active-error"
+                variants={fadeIn}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="card flex flex-col items-center gap-3 px-6 py-12 text-center"
+              >
+                <p className="font-semibold text-ink">Failed to load</p>
+                <p className="max-w-sm text-sm-fluid text-ink-muted">{tutorsError}</p>
+                <button
+                  type="button"
+                  onClick={loadApproved}
+                  className="btn-brand mt-2 px-4 py-2 text-sm-fluid"
+                >
+                  Retry
+                </button>
+              </Motion.div>
+            ) : approvedTutors.length === 0 ? (
+              <Motion.div
+                key="active-empty"
+                variants={fadeIn}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="card flex flex-col items-center gap-3 px-6 py-16 text-center"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface-soft">
+                  <Inbox size={22} className="text-ink-muted" />
+                </div>
+                <p className="font-semibold text-ink">No active tutors yet</p>
+                <p className="max-w-sm text-sm-fluid text-ink-muted">
+                  Approved tutors will appear here.
+                </p>
+              </Motion.div>
+            ) : (
+              <Motion.div
+                key="active-table"
+                variants={fadeIn}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="card scrollbar-brand overflow-x-auto"
+              >
+                <table className="w-full min-w-[750px] border-collapse">
+                  <thead>
+                    <tr className="table-header">
+                      <th className="px-5 py-4 font-medium">Instructor</th>
+                      <th className="px-5 py-4 font-medium">Courses</th>
+                      <th className="px-5 py-4 font-medium">Learners</th>
+                      <th className="px-5 py-4 font-medium">Avg Rating</th>
+                      <th className="px-5 py-4 text-right font-medium">Earnings</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {approvedTutors.map((tutor) => {
+                      const rating = tutor.avgRating ?? 0;
+                      return (
+                        <tr key={tutor.id} className="table-row odd:bg-surface-soft">
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-brand/10">
+                                <User size={18} className="text-brand" />
+                              </div>
+                              <span className="whitespace-nowrap font-medium text-ink">
+                                {tutor.instructor}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-5 py-4">{tutor.courses ?? 0}</td>
+                          <td className="px-5 py-4">
+                            {Number(tutor.learners ?? 0).toLocaleString()}
+                          </td>
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-2">
+                              <span className="text-ink">{rating}</span>
+                              <Stars rating={rating} />
+                            </div>
+                          </td>
+                          <td className="px-5 py-4 text-right font-medium text-ink">
+                            ${Number(tutor.earnings ?? 0).toLocaleString()}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </Motion.div>
+            )}
+          </AnimatePresence>
         </Tabs.Content>
       </Tabs.Root>
     </div>
