@@ -1,580 +1,423 @@
-import { useState, useRef, useEffect } from "react";
-import { toast } from "sonner";
+import { useState, useEffect } from "react";
+import { m as Motion } from "motion/react";
 import {
-  Save,
-  X,
-  Check,
-  Image,
+  Pencil,
   FileText,
-  Briefcase,
   Award,
+  Download,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  Clock,
+  CheckCircle2,
+  XCircle,
   Loader2,
-  AlertCircle,
 } from "lucide-react";
-import {
-  uploadTutorProfile,
-  fetchMyTutorProfile,
-} from "src/services/tutorProfile";
-import { submitTutorOnboarding } from "src/services/stores/tutorOnboarding";
+import { fadeIn } from "src/lib/animationVariants";
+import { fetchMyTutorProfile } from "src/services/tutorProfile";
+import TutorProfileForm from "src/components/tutor/TutorProfileForm";
+
+const GENDER_DISPLAY = {
+  MALE: "Male",
+  FEMALE: "Female",
+  NON_BINARY: "Non-binary",
+  OTHER: "Other",
+  PREFER_NOT_TO_SAY: "Prefer not to say",
+};
+
+const STATUS_CONFIG = {
+  pending: {
+    icon: Clock,
+    label: "Under Review",
+    className: "bg-amber-50 text-amber-700 border-amber-200",
+    iconClassName: "text-amber-500",
+  },
+  approved: {
+    icon: CheckCircle2,
+    label: "Verified Instructor",
+    className: "bg-green-50 text-green-700 border-green-200",
+    iconClassName: "text-green-500",
+  },
+  rejected: {
+    icon: XCircle,
+    label: "Changes Requested",
+    className: "bg-red-50 text-red-700 border-red-200",
+    iconClassName: "text-red-500",
+  },
+};
+
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+function formatFileSize(bytes) {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function StatusBadge({ approved, className = "" }) {
+  const status = approved ? "approved" : "pending";
+  const config = STATUS_CONFIG[status];
+  const Icon = config.icon;
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium ${config.className} ${className}`}
+    >
+      <Icon size={14} className={config.iconClassName} aria-hidden="true" />
+      {config.label}
+    </span>
+  );
+}
+
+function ProfileHeader({ profile, onEdit }) {
+  const avatarUrl = profile.profileImage
+    ? `${apiUrl}${profile.profileImage}`
+    : null;
+
+  const initials = profile.fullName
+    ? profile.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "TU";
+
+  return (
+    <section className="card overflow-hidden">
+      <div className="bg-tint-tutor px-5 py-6 sm:px-7">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end">
+          <div className="relative shrink-0">
+            <div className="relative h-28 w-28 overflow-hidden rounded-full border-4 border-white bg-brand/10 shadow-avatar">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={`${profile.fullName} avatar`}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-brand/10 text-2xl font-semibold text-brand">
+                  {initials}
+                </div>
+              )}
+            </div>
+            <div className="absolute -bottom-1 -right-1">
+              <StatusBadge approved={profile.approved} />
+            </div>
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <h1 className="page-title mt-2">{profile.fullName}</h1>
+            <p className="mt-1 text-body-lg font-medium text-ink">
+              {profile.headline}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-sm text-ink-muted">
+                {profile.nationality}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-sm text-ink-muted">
+                {profile.age} years old
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-sm text-ink-muted">
+                {GENDER_DISPLAY[profile.gender] || profile.gender}
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onEdit}
+            className="btn-outline shrink-0 self-end p-3"
+          >
+            <Pencil size={16} aria-hidden="true" />
+            Edit profile
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AboutSection({ about }) {
+  return (
+    <section className="mt-6 card p-5 sm:p-6" aria-labelledby="about-heading">
+      <div className="flex items-center gap-2">
+        <FileText size={18} className="text-accent-tutor" aria-hidden="true" />
+        <h2 id="about-heading" className="section-title">
+          About
+        </h2>
+      </div>
+      <p className="mt-3 text-sm-fluid leading-relaxed text-ink-muted">
+        {about?.trim() || "No bio provided yet."}
+      </p>
+    </section>
+  );
+}
+
+function CredentialsSection({ resume, certificates }) {
+  const [isCertificatesOpen, setIsCertificatesOpen] = useState(false);
+  const hasCertificates = certificates && certificates.length > 0;
+
+  return (
+    <section className="mt-6 card p-5 sm:p-6" aria-labelledby="credentials-heading">
+      <div className="flex items-center gap-2">
+        <Award size={18} className="text-accent-tutor" aria-hidden="true" />
+        <h2 id="credentials-heading" className="section-title">
+          Credentials
+        </h2>
+      </div>
+
+      <div className="mt-4 space-y-3">
+        {resume && (
+          <a
+            href={`${apiUrl}${resume}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 rounded-lg border border-border bg-surface-soft p-4 transition hover:border-accent-tutor hover:bg-tint-tutor"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-border">
+              <FileText size={18} className="text-accent-tutor" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-ink">Resume</p>
+              <p className="text-xs text-ink-muted">PDF / DOCX</p>
+            </div>
+            <Download size={16} className="shrink-0 text-ink-muted" />
+          </a>
+        )}
+
+        {hasCertificates && (
+          <div className="rounded-lg border border-border">
+            <button
+              type="button"
+              onClick={() => setIsCertificatesOpen(!isCertificatesOpen)}
+              className="flex w-full items-center justify-between gap-3 p-4 text-left transition hover:bg-surface-soft"
+              aria-expanded={isCertificatesOpen}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-border">
+                  <Award size={18} className="text-brand-secondary-strong" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-ink">
+                    Certificates ({certificates.length})
+                  </p>
+                  <p className="text-xs text-ink-muted">Uploaded credentials</p>
+                </div>
+              </div>
+              {isCertificatesOpen ? (
+                <ChevronUp size={18} className="text-ink-muted" />
+              ) : (
+                <ChevronDown size={18} className="text-ink-muted" />
+              )}
+            </button>
+
+            {isCertificatesOpen && (
+              <div className="border-t border-border p-4 pt-3">
+                <div className="space-y-2">
+                  {certificates.map((cert) => (
+                    <a
+                      key={cert.id}
+                      href={`${apiUrl}${cert.filePath}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-lg border border-border bg-white p-3 transition hover:border-accent-tutor hover:bg-surface-soft"
+                    >
+                      <FileText size={16} className="shrink-0 text-brand-secondary-strong" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-ink">
+                          {cert.fileName}
+                        </p>
+                        <p className="text-xs text-ink-muted">
+                          {formatFileSize(cert.fileSize)}
+                        </p>
+                      </div>
+                      <ExternalLink size={14} className="shrink-0 text-ink-muted" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!resume && !hasCertificates && (
+          <div className="rounded-lg border border-dashed border-border bg-surface-soft p-4 text-center">
+            <p className="text-sm text-ink-muted">No credentials uploaded yet.</p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function StatusSection({ approved, createdAt, updatedAt }) {
+  const StatusIcon = approved ? CheckCircle2 : Clock;
+  const statusTitle = approved ? "Profile Approved" : "Verification in Progress";
+  const statusDescription = approved
+    ? "Your instructor profile has been approved. You can now publish courses and accept enrollments."
+    : "Your profile is under review. This usually takes 24–48 hours. You'll be notified once approved.";
+
+  return (
+    <section className="mt-6 card p-5 sm:p-6" aria-labelledby="status-heading">
+      <div className="flex items-center gap-2">
+        <StatusIcon
+          size={18}
+          className={approved ? "text-green-500" : "text-amber-500"}
+          aria-hidden="true"
+        />
+        <h2 id="status-heading" className="section-title">
+          Application Status
+        </h2>
+      </div>
+
+      <div className="mt-4 rounded-lg border border-border bg-surface-soft p-4">
+        <div className="flex items-start gap-3">
+          <div
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
+              approved ? "bg-green-50" : "bg-amber-50"
+            }`}
+          >
+            <StatusIcon
+              size={20}
+              className={approved ? "text-green-600" : "text-amber-600"}
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p
+              className={`text-sm font-semibold ${
+                approved ? "text-green-700" : "text-amber-700"
+              }`}
+            >
+              {statusTitle}
+            </p>
+            <p className="mt-1 text-sm text-ink-muted">{statusDescription}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-lg border border-border bg-white p-3">
+          <p className="text-xs text-ink-muted">Profile Created</p>
+          <p className="mt-0.5 text-sm font-medium text-ink">
+            {createdAt
+              ? new Date(createdAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "N/A"}
+          </p>
+        </div>
+        <div className="rounded-lg border border-border bg-white p-3">
+          <p className="text-xs text-ink-muted">Last Updated</p>
+          <p className="mt-0.5 text-sm font-medium text-ink">
+            {updatedAt
+              ? new Date(updatedAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "N/A"}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProfileView({ profile, onEdit }) {
+  return (
+    <Motion.div
+      variants={fadeIn}
+      initial="hidden"
+      animate="visible"
+      className="max-w-3xl mx-auto px-4 sm:px-6 py-10 lg:py-14"
+    >
+      <ProfileHeader profile={profile} onEdit={onEdit} />
+      <AboutSection about={profile.about} />
+      <CredentialsSection
+        resume={profile.resume}
+        certificates={profile.certificates}
+      />
+      <StatusSection
+        approved={profile.approved}
+        createdAt={profile.createdAt}
+        updatedAt={profile.updatedAt}
+      />
+    </Motion.div>
+  );
+}
 
 export default function TutorProfilePage() {
-  const [form, setForm] = useState({
-    fullName: "",
-    headline: "",
-    about: "",
-    age: "",
-    gender: "",
-    photoName: "",
-    photoPreview: null,
-    resumeName: "",
-    nationality: "",
-    certName: "",
-    agreePolicy: false,
-  });
-
-  const [photoFile, setPhotoFile] = useState(null);
-  const [resumeFile, setResumeFile] = useState(null);
-  const [certFiles, setCertFiles] = useState([]);
-  const [errors, setErrors] = useState({});
-  const [saved, setSaved] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [apiError, setApiError] = useState("");
-
-  const photoRef = useRef(null);
-  const resumeRef = useRef(null);
-  const certRef = useRef(null);
+  const [mode, setMode] = useState(null);
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
-    async function loadExistingProfile() {
+    async function loadProfile() {
       try {
         const existing = await fetchMyTutorProfile();
-        if (existing && isMounted) {
-          const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-          setForm((p) => ({
-            ...p,
-            fullName: existing.fullName || "",
-            headline: existing.headline || "",
-            about: existing.about || "",
-            age: existing.age ? String(existing.age) : "",
-            gender: existing.gender || "",
-            nationality: existing.nationality || "",
-            photoPreview: existing.profileImage ? `${apiUrl}${existing.profileImage}` : null,
-            photoName: existing.profileImage ? "Current profile photo" : "",
-            resumeName: existing.resume ? "Current resume" : "",
-            certName: existing.certificates?.[0]?.fileName || "",
-          }));
+        if (isMounted) {
+          if (existing) {
+            setProfileData(existing);
+            setMode("view");
+          } else {
+            setMode("edit");
+          }
         }
       } catch {
-        // New instructor without existing profile
+        if (isMounted) {
+          setMode("edit");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
-    loadExistingProfile();
+    loadProfile();
     return () => {
       isMounted = false;
     };
   }, []);
 
-  function setField(k, v) {
-    setForm((p) => ({ ...p, [k]: v }));
-    setErrors((p) => {
-      const n = { ...p };
-      delete n[k];
-      return n;
-    });
-    setApiError("");
+  function handleEdit() {
+    setMode("edit");
   }
 
-  function handlePhoto(file) {
-    if (!file || !file.type.startsWith("image/")) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((p) => ({ ...p, photo: "Image must be under 5MB." }));
-      return;
-    }
-    setPhotoFile(file);
-    setField("photoName", file.name);
-    const r = new FileReader();
-    r.onload = (e) => setField("photoPreview", e.target.result);
-    r.readAsDataURL(file);
-  }
-
-  function handleResume(file) {
-    if (file) {
-      setResumeFile(file);
-      setField("resumeName", file.name);
+  function handleCancel() {
+    if (profileData) {
+      setMode("view");
     }
   }
 
-  function handleCert(file) {
-    if (file) {
-      setCertFiles([file]);
-      setField("certName", file.name);
-    }
+  function handleSuccess(newProfile) {
+    setProfileData(newProfile);
+    setMode("view");
   }
 
-  function wordCount(t) {
-    return t.trim() ? t.trim().split(/\s+/).length : 0;
+  if (loading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loader2 size={32} className="animate-spin text-brand" />
+      </div>
+    );
   }
 
-  function validate() {
-    const e = {};
-    if (!form.fullName.trim()) e.fullName = "Full name is required.";
-    const hw = wordCount(form.headline);
-    if (!form.headline.trim()) e.headline = "Headline is required.";
-    else if (hw > 5) e.headline = `Headline must be 5 words or less (${hw} words).`;
-    const aw = wordCount(form.about);
-    if (!form.about.trim()) e.about = "About you is required.";
-    else if (aw > 80) e.about = `About must be 80 words or less (${aw} words).`;
-    if (!form.age.trim()) e.age = "Age is required.";
-    else if (Number(form.age) < 18 || Number(form.age) > 120) e.age = "Invalid age.";
-    if (!form.gender) e.gender = "Gender is required.";
-    if (!photoFile && !form.photoPreview) e.photo = "Profile image is required.";
-    if (!resumeFile && !form.resumeName) e.resume = "Resume is required.";
-    if (!form.nationality.trim()) e.nationality = "Nationality is required.";
-    if (!form.agreePolicy) e.agreePolicy = "You must agree to the policy.";
-    return e;
+  if (mode === "view" && profileData) {
+    return <ProfileView profile={profileData} onEdit={handleEdit} />;
   }
-
-  async function onSubmit(e) {
-    e.preventDefault();
-    setApiError("");
-    const errs = validate();
-    setErrors(errs);
-
-    if (Object.keys(errs).length > 0) return;
-
-    try {
-      setIsSubmitting(true);
-      const res = await uploadTutorProfile({
-        fullName: form.fullName,
-        headline: form.headline,
-        about: form.about,
-        age: Number(form.age),
-        gender: form.gender,
-        nationality: form.nationality,
-        profileImage: photoFile,
-        resume: resumeFile,
-        certificates: certFiles,
-      });
-
-      submitTutorOnboarding({
-        profile: {
-          fullName: form.fullName,
-          headline: form.headline,
-          about: form.about,
-          age: form.age,
-          gender: form.gender,
-          nationality: form.nationality,
-          profileImage: res.profile?.profileImage,
-        },
-      });
-
-      setSaved(true);
-      toast.success("Tutor profile saved and submitted successfully!");
-    } catch (err) {
-      console.error("Profile save error:", err);
-      setApiError(err.message || "Unable to save tutor profile. Please try again.");
-      toast.error(err.message || "Failed to save profile.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  const genderOptions = [
-    { label: "Male", value: "MALE" },
-    { label: "Female", value: "FEMALE" },
-    { label: "Other", value: "OTHER" },
-    { label: "Prefer not to say", value: "PREFER_NOT_TO_SAY" },
-  ];
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="page-title">Tutor Profile</h1>
-        <p className="mt-2 text-subtitle text-ink-muted">
-          Keep your public profile sharp. Only these fields are shown to students.
-        </p>
-      </div>
-
-      {apiError && (
-        <div className="mb-6 flex items-start gap-3 rounded-xl border border-error/40 bg-error-soft p-4 text-error">
-          <AlertCircle size={18} className="mt-0.5 shrink-0" />
-          <p className="text-sm-fluid font-medium">{apiError}</p>
-        </div>
-      )}
-
-      <form onSubmit={onSubmit} noValidate className="space-y-6">
-        {/* Section: Basic identity */}
-        <section className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <div>
-              <label htmlFor="fullName" className="label">
-                Tutor&apos;s Full Name
-              </label>
-              <input
-                id="fullName"
-                type="text"
-                value={form.fullName}
-                onChange={(e) => setField("fullName", e.target.value)}
-                placeholder="e.g. Amina Bekele"
-                className={`input ${errors.fullName ? "border-error" : ""}`}
-              />
-              {errors.fullName && (
-                <p className="mt-1.5 text-sm-fluid text-error">{errors.fullName}</p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="headline" className="label">
-                Headline{" "}
-                <span className="text-ink-muted font-normal">(max 5 words)</span>
-              </label>
-              <input
-                id="headline"
-                type="text"
-                value={form.headline}
-                onChange={(e) => setField("headline", e.target.value)}
-                placeholder="e.g. Senior Cloud Architect"
-                className={`input ${errors.headline ? "border-error" : ""}`}
-              />
-              <div className="mt-1.5 flex items-center justify-between gap-2">
-                {errors.headline ? (
-                  <p className="text-sm-fluid text-error">{errors.headline}</p>
-                ) : (
-                  <span
-                    className={`text-xs font-medium ${wordCount(form.headline) > 5 ? "text-error" : "text-ink-muted"
-                      }`}
-                  >
-                    {wordCount(form.headline)} / 5 words
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="about" className="label">
-              About You{" "}
-              <span className="text-ink-muted font-normal">(max 80 words)</span>
-            </label>
-            <textarea
-              id="about"
-              rows={4}
-              value={form.about}
-              onChange={(e) => setField("about", e.target.value)}
-              placeholder="What do you teach, and what practical experience do you bring to it?"
-              className={`input resize-none py-2.5 ${errors.about ? "border-error" : ""}`}
-            />
-            <div className="mt-1.5 flex items-center justify-between gap-2">
-              {errors.about ? (
-                <p className="text-sm-fluid text-error">{errors.about}</p>
-              ) : (
-                <span
-                  className={`text-xs font-medium ${wordCount(form.about) > 80 ? "text-error" : "text-ink-muted"
-                    }`}
-                >
-                  {wordCount(form.about)} / 80 words
-                </span>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Section: Demographics */}
-        <section className="grid gap-6 sm:grid-cols-2">
-          <div>
-            <label htmlFor="age" className="label">
-              Age
-            </label>
-            <input
-              id="age"
-              type="number"
-              min={18}
-              max={120}
-              value={form.age}
-              onChange={(e) => setField("age", e.target.value)}
-              placeholder="e.g. 28"
-              className={`input ${errors.age ? "border-error" : ""}`}
-            />
-            {errors.age && (
-              <p className="mt-1.5 text-sm-fluid text-error">{errors.age}</p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="gender" className="label">
-              Gender
-            </label>
-            <select
-              id="gender"
-              value={form.gender}
-              onChange={(e) => setField("gender", e.target.value)}
-              className={`input ${errors.gender ? "border-error" : ""}`}
-            >
-              <option value="">Select gender</option>
-              {genderOptions.map((g) => (
-                <option key={g.value} value={g.value}>
-                  {g.label}
-                </option>
-              ))}
-            </select>
-            {errors.gender && (
-              <p className="mt-1.5 text-sm-fluid text-error">{errors.gender}</p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="nationality" className="label">
-              Nationality
-            </label>
-            <input
-              id="nationality"
-              type="text"
-              value={form.nationality}
-              onChange={(e) => setField("nationality", e.target.value)}
-              placeholder="e.g. Ethiopian"
-              className={`input ${errors.nationality ? "border-error" : ""}`}
-            />
-            {errors.nationality && (
-              <p className="mt-1.5 text-sm-fluid text-error font-medium">
-                {errors.nationality}
-              </p>
-            )}
-          </div>
-        </section>
-
-        {/* Section: Media uploads */}
-        <section className="grid gap-6 md:grid-cols-2">
-          <div>
-            <h3 className="label mb-0">
-              Profile Image{" "}
-              <span className="text-ink-muted font-normal">(max 5MB)</span>
-            </h3>
-            <div className="mt-2">
-              {form.photoPreview ? (
-                <div className="flex items-center gap-4 rounded-xl border border-border bg-white px-4 py-4 shadow-sm">
-                  <img
-                    src={form.photoPreview}
-                    alt="Preview"
-                    className="h-14 w-14 rounded-full object-cover shadow-md ring-2 ring-brand/10"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-ink truncate">
-                      {form.photoName}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPhotoFile(null);
-                        setField("photoName", "");
-                        setField("photoPreview", null);
-                      }}
-                      className="mt-2 inline-flex items-center gap-1 rounded-full bg-error-soft text-error hover:bg-error/10 px-2.5 py-0.5 text-xs font-semibold transition"
-                    >
-                      <X size={12} /> Remove
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => photoRef.current?.click()}
-                  className={`group flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-6 text-center transition ${errors.photo
-                    ? "border-error bg-error-soft/20"
-                    : "border-border bg-surface-soft hover:border-brand hover:bg-tint-tutor hover:shadow-md"
-                    }`}
-                >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-border group-hover:ring-brand/30 transition">
-                    <Image size={20} className="text-brand" />
-                  </span>
-                  <div>
-                    <p className="text-sm font-semibold text-ink">
-                      Click to upload photo
-                    </p>
-                    <p className="text-xs text-ink-muted">JPG or PNG — up to 5MB</p>
-                  </div>
-                  <input
-                    ref={photoRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) handlePhoto(f);
-                      e.target.value = "";
-                    }}
-                  />
-                </button>
-              )}
-            </div>
-            {errors.photo && (
-              <p className="mt-2 text-sm-fluid text-error font-medium">
-                {errors.photo}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <h3 className="label mb-0">Resume</h3>
-            <div className="mt-2">
-              {form.resumeName ? (
-                <div className="flex items-center gap-3 rounded-xl border border-border bg-white px-4 py-3 shadow-sm">
-                  <FileText size={16} className="text-brand shrink-0" />
-                  <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">
-                    {form.resumeName}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setResumeFile(null);
-                      setField("resumeName", "");
-                    }}
-                    aria-label="Remove resume"
-                    className="shrink-0 rounded-full p-1 text-ink-muted hover:text-error hover:bg-error-soft transition"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => resumeRef.current?.click()}
-                  className={`flex w-full flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed px-4 py-5 text-center transition ${errors.resume
-                    ? "border-error bg-error-soft/20"
-                    : "border-border bg-surface-soft hover:border-brand hover:bg-tint-tutor hover:shadow-md"
-                    }`}
-                >
-                  <Briefcase size={18} className="text-brand" />
-                  <span className="text-sm font-medium text-ink">Upload resume</span>
-                  <span className="text-xs text-ink-muted">PDF / DOCX</span>
-                  <input
-                    ref={resumeRef}
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) handleResume(f);
-                      e.target.value = "";
-                    }}
-                  />
-                </button>
-              )}
-            </div>
-            {errors.resume && (
-              <p className="mt-2 text-sm-fluid text-error font-medium">
-                {errors.resume}
-              </p>
-            )}
-          </div>
-        </section>
-
-        {/* Section: Certifications */}
-        <section>
-          <h3 className="label mb-0">
-            Certificate / Licenses{" "}
-            <span className="text-ink-muted font-normal">(optional)</span>
-          </h3>
-          <div className="mt-2">
-            {form.certName ? (
-              <div className="flex items-center gap-3 rounded-xl border border-border bg-white px-4 py-3 shadow-sm">
-                <Award size={16} className="text-brand-secondary-strong shrink-0" />
-                <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">
-                  {form.certName}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCertFiles([]);
-                    setField("certName", "");
-                  }}
-                  aria-label="Remove certificate"
-                  className="shrink-0 rounded-full p-1 text-ink-muted hover:text-error hover:bg-error-soft transition"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => certRef.current?.click()}
-                className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-surface-soft px-6 py-6 text-center transition hover:border-brand hover:bg-tint-tutor hover:shadow-md"
-              >
-                <Award size={20} className="text-brand-secondary-strong" />
-                <span className="text-sm font-medium text-ink">
-                  Upload certificate
-                </span>
-                <span className="text-xs text-ink-muted">
-                  Optional — PDF / DOCX / JPG / PNG
-                </span>
-                <input
-                  ref={certRef}
-                  type="file"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) handleCert(f);
-                    e.target.value = "";
-                  }}
-                />
-              </button>
-            )}
-          </div>
-        </section>
-
-        {/* Section: Policy */}
-        <section>
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form.agreePolicy}
-              onChange={(e) => setField("agreePolicy", e.target.checked)}
-              className="mt-0.5 h-5 w-5 shrink-0 rounded-md border-border text-brand focus:ring-brand accent-brand"
-            />
-            <span className="text-sm-fluid text-ink leading-relaxed">
-              I agree to the{" "}
-              <a
-                href="/policy"
-                className="font-semibold text-brand-secondary-strong hover:text-brand underline underline-offset-2 transition"
-              >
-                Policy
-              </a>{" "}
-              and confirm all information is accurate.
-            </span>
-          </label>
-          {errors.agreePolicy && (
-            <p className="mt-2 text-sm-fluid text-error font-medium">
-              {errors.agreePolicy}
-            </p>
-          )}
-        </section>
-
-        {/* Submit */}
-        <div className="flex items-center justify-between gap-4 pt-6 border-t border-border">
-          <div className="min-h-[36px]">
-            {saved && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-3 py-1 text-sm-fluid font-medium text-success shadow-sm">
-                <Check size={14} /> Saved &amp; Submitted
-              </span>
-            )}
-          </div>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="btn-brand rounded-lg px-6 py-2.5 text-sm-fluid shadow-sm hover:shadow-md hover:-translate-y-px transition active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 size={16} className="animate-spin" /> Uploading Profile...
-              </>
-            ) : (
-              <>
-                <Save size={16} /> Save Profile
-              </>
-            )}
-          </button>
-        </div>
-      </form>
-    </div>
+    <TutorProfileForm
+      initialProfile={profileData}
+      onSuccess={handleSuccess}
+      onCancel={profileData ? handleCancel : null}
+    />
   );
 }
-
