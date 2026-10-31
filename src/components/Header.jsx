@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, m as Motion } from "motion/react";
 import {
@@ -13,7 +13,6 @@ import {
   X,
 } from "lucide-react";
 import { mobileMenu } from "src/lib/animationVariants";
-import { getTutorEntryPath } from "src/services/stores/tutorOnboarding";
 import logo from "src/assets/logo.webp";
 
 const navLinkClass = (active, textSize, minH = "min-h-11") =>
@@ -28,7 +27,6 @@ export default function Header({ onLoginClick, onSignupClick, onTeachClick }) {
   const [scrolled, setScrolled] = useState(false);
   const closeMenu = () => setMobileMenuOpen(false);
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const [lastPathname, setLastPathname] = useState(pathname);
   const isHome = pathname === "/";
   const isCourses = pathname.startsWith("/courses") || pathname.startsWith("/course/");
@@ -38,11 +36,6 @@ export default function Header({ onLoginClick, onSignupClick, onTeachClick }) {
   // visitors open the signup popup with the instructor arm pre-selected.
   function handleTeachClick() {
     closeMenu();
-    const entryPath = getTutorEntryPath();
-    if (entryPath) {
-      navigate(entryPath);
-      return;
-    }
     onTeachClick?.();
   }
 
