@@ -1,19 +1,18 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { m as Motion } from "motion/react";
 import { Lock } from "lucide-react";
 import courses from "src/services/courses";
 import { parsePrice } from "src/lib/format";
 import { fadeIn, viewportOnce } from "src/lib/animationVariants";
-import { isTutorApproved } from "src/services/tutorProfile";
 
 const CURRENT_TUTOR_ID = "richard-james";
 
 /** Status toggle — locked (non-interactive) until the instructor is approved. */
-function StatusToggle({ initialStatus, isApproved }) {
+function StatusToggle({ initialStatus, approved }) {
   const [isLive, setIsLive] = useState(initialStatus === "Live");
 
-  if (!isApproved) {
+  if (!approved) {
     return (
       <button
         role="switch"
@@ -52,7 +51,7 @@ export default function TutorCoursesPage() {
       earnings: Math.round(parsePrice(course.price) * course.students),
     }));
 
-  const isApproved = isTutorApproved();
+  const { approved } = useOutletContext();
 
   return (
     <div>
@@ -98,7 +97,7 @@ export default function TutorCoursesPage() {
                 <td className="px-5 py-4">{course.students}</td>
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
-                    <StatusToggle initialStatus={course.status} isApproved={isApproved} />
+                    <StatusToggle initialStatus={course.status} approved={approved} />
                     <span
                       className={`text-sm-fluid ${course.status === "Live"
                           ? "text-brand"

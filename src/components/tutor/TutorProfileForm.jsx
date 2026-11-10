@@ -137,7 +137,7 @@ export default function TutorProfileForm({ initialData = null, onSuccess = null,
   };
 
   const photoDrop = useDropzone({ onDrop: onPhotoDrop, accept: { "image/*": [] }, maxFiles: 1, disabled: isLoading });
-  const resumeDrop = useDropzone({ onDrop: onResumeDrop, accept: { ".pdf": [], ".doc": [], ".docx": [] }, maxFiles: 1, disabled: isLoading });
+  const resumeDrop = useDropzone({ onDrop: onResumeDrop, accept: { "application/pdf": [], "application/msword": [], "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [] }, maxFiles: 1, disabled: isLoading });
   const certDrop = useDropzone({
     onDrop: (f) => {
       if (f && f.length > 5) {
@@ -146,7 +146,7 @@ export default function TutorProfileForm({ initialData = null, onSuccess = null,
       }
       onCertDrop(f);
     },
-    accept: ".pdf,.doc,.docx",
+    accept: "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     maxFiles: 5,
     disabled: isLoading,
   });
@@ -257,7 +257,7 @@ export default function TutorProfileForm({ initialData = null, onSuccess = null,
           {errors.agreePolicy && <p className="text-sm text-red-600 font-medium">{errors.agreePolicy}</p>}
         </section>
 
-        <div className="flex items-center justify-between gap-4 pt-6 border-t border-border">
+        <div className="flex items-center justify-between gap-4 pt-6">
           <div className="min-h-[36px]" />
           <div className="flex items-center gap-3">
             {onCancel && (
