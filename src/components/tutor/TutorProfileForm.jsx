@@ -146,8 +146,11 @@ export default function TutorProfileForm({ initialData = null, onSuccess = null,
       }
       onCertDrop(f);
     },
-    accept: "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    maxFiles: 5,
+    accept: {
+      "application/pdf": [],
+      "application/msword": [],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": []
+    },maxFiles: 5,
     disabled: isLoading,
   });
 
