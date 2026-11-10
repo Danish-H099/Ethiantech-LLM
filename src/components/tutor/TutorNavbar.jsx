@@ -10,28 +10,25 @@ import {
 } from "lucide-react";
 import { clearMockAuth } from "src/utils/authMock";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 
 export default function TutorNavbar({ sidebarOpen, setSidebarOpen, hamburgerRef }) {
   const navigate = useNavigate();
 
   // Inside your component:
-  const [userName, setUserName] = useState("User");
-
-  useEffect(() => {
+  const [userName, _setUserName] = useState(() => {
     try {
       const storedTutor = localStorage.getItem("tutor");
       if (storedTutor) {
         const parsed = JSON.parse(storedTutor);
-        if (parsed?.name) {
-          setUserName(parsed.name);
-        }
+        if (parsed?.name) return parsed.name;
       }
-    } catch (e) {
-      // Fallback if parsing fails
+    } catch {
+      // Ignore
     }
-  }, []);
+    return "User";
+  });
 
   function handleLogout() {
     clearMockAuth();
@@ -94,12 +91,12 @@ export default function TutorNavbar({ sidebarOpen, setSidebarOpen, hamburgerRef 
         </div>
         <button
           ref={hamburgerRef}
-          aria-label={sidebarOpen ? "Close menu" : "Open menu"}
+          aria-label="Open menu"
           aria-expanded={sidebarOpen}
           className="rounded p-1 text-gray-700 lg:hidden"
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >
-          {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          <Menu size={24} />
         </button>
       </div>
     </header>

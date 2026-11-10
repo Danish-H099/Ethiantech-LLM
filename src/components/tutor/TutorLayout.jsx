@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from "react";
-import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   PlusSquare,
@@ -10,15 +10,10 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  Info,
   Lock,
 } from "lucide-react";
 import { clearMockAuth } from "src/utils/authMock";
-import { isTutorApproved } from "src/services/tutorProfile";
-import {
-  getTutorOnboardingState,
-  TUTOR_STATUS,
-} from "src/services/stores/tutorOnboarding";
+import TutorBanner from "./TutorBanner";
 import TutorNavbar from "src/components/tutor/TutorNavbar";
 import Footer from "src/components/Footer";
 import RouteLoader from "src/components/ui/RouteLoader";
@@ -36,8 +31,11 @@ export default function TutorLayout() {
   const sidebarRef = useRef(null);
   const hamburgerRef = useRef(null);
   const navigate = useNavigate();
-  const { status: onboardingStatus } = getTutorOnboardingState();
-  const tutorApproved = isTutorApproved();
+  const [bannerTick, setBannerTick] = useState(0);
+  const refreshBanner = () => setBannerTick((t) => t + 1);
+  const tutorLocal = (() => { try { return JSON.parse(localStorage.getItem("tutor") || "{}"); } catch { return {}; } })();
+  const profileComplete = tutorLocal.profileComplete === true;
+  const approved = tutorLocal.approved === true;
 
   function handleLogout() {
     clearMockAuth();
@@ -167,7 +165,7 @@ export default function TutorLayout() {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isAddCourse = item.path === "/tutor/add-course";
-              const disabled = isAddCourse && !tutorApproved;
+              const disabled = isAddCourse && !profileComplete;
               if (disabled) {
                 return (
                   <span
@@ -184,7 +182,7 @@ export default function TutorLayout() {
                     >
                       {item.label}
                     </span>
-                    <Lock size={14} className="ml-auto shrink-0 opacity-60" aria-hidden="true" />
+                    {!collapsed && <Lock size={14} className="ml-auto shrink-0 opacity-60" aria-hidden="true" />}
                   </span>
                 );
               }
@@ -249,47 +247,11 @@ export default function TutorLayout() {
         >
           {/* Sandbox banner — shown for any unapproved status so tutors know their
               publishing is restricted and how to unlock it. */}
-          {!tutorApproved && (
-            <div className="mb-6 flex flex-wrap items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3">
-              <Info size={18} className="mt-0.5 shrink-0 text-amber-700" aria-hidden="true" />
-              <div className="min-w-0 flex-1">
-                <p className="text-sm-fluid font-semibold text-amber-800">
-                  {(() => {
-                    if (onboardingStatus === TUTOR_STATUS.SUBMITTED) {
-                      return "Verification in progress — Sandbox Mode";
-                    }
-                    if (onboardingStatus === TUTOR_STATUS.REJECTED) {
-                      return "Action required — changes requested on your profile";
-                    }
-                    return "Complete your instructor profile to unlock course publishing";
-                  })()}
-                </p>
-                <p className="mt-1 text-sm-fluid text-amber-700">
-                  {(() => {
-                    if (onboardingStatus === TUTOR_STATUS.SUBMITTED) {
-                      return "Your instructor profile is under admin review (usually 24–48 hours). You can draft courses and curriculum, but publishing, learner enrollments and payouts unlock once you're approved.";
-                    }
-                    if (onboardingStatus === TUTOR_STATUS.REJECTED) {
-                      return "Update your details and resubmit for review to unlock publishing.";
-                    }
-                    return "Pick a teaching track, add your profile and credentials, and submit for verification. Publishing unlocks once you're approved.";
-                  })()}
-                </p>
-              </div>
-              <Link
-                to="/tutor/profile"
-                className="text-sm-fluid font-medium text-amber-800 underline transition hover:text-amber-900"
-              >
-                {(() => {
-                  if (onboardingStatus === TUTOR_STATUS.SUBMITTED) return "View application status";
-                  if (onboardingStatus === TUTOR_STATUS.REJECTED) return "Edit application";
-                  return "Complete your profile";
-                })()}
-              </Link>
-            </div>
+          {!approved && (
+            <TutorBanner key={bannerTick} profileComplete={profileComplete} approved={approved} />
           )}
           <Suspense fallback={<RouteLoader />}>
-            <Outlet />
+            <Outlet context={{ refreshBanner }} />
           </Suspense>
         </main>
       </div>

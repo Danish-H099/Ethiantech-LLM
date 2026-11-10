@@ -7,7 +7,7 @@ import courses from "src/services/courses";
 import Footer from "src/components/Footer";
 import { Building2, GraduationCap, Users, BookOpen } from "lucide-react";
 import { AuthPopupGate } from "src/components/AuthPopups";
-import { getTutorEntryPath } from "src/services/stores/tutorOnboarding";
+import { getCurrentUser } from "src/services/auth";
 import { setStudentAuthed, setTutorAuthed } from "src/utils/authMock";
 import demoVideoUrl from "src/assets/demo.mp4?url";
 import CourseCard from "src/components/CourseCard";
@@ -398,13 +398,12 @@ export default function HomePage() {
   const shouldReduceMotion = useReducedMotion();
   const staggerItem = useMemo(() => createStaggerItem(!!shouldReduceMotion), [shouldReduceMotion]);
 
-  // Google OAuth lands on this existing public route with either
-  // ?token=...&user=... (success) or ?error=oauth_failed (failure).
-  // Persist the session, clean the URL, and route to the right dashboard.
+  // Google OAuth lands on this existing public route with ?oauth_success=true
+  // or ?error=oauth_failed. The backend sets an httpOnly session cookie before
+  // redirecting; fetch the verified user, then route to the right dashboard.
   useEffect(() => {
     const oauthError = searchParams.get("error");
-    const token = searchParams.get("token");
-    const userParam = searchParams.get("user");
+    const oauthSuccess = searchParams.get("oauth_success");
 
     if (oauthError) {
       window.history.replaceState({}, "", "/");
@@ -412,56 +411,63 @@ export default function HomePage() {
       return;
     }
 
-    if (!token || !userParam) return;
+    if (oauthSuccess !== "true") return;
 
-    let user = null;
-    try {
-      user = JSON.parse(userParam);
-    } catch {
-      user = null;
-    }
+    let isCancelled = false;
 
-    // Strip the sensitive params from the address bar immediately.
-    window.history.replaceState({}, "", "/");
+    async function handleOAuthSuccess() {
+      try {
+        const user = await getCurrentUser();
 
-    if (!user?.role || !user?.name) {
-      toast.error("Google authentication failed. Please try again.");
-      return;
-    }
+        if (isCancelled) return;
 
-    if (user.role === "INSTRUCTOR") {
-      localStorage.setItem(
-        "tutor",
-        JSON.stringify({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          approved: user.approved,
-          authToken: token,
-        })
-      );
-      setTutorAuthed();
-      toast.success(`Welcome back, ${user.name}`);
-      navigate(getTutorEntryPath() ?? "/tutor/profile", { replace: true });
-      return;
-    }
+        if (!user?.role || !user?.name) {
+          window.history.replaceState({}, "", "/");
+          toast.error("Google authentication failed. Please try again.");
+          return;
+        }
 
-    setStudentAuthed();
-    toast.success(`Welcome back, ${user.name}`);
+        window.history.replaceState({}, "", "/");
 
-    let returnTo = "/student";
-    try {
-      const stored = sessionStorage.getItem("ethiantech_login_return_to");
-      if (stored) {
-        sessionStorage.removeItem("ethiantech_login_return_to");
-        returnTo = stored;
+        if (user.role === "INSTRUCTOR") {
+          localStorage.setItem(
+            "tutor",
+            JSON.stringify(user)
+          );
+          setTutorAuthed();
+          toast.success(`Welcome back, ${user.name}`);
+          navigate("/tutor/profile", { replace: true });
+          return;
+        }
+
+        setStudentAuthed();
+        toast.success(`Welcome back, ${user.name}`);
+
+        let returnTo = "/student";
+        try {
+          const stored = sessionStorage.getItem("ethiantech_login_return_to");
+          if (stored) {
+            sessionStorage.removeItem("ethiantech_login_return_to");
+            returnTo = stored;
+          }
+        } catch {
+          returnTo = "/student";
+        }
+
+        navigate(returnTo, { replace: true });
+      } catch {
+        if (!isCancelled) {
+          window.history.replaceState({}, "", "/");
+          toast.error("Google authentication failed. Please try again.");
+        }
       }
-    } catch {
-      returnTo = "/student";
     }
 
-    navigate(returnTo, { replace: true });
+    handleOAuthSuccess();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [searchParams, navigate]);
 
     
@@ -469,11 +475,6 @@ export default function HomePage() {
   // instructors go straight to their tutor area, everyone else gets the
   // instructor signup popup.
   function handleTeachClick() {
-    const entryPath = getTutorEntryPath();
-    if (entryPath) {
-      navigate(entryPath);
-      return;
-    }
     setPopupState("signup-tutor");
   }
 

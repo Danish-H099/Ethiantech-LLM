@@ -5,10 +5,6 @@ import { AnimatePresence, m as Motion } from 'motion/react';
 import { X, Eye, EyeOff, BookOpen, GraduationCap } from 'lucide-react';
 import { backdrop, modal } from 'src/lib/animationVariants';
 import { setStudentAuthed, setTutorAuthed } from 'src/utils/authMock';
-import {
-    getTutorEntryPath,
-    resetTutorOnboarding,
-} from 'src/services/stores/tutorOnboarding';
 import { registerInstructor, loginInstructor } from "src/services/auth";
 
 // Focus handling for the modal dialogs: land on the first field on open (not
@@ -205,7 +201,7 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
                     sessionStorage.removeItem("ethiantech_login_return_to");
                     returnTo = stored;
                 }
-            } catch { }
+            } catch { /* ignore missing redirect target */ }
 
             navigate(returnTo, { replace: true });
             return;
@@ -218,25 +214,10 @@ export const LoginPopup = ({ onClose, onSwitchToSignup, initialRole = "student" 
                 password,
             });
 
-            // localStorage.setItem("authToken", data.token);
-            localStorage.setItem(
-                "tutor",
-                JSON.stringify({
-                    id:data.user.id,
-                    name: data.user.name,
-                    email: data.user.email,
-                    role: data.user.role,
-                    approved: data.user.approved,
-                    authToken: data.token,
-                })
-            );
+            localStorage.setItem("tutor", JSON.stringify(data.user));
             setTutorAuthed();
             onClose();
-
-            navigate(
-                getTutorEntryPath() ?? "/tutor/profile",
-                { replace: true }
-            );
+            navigate(data.user.profileComplete ? "/tutor/dashboard" : "/tutor/profile", { replace: true });
         } catch (err) {
             setError(err.message || "Unable to log in. Please try again.");
         } finally {
@@ -342,21 +323,21 @@ function handleGoogleAuth(role) {
     async function handleAuth(e) {
         e?.preventDefault();
         setError("");
+        
+        if (password !== confirmPassword) {
+            setError("Passwords do not match.");
+            return;
+        }
+        
+        if (password.length < 8) {
+            setError("Password must be at least 8 characters.");
+            return;
+        }
 
         if (role !== "tutor") {
             onClose();
             setStudentAuthed();
             navigate("/student", { replace: true });
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            setError("Passwords do not match.");
-            return;
-        }
-
-        if (password.length < 8) {
-            setError("Password must be at least 8 characters.");
             return;
         }
 
@@ -366,22 +347,11 @@ function handleGoogleAuth(role) {
                 name: name.trim(),
                 email: email.trim(),
                 password,
+                confirmPassword,
+                role,
             });
 
-            // localStorage.setItem("authToken", data.token);
-            localStorage.setItem(
-                "tutor",
-                JSON.stringify({
-                    id:data.user.id,
-                    name: data.user.name,
-                    email: data.user.email,
-                    role: data.user.role,
-                    approved: data.user.approved,
-                    authToken: data.token,
-                })
-            );
-
-            resetTutorOnboarding();
+            localStorage.setItem("tutor", JSON.stringify(data.user));
             onClose();
             setTutorAuthed();
             navigate("/tutor/profile", { replace: true });
@@ -494,6 +464,9 @@ function handleGoogleAuth(role) {
                             ? "Create Instructor Account"
                             : "Create Account"}
                 </button>
+                {error && (
+                    <p className="text-sm text-red-600">{error}</p>
+                )}
                 {role === "tutor" && (
                     <p className="text-center text-sm-fluid text-ink-muted">
                         You&apos;ll choose a teaching track and set up your instructor profile next.
