@@ -11,25 +11,33 @@ export default function TutorProfilePage() {
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState("view");
 
-  const { refreshBanner } = useOutletContext?.() || {};
+  const { setApproved, setProfileComplete } = useOutletContext();
   const navigate = useNavigate();
-  
-    const loadProfile = useCallback(async () => {
-      try {
-        const existing = await fetchMyTutorProfile();
-        if (existing) {
-          setProfileData(existing);
-          setMode("view");
-        } else {
-          setMode("edit");
-        }
-      } catch {
+
+  const applyStatus = useCallback(
+    (profile) => {
+      setProfileComplete(!!profile);
+      setApproved(profile?.approved === true);
+    },
+    [setApproved, setProfileComplete]
+  );
+
+  const loadProfile = useCallback(async () => {
+    try {
+      const existing = await fetchMyTutorProfile();
+      applyStatus(existing);
+      if (existing) {
+        setProfileData(existing);
+        setMode("view");
+      } else {
         setMode("edit");
-      } finally {
-        setLoading(false);
-        if (refreshBanner) refreshBanner();
       }
-    }, [refreshBanner]);
+    } catch {
+      setMode("edit");
+    } finally {
+      setLoading(false);
+    }
+  }, [applyStatus]);
 
   useEffect(() => {
     if (!isTutorAuthed()) {
@@ -52,14 +60,19 @@ export default function TutorProfilePage() {
   };
 
   const handleSuccess = async (newProfile) => {
-    if (newProfile) setProfileData(newProfile);
+    if (newProfile) {
+      setProfileData(newProfile);
+      applyStatus(newProfile);
+    }
     setMode("view");
     toast.success("Profile saved successfully!");
     try {
       const freshProfile = await fetchMyTutorProfile();
-      if (freshProfile) setProfileData(freshProfile);
+      if (freshProfile) {
+        setProfileData(freshProfile);
+        applyStatus(freshProfile);
+      }
     } catch { /* ignore refresh failure */ }
-    if (refreshBanner) refreshBanner();
   };
 
   if (loading) {

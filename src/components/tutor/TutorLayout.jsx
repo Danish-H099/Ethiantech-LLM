@@ -31,12 +31,9 @@ export default function TutorLayout() {
   const sidebarRef = useRef(null);
   const hamburgerRef = useRef(null);
   const navigate = useNavigate();
-  const [bannerTick, setBannerTick] = useState(0);
-  const refreshBanner = () => setBannerTick((t) => t + 1);
-  const tutorLocal = (() => { try { return JSON.parse(localStorage.getItem("tutor") || "{}"); } catch { return {}; } })();
-  const profileComplete = tutorLocal.profileComplete === true;
-  const approved = tutorLocal.approved === true;
 
+  const [profileComplete, setProfileComplete] = useState(false);
+  const [approved, setApproved] = useState(false);
   function handleLogout() {
     clearMockAuth();
     navigate("/", { replace: true });
@@ -165,7 +162,7 @@ export default function TutorLayout() {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isAddCourse = item.path === "/tutor/add-course";
-              const disabled = isAddCourse && !profileComplete;
+              const disabled = isAddCourse && !approved;
               if (disabled) {
                 return (
                   <span
@@ -248,10 +245,10 @@ export default function TutorLayout() {
           {/* Sandbox banner — shown for any unapproved status so tutors know their
               publishing is restricted and how to unlock it. */}
           {!approved && (
-            <TutorBanner key={bannerTick} profileComplete={profileComplete} approved={approved} />
+            <TutorBanner profileComplete={profileComplete} approved={approved} />
           )}
           <Suspense fallback={<RouteLoader />}>
-            <Outlet context={{ refreshBanner }} />
+            <Outlet context={{ approved, profileComplete, setApproved, setProfileComplete }} />
           </Suspense>
         </main>
       </div>
